@@ -1,0 +1,18 @@
+{
+  "provisional": true,
+  "note": "ILLUSTRATIVE values until the math team fills Appendix A1 from NASA-STD-3001. Not clinical guidance.",
+  "metrics": {
+    "hr":       { "unit": "bpm",   "high": { "caution": 100, "warning": 120, "critical": 150 }, "low": { "caution": 50, "warning": 42, "critical": 35 }, "hysteresis": 3 },
+    "hrv":      { "unit": "ms",    "low":  { "caution": 30,  "warning": 20,  "critical": 10 },  "hysteresis": 3 },
+    "spo2":     { "unit": "%",     "low":  { "caution": 95,  "warning": 92,  "critical": 88 },  "hysteresis": 1 },
+    "bpSys":    { "unit": "mmHg",  "high": { "caution": 130, "warning": 150, "critical": 180 }, "low": { "caution": 100, "warning": 90, "critical": 80 }, "hysteresis": 3 },
+    "bpDia":    { "unit": "mmHg",  "high": { "caution": 85,  "warning": 95,  "critical": 110 }, "low": { "caution": 60, "warning": 50, "critical": 40 }, "hysteresis": 3 },
+    "respRate": { "unit": "/min",  "high": { "caution": 20,  "warning": 26,  "critical": 32 },  "low": { "caution": 11, "warning": 8, "critical": 6 }, "hysteresis": 1 },
+    "temp":     { "unit": "°C",    "high": { "caution": 37.5,"warning": 38.3,"critical": 39.5 }, "low": { "caution": 36.0, "warning": 35.0, "critical": 34.0 }, "hysteresis": 0.2 },
+    "stress":   { "unit": "idx",   "high": { "caution": 50,  "warning": 70,  "critical": 85 },  "hysteresis": 3 },
+    "co2":      { "unit": "mmHg",  "high": { "caution": 5,   "warning": 8,   "critical": 12 },  "hysteresis": 0.3 },
+    "o2":       { "unit": "%",     "low":  { "caution": 19.5,"warning": 18,  "critical": 16 },  "hysteresis": 0.3 },
+    "doseRate": { "unit": "µSv/h", "high": { "caution": 60,  "warning": 150, "critical": 400 }, "hysteresis": 5 },
+    "dose":     { "unit": "mSv",   "high": { "caution": 10,  "warning": 30,  "critical": 50 },  "hysteresis": 0.5 }
+  }
+}

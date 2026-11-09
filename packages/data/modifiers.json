@@ -1,0 +1,7 @@
+{
+  "provisional": true,
+  "note": "Illustrative response model until the math team fills Appendix A3.",
+  "recoverSec": 20,
+  "exertion": { "riseSec": 8, "holdSec": 40, "decaySec": 20, "hrAddFrac": 0.6, "hrvDropFrac": 0.55, "respAddFrac": 0.8, "bpSysAdd": 30, "tempAdd": 0.6, "stressAdd": 35 },
+  "o2fault":  { "riseSec": 15, "holdSec": 60, "decaySec": 30, "spo2Drop": 12, "hrAdd": 15, "respAdd": 6, "cabinO2Drop": 6, "stressAdd": 25, "eegDrop": 3 }
+}

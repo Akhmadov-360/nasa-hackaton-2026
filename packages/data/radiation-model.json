@@ -1,0 +1,11 @@
+{
+  "provisional": true,
+  "note": "Flare class -> dose-rate profile. DONKI gives class/times only; the dose response is MODELED. Illustrative until Appendix A2 is filled.",
+  "backgroundUSvH": 20,
+  "demoCompression": 180,
+  "classes": {
+    "C": { "peakMultiplier": 1.5, "riseSec": 1800,  "holdSec": 1800,  "decaySec": 14400 },
+    "M": { "peakMultiplier": 3,   "riseSec": 2700,  "holdSec": 3600,  "decaySec": 21600 },
+    "X": { "peakMultiplier": 8,   "riseSec": 3600,  "holdSec": 7200,  "decaySec": 43200 }
+  }
+}
