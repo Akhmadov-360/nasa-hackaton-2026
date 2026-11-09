@@ -41,7 +41,7 @@ export function TopBar() {
 
   return (
     <header className="relative">
-      <div className="glass grid grid-cols-[1fr_auto] items-center gap-3 px-4 py-2.5 md:grid-cols-[1fr_minmax(0,460px)_1fr]">
+      <div className="glass glass-blur grid grid-cols-[1fr_auto] items-center gap-3 px-4 py-2.5 md:grid-cols-[1fr_minmax(0,460px)_1fr]">
         <div className="flex min-w-0 items-center gap-3">
           <Orbit className="size-6 shrink-0 text-teal" aria-hidden />
           <div className="min-w-0 leading-tight">

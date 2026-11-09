@@ -31,7 +31,7 @@ export function VitalCard({ crewId, label, icon, unit, value, value2, decimals =
   return (
     <article
       aria-current={highlighted ? 'true' : undefined}
-      className="glass relative flex flex-col gap-1.5 p-3.5 transition-[box-shadow,border-color] duration-500"
+      className="glass relative flex flex-col gap-1 p-3 transition-[box-shadow,border-color] duration-500"
       style={{
         borderColor: alert ? `color-mix(in srgb, ${color} 55%, transparent)` : highlighted ? 'rgba(79,182,168,0.55)' : undefined,
         boxShadow: highlighted ? '0 0 0 1px rgba(79,182,168,0.35), 0 0 28px -8px rgba(79,182,168,0.5)' : undefined,
@@ -42,11 +42,11 @@ export function VitalCard({ crewId, label, icon, unit, value, value2, decimals =
         {status !== 'NOMINAL' ? <StatusBadge status={status} /> : degraded ? <span className="text-xs text-amber">est.</span> : null}
       </header>
       <div className="flex items-baseline gap-1.5">
-        <span className="num text-[1.7rem] leading-none font-medium" aria-live="off">
-          {finite(value) ? <NumberFlow value={value} format={fmt} /> : '—'}
+        <span className="num text-[1.6rem] leading-[1.3] font-medium" aria-live="off">
+          {finite(value) ? <NumberFlow value={value} format={fmt} locales="en-US" /> : '—'}
           {finite(value2) && (<>
             <span className="text-mist">/</span>
-            <NumberFlow value={value2} format={fmt} />
+            <NumberFlow value={value2} format={fmt} locales="en-US" />
           </>)}
         </span>
         <span className="text-xs text-mist">{unit}</span>

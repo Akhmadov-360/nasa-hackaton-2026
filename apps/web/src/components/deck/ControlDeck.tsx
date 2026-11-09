@@ -22,7 +22,8 @@ function useRealFlare(): Flare | undefined {
       return (await r.json()) as { flares: Flare[] };
     },
     staleTime: 5 * 60_000,
-    retry: false,
+    retry: 5,
+    retryDelay: 4000,
   });
   return data?.flares?.[0];
 }

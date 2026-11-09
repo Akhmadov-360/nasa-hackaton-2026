@@ -61,6 +61,8 @@ export function diffAlerts(prev: TelemetryFrame | undefined, next: TelemetryFram
       metric,
       severity: status,
       message: `${metric} ${status.toLowerCase()} (${Number(values[metric]).toFixed(1)} ${unit})`,
+      value: values[metric],
+      unit,
     });
   }
   return alerts;

@@ -31,6 +31,9 @@ export interface Alert {
   metric: string;
   severity: Status;
   message: string;
+  /** value that crossed the threshold and its unit, for UI formatting */
+  value?: number;
+  unit?: string;
 }
 
 export type EventType = 'flare' | 'exertion' | 'o2fault' | 'normalize';

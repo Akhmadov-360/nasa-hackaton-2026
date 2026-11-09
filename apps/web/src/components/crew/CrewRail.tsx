@@ -56,7 +56,7 @@ export function CrewRail() {
   const reduce = useReducedMotion();
   const spring = reduce ? { duration: 0 } : { type: 'spring' as const, stiffness: 190, damping: 17, mass: 0.8 };
   return (
-    <nav aria-label={t('crew.title')} className="glass relative flex flex-row items-stretch gap-1 p-2 lg:flex-col lg:p-3">
+    <nav aria-label={t('crew.title')} className="glass glass-blur relative flex flex-row items-stretch gap-1 p-2 lg:flex-col lg:p-3">
       <h2 className="sr-only">{t('crew.title')}</h2>
       {/* liquid layer: filtered blobs only, aligned 1:1 with the buttons above it */}
       <div className="pointer-events-none absolute inset-2 flex flex-row gap-1 lg:inset-3 lg:flex-col" style={{ filter: 'url(#goo)' }} aria-hidden>

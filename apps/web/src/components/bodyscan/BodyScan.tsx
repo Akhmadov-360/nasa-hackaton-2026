@@ -1,7 +1,6 @@
 'use client';
 import { useEffect, useRef, useState } from 'react';
 import { animate, svg } from 'animejs';
-import { sileo } from 'sileo';
 import { worstStatus, type Status } from '@astro/engine';
 import { useDisplayFrame } from '@/hooks/useDisplayFrame';
 import { useT, type DictKey } from '@/lib/i18n';
@@ -42,7 +41,7 @@ export function BodyScan({ crewId }: { crewId: string }) {
   // outline draws itself (Anime.js) when the selected astronaut changes
   useEffect(() => {
     if (!root.current) return;
-    const paths = root.current.querySelectorAll('.outline');
+    const paths = root.current.querySelectorAll('.body-line');
     const a = animate(svg.createDrawable(paths), { draw: ['0 0', '0 1'], duration: 1400, ease: 'inOutQuad', delay: (_el: unknown, i?: number) => (i ?? 0) * 60 });
     return () => void a.pause();
   }, [crewId]);
@@ -52,16 +51,13 @@ export function BodyScan({ crewId }: { crewId: string }) {
     return worstStatus(o.metrics.map((m) => frame?.status.byMetric[m] ?? 'NOMINAL'));
   };
 
-  const pick = (id: OrganId) => {
-    setPinned((p) => (p === id ? null : id));
-    const o = ORGANS.find((x) => x.id === id)!;
-    const vals = frame ? { ...frame.vitals, co2: frame.cabin.co2, o2: frame.cabin.o2 } : {};
-    const description = o.metrics.map((m) => `${metricLabel(m)} ${fmt(m, (vals as Record<string, number>)[m])}`).join(' · ');
-    sileo.info({ title: `${t(`organ.${id}` as DictKey)} · ${STATUS_WORD[organStatus(id)]}`, description });
-  };
+  const pick = (id: OrganId) => setPinned((p) => (p === id ? null : id));
+
+  const vals: Record<string, number> = frame ? { ...frame.vitals, co2: frame.cabin.co2, o2: frame.cabin.o2 } : {};
+  const activeOrgan = ORGANS.find((o) => o.id === active);
 
   return (
-    <section className="glass flex flex-col items-center gap-3 p-4" aria-label={t('scan.title')}>
+    <section className="glass glass-blur flex flex-col items-center gap-3 p-4" aria-label={t('scan.title')}>
       <h3 className="self-start text-sm font-medium text-mist">{t('scan.title')}</h3>
       <div className="relative w-full max-w-[210px]">
         <svg ref={root} viewBox="0 0 200 420" className="w-full" role="group" aria-label={t('scan.title')}>
@@ -79,12 +75,12 @@ export function BodyScan({ crewId }: { crewId: string }) {
             </clipPath>
           </defs>
           <g fill="rgba(28,39,64,0.55)" stroke="rgba(159,176,201,0.5)" strokeWidth="1.4" strokeLinejoin="round" strokeLinecap="round">
-            <circle className="outline" cx="100" cy="38" r="22" />
-            <path className="outline" d="M92 58 L92 76 M108 58 L108 76" fill="none" />
-            <path className="outline" d="M62 84 C80 76 120 76 138 84 L148 150 C150 176 142 206 136 226 L64 226 C58 206 50 176 52 150 Z" />
-            <path className="outline" d="M62 90 L44 150 L36 212 L48 214 L62 160 Z" />
-            <path className="outline" d="M138 90 L156 150 L164 212 L152 214 L138 160 Z" />
-            <path className="outline" d="M66 224 L100 232 L134 224 L128 330 L124 410 L108 410 L100 250 L92 410 L76 410 L72 330 Z" />
+            <circle className="body-line" cx="100" cy="38" r="22" />
+            <path className="body-line" d="M92 58 L92 76 M108 58 L108 76" fill="none" />
+            <path className="body-line" d="M62 84 C80 76 120 76 138 84 L148 150 C150 176 142 206 136 226 L64 226 C58 206 50 176 52 150 Z" />
+            <path className="body-line" d="M62 90 L44 150 L36 212 L48 214 L62 160 Z" />
+            <path className="body-line" d="M138 90 L156 150 L164 212 L152 214 L138 160 Z" />
+            <path className="body-line" d="M66 224 L100 232 L134 224 L128 330 L124 410 L108 410 L100 250 L92 410 L76 410 L72 330 Z" />
           </g>
           {/* scan line, clipped to the silhouette */}
           <g clipPath="url(#body-clip)" aria-hidden>
@@ -125,7 +121,7 @@ export function BodyScan({ crewId }: { crewId: string }) {
           })}
         </svg>
       </div>
-      <ul className="grid w-full grid-cols-2 gap-1.5 text-xs">
+      <ul className="grid w-full grid-cols-1 gap-1 text-xs">
         {ORGANS.map((o) => {
           const st = organStatus(o.id);
           return (
@@ -144,6 +140,26 @@ export function BodyScan({ crewId }: { crewId: string }) {
           );
         })}
       </ul>
+      {/* micro-metrics of the organ under the pointer / pinned: right next to the silhouette */}
+      <div className="min-h-[92px] w-full rounded-xl bg-ink/50 p-3" aria-live="polite">
+        {activeOrgan ? (
+          <>
+            <p className="mb-1.5 text-sm font-medium" style={{ color: STATUS_COLOR[organStatus(activeOrgan.id)] }}>
+              {t(`organ.${activeOrgan.id}` as DictKey)} · {STATUS_WORD[organStatus(activeOrgan.id)]}
+            </p>
+            <dl className="grid grid-cols-[1fr_auto] gap-x-3 gap-y-0.5 text-xs">
+              {activeOrgan.metrics.map((m) => (
+                <div key={m} className="contents">
+                  <dt className="truncate text-mist">{metricLabel(m)}</dt>
+                  <dd className="num text-right">{fmt(m, vals[m])}</dd>
+                </div>
+              ))}
+            </dl>
+          </>
+        ) : (
+          <p className="text-xs text-mist">{t('scan.hint')}</p>
+        )}
+      </div>
     </section>
   );
 }

@@ -26,7 +26,7 @@ export function TimeTravelBar() {
   };
 
   return (
-    <section className="glass flex items-center gap-4 px-4 py-3" aria-label={t('tt.title')}>
+    <section className="glass glass-blur flex items-center gap-4 px-4 py-3" aria-label={t('tt.title')}>
       <div className="flex shrink-0 items-center gap-2 text-sm text-mist">
         <History className="size-4" aria-hidden /> <span className="hidden sm:inline">{t('tt.title')}</span>
       </div>

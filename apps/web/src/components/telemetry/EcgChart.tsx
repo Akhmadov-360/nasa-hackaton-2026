@@ -82,9 +82,13 @@ export function EcgChart({ crewId }: { crewId: string }) {
       let mn = Infinity;
       let mx = -Infinity;
       for (let i = from; i < data.length; i++) { const v = data[i]; if (v < mn) mn = v; if (v > mx) mx = v; }
-      const pad = Math.max(0.2, (mx - mn) * 0.12);
-      lo += (mn - pad - lo) * 0.08;
-      hi += (mx + pad - hi) * 0.08;
+      // robust range: ignore the extreme 1% so one noisy sample cannot flatten the trace
+      const sorted = Array.from(data.subarray(from)).sort((a, b) => a - b);
+      const rlo = sorted[Math.floor(sorted.length * 0.01)];
+      const rhi = sorted[Math.floor(sorted.length * 0.995)];
+      const pad = Math.max(0.1, (rhi - rlo) * 0.08);
+      lo += (rlo - pad - lo) * 0.1;
+      hi += (rhi + pad - hi) * 0.1;
       const span = Math.max(0.5, hi - lo);
       const xs = w / (WINDOW_SEC * ECG_HZ);
       const xOff = w - n * xs; // newest sample at the right edge
@@ -94,17 +98,20 @@ export function EcgChart({ crewId }: { crewId: string }) {
       ctx.beginPath();
       ctx.rect(0, 0, revealX, h);
       ctx.clip();
-      ctx.strokeStyle = colorRef.current;
-      ctx.lineWidth = 1.6;
       ctx.lineJoin = 'round';
-      ctx.shadowColor = colorRef.current;
-      ctx.shadowBlur = 6;
       ctx.beginPath();
       for (let i = 0; i < n; i++) {
         const x = xOff + i * xs;
         const y = h - ((data[from + i] - lo) / span) * h;
         if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
       }
+      // cheap glow: a wide translucent stroke under the sharp one (shadowBlur is slow without a GPU)
+      ctx.strokeStyle = colorRef.current;
+      ctx.globalAlpha = 0.16;
+      ctx.lineWidth = 5;
+      ctx.stroke();
+      ctx.globalAlpha = 1;
+      ctx.lineWidth = 1.6;
       ctx.stroke();
       ctx.restore();
     };
@@ -121,7 +128,7 @@ export function EcgChart({ crewId }: { crewId: string }) {
         </h3>
         <StatusBadge status={status} />
       </header>
-      <canvas ref={canvasRef} className="h-32 w-full" role="img" aria-label={t('ecg.title')} />
+      <canvas ref={canvasRef} className="h-28 w-full" role="img" aria-label={t('ecg.title')} />
       <p className="num mt-1 text-xs text-mist">
         {baseCfg.pack.baselines[crewId] ? `MIT-BIH ${baseCfg.pack.baselines[crewId].ecgHz} Hz` : ''}
       </p>

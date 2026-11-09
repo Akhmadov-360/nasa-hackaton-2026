@@ -2,7 +2,7 @@ import { sileo } from 'sileo';
 import type { Alert } from '@astro/engine';
 import { beep, speak } from '../audio';
 import { crewIndex, crewName } from '../engineConfig';
-import { metricLabel } from '../metrics';
+import { METRICS, metricLabel, STATUS_WORD } from '../metrics';
 
 export interface AlertDeps {
   toast: (a: Alert) => void;
@@ -14,12 +14,21 @@ export interface AlertDeps {
 export const voiceText = (a: Alert) =>
   `Warning: Crew Member ${crewIndex(a.crewId)} ${metricLabel(a.metric)} ${a.severity === 'CRITICAL' ? 'critical' : 'warning'}`;
 
+const sentence = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
+
+/** Readable value line, e.g. "WARNING · 92 %". */
+export function alertValueText(a: Alert): string {
+  const m = METRICS[a.metric];
+  const v = typeof a.value === 'number' && Number.isFinite(a.value) ? a.value.toFixed(m?.decimals ?? 1) : '';
+  return `${STATUS_WORD[a.severity]}${v ? ` · ${v} ${a.unit ?? m?.unit ?? ''}` : ''}`;
+}
+
 const defaultDeps = (log: (a: Alert) => void): AlertDeps => ({
   log,
   speak: (text) => speak(text),
   beep: (s) => beep(s),
   toast: (a) => {
-    const opts = { title: `${crewName(a.crewId)} · ${metricLabel(a.metric)}`, description: a.message };
+    const opts = { title: `${crewName(a.crewId)} · ${sentence(metricLabel(a.metric))}`, description: alertValueText(a) };
     if (a.severity === 'CRITICAL') sileo.error(opts);
     else sileo.warning(opts);
   },

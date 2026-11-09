@@ -2,9 +2,9 @@ import { sileo } from 'sileo';
 import type { Alert, EngineEvent, EventType, Status } from '@astro/engine';
 import { enableAudio } from './audio';
 import { apiBase, wsUrl } from './constants';
-import { notifyAlert } from './alerts/alertCenter';
+import { alertValueText, notifyAlert } from './alerts/alertCenter';
 import { crewName } from './engineConfig';
-import { STATUS_RANK } from './metrics';
+import { metricLabel, STATUS_RANK } from './metrics';
 import { PollSource } from './sources/PollSource';
 import { SimSource } from './sources/SimSource';
 import { SourceManager, type ManagerEvent } from './sources/SourceManager';
@@ -69,7 +69,7 @@ function handle(e: ManagerEvent): void {
 function logAlert(a: Alert): void {
   st().addAudit({
     t: a.t, kind: 'alert', severity: a.severity,
-    text: `${crewName(a.crewId)}: ${a.message}`,
+    text: `${crewName(a.crewId)}: ${metricLabel(a.metric)} · ${alertValueText(a)}`,
   });
 }
 

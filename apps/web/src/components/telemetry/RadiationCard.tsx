@@ -31,15 +31,15 @@ export function RadiationCard({ frame, crewId, tick }: { frame: TelemetryFrame |
       </header>
       <div>
         <p className="text-xs text-mist">{t('rad.rate')}</p>
-        <p className="num text-2xl font-medium">
-          {ok(rate) ? <NumberFlow value={rate} format={{ maximumFractionDigits: 0 }} /> : '—'}
+        <p className="num text-2xl leading-[1.3] font-medium">
+          {ok(rate) ? <NumberFlow value={rate} format={{ maximumFractionDigits: 0 }} locales="en-US" /> : '—'}
           <span className="ml-1 text-xs text-mist">µSv/h</span>
         </p>
       </div>
       <div>
         <p className="text-xs text-mist">{t('rad.total')}</p>
-        <p className="num text-2xl font-medium">
-          {ok(total) ? <NumberFlow value={total} format={{ minimumFractionDigits: 3, maximumFractionDigits: 3 }} /> : '—'}
+        <p className="num text-2xl leading-[1.3] font-medium">
+          {ok(total) ? <NumberFlow value={total} format={{ minimumFractionDigits: 3, maximumFractionDigits: 3 }} locales="en-US" /> : '—'}
           <span className="ml-1 text-xs text-mist">mSv</span>
         </p>
       </div>

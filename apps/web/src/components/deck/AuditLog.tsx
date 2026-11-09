@@ -33,7 +33,7 @@ export function AuditLog() {
   const audit = useMissionStore((s) => s.audit);
   const rows = audit.slice(-60).reverse();
   return (
-    <section className="glass flex min-h-0 flex-1 flex-col p-4" aria-label={t('log.title')}>
+    <section className="glass flex max-h-72 min-h-0 flex-1 flex-col p-4 lg:max-h-none" aria-label={t('log.title')}>
       <h3 className="mb-1 text-sm font-medium text-mist">{t('log.title')}</h3>
       <ul className="thin-scroll min-h-0 flex-1 divide-y divide-white/5 overflow-y-auto pr-1" aria-live="polite">
         <AnimatePresence initial={false}>

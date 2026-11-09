@@ -35,7 +35,15 @@ export function MissionControl() {
     <QueryClientProvider client={qc}>
       <GooeyFilter />
       <Aurora />
-      <Toaster position="top-right" theme="dark" options={{ fill: '#141C2E' }} />
+      <Toaster
+        position="top-center"
+        theme="dark"
+        offset={{ top: 62 }}
+        options={{
+          fill: '#1C2740',
+          styles: { title: 'text-bone! font-semibold!', description: 'text-bone/85! text-sm!' },
+        }}
+      />
       <div className="mx-auto flex min-h-dvh max-w-[1720px] flex-col gap-3 p-3 lg:h-dvh">
         <TopBar />
         <div className="grid min-h-0 flex-1 gap-3 lg:grid-cols-[108px_minmax(0,1fr)_320px]">
