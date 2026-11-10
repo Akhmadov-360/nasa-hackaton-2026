@@ -69,7 +69,7 @@ export function HoldButton({ label, hint, icon, tone, onConfirm, disabled }: Pro
       onBlur={() => hold.cancel()}
       onContextMenu={(e) => e.preventDefault()}
       aria-label={`${label}. ${hint}`}
-      className="relative flex min-h-14 w-full touch-none items-center gap-3 overflow-hidden rounded-2xl border border-white/10 bg-panel-2/70 px-4 py-2.5 text-left select-none transition-colors enabled:hover:bg-panel-2 disabled:cursor-not-allowed disabled:opacity-50"
+      className="relative flex min-h-14 w-full touch-none items-center gap-3 overflow-hidden rounded-2xl bg-[#17213a] px-4 py-2.5 shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] text-left select-none transition-colors enabled:hover:bg-[#1c2844] disabled:cursor-not-allowed disabled:opacity-50"
       style={{ boxShadow: progress > 0 ? `0 0 0 1px ${c.ring}` : undefined }}
     >
       <span className="absolute inset-y-0 left-0 origin-left" style={{ width: '100%', background: c.fill, transform: `scaleX(${progress})` }} aria-hidden />

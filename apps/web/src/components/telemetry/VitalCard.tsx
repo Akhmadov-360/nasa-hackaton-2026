@@ -59,10 +59,10 @@ export function VitalCard({ crewId, sourceKey, label, icon, unit, value, value2,
   return (
     <article
       aria-current={highlighted ? 'true' : undefined}
-      className="glass relative flex min-w-0 flex-col gap-0.5 p-3 transition-[box-shadow,border-color] duration-500"
+      className="relative flex min-w-0 flex-col gap-0.5 bg-cell p-3.5 transition-[box-shadow,background-color] duration-500"
       style={{
-        borderColor: alert ? `color-mix(in srgb, ${color} 55%, transparent)` : highlighted ? 'rgba(79,182,168,0.55)' : undefined,
-        boxShadow: highlighted ? '0 0 0 1px rgba(79,182,168,0.35), 0 0 28px -8px rgba(79,182,168,0.5)' : undefined,
+        background: alert ? `color-mix(in srgb, ${color} 9%, var(--color-cell))` : highlighted ? 'color-mix(in srgb, var(--color-teal) 9%, var(--color-cell))' : undefined,
+        boxShadow: alert ? `inset 3px 0 0 ${color}` : highlighted ? 'inset 3px 0 0 var(--color-teal)' : undefined,
       }}
     >
       <header className="flex items-center justify-between gap-1 text-[13px] text-muted-foreground">
@@ -86,7 +86,7 @@ export function VitalCard({ crewId, sourceKey, label, icon, unit, value, value2,
         )}
         <span className="text-xs text-muted-foreground">{unit}</span>
       </div>
-      <div className="[@media(max-height:820px)]:hidden"><Sparkline crewId={crewId} read={read} color={color} tick={tick} /></div>
+      <div className="mt-auto pt-2 [@media(max-height:820px)]:hidden"><Sparkline crewId={crewId} read={read} color={color} tick={tick} /></div>
     </article>
   );
 }

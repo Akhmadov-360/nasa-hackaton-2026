@@ -29,7 +29,7 @@ export class WidgetBoundary extends Component<Props, State> {
     if (!this.state.failed) return this.props.children;
     const locale = useMissionStore.getState().locale;
     return (
-      <div role="alert" className={`glass flex flex-col items-start justify-center gap-2 p-4 ${this.props.className ?? ''}`}>
+      <div role="alert" className={`card flex flex-col items-start justify-center gap-2 bg-cell p-4 ${this.props.className ?? ''}`}>
         <SignalZero className="size-5 text-amber" aria-hidden />
         <p className="text-sm font-medium">{translate(locale, 'widget.offline')}</p>
         <p className="text-xs text-mist">{this.props.name}</p>

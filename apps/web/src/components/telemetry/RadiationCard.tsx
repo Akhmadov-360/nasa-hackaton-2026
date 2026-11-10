@@ -21,8 +21,12 @@ export function RadiationCard({ frame, crewId, tick }: { frame: TelemetryFrame |
   const ok = (v?: number): v is number => typeof v === 'number' && Number.isFinite(v);
   return (
     <section
-      className="glass grid min-w-0 grid-cols-[auto_auto_1fr] items-center gap-x-6 gap-y-1 p-3"
-      style={STATUS_RANK[status] >= 2 ? { borderColor: `color-mix(in srgb, ${color} 55%, transparent)` } : undefined}
+      className="grid h-full min-w-0 grid-cols-[auto_auto_1fr] items-center gap-x-6 gap-y-1 bg-cell p-3.5 transition-[box-shadow,background-color] duration-500"
+      style={
+        STATUS_RANK[status] >= 2
+          ? { background: `color-mix(in srgb, ${color} 9%, var(--color-cell))`, boxShadow: `inset 3px 0 0 ${color}` }
+          : undefined
+      }
       aria-label={t('rad.title')}
     >
       <header className="col-span-full flex items-center justify-between gap-2">

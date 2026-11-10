@@ -39,9 +39,10 @@ export function TelemetryGrid({ crewId }: { crewId: string }) {
   );
 
   return (
-    <div className="flex min-w-0 flex-col gap-3">
+    <div className="flex min-h-0 min-w-0 flex-col gap-3">
       <WidgetBoundary name="ECG"><EcgChart crewId={crewId} /></WidgetBoundary>
-      <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
+      {/* one flat plateau: hairline dividers between readings, no cards inside the card */}
+      <div className="grid flex-1 auto-rows-fr grid-cols-2 gap-px overflow-hidden rounded-[20px] bg-white/[0.06] md:grid-cols-4">
         {card('hr', t('metric.hr'), <HeartPulse className={ic} aria-hidden />, 'bpm', v?.hr, (f) => f.vitals.hr)}
         {card('spo2', t('metric.spo2'), <Droplets className={ic} aria-hidden />, '%', v?.spo2, (f) => f.vitals.spo2)}
         <WidgetBoundary name={t('metric.bp')} key="bp">

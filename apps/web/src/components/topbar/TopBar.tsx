@@ -49,8 +49,8 @@ export function TopBar() {
   const status = globalStatus(latest);
 
   return (
-    <header className="relative">
-      <div className="glass glass-blur grid grid-cols-[1fr_auto] items-center gap-3 px-4 py-2.5 md:grid-cols-[1fr_minmax(0,460px)_1fr]">
+    <header className="hairline-b relative z-30 bg-bar">
+      <div className="grid grid-cols-[1fr_auto] items-center gap-3 px-4 py-2 md:grid-cols-[1fr_minmax(0,460px)_1fr]">
         <div className="flex min-w-0 items-center gap-3">
           <Orbit className="size-6 shrink-0 text-teal" aria-hidden />
           <div className="min-w-0 leading-tight">
@@ -92,11 +92,11 @@ export function TopBar() {
         </div>
       </div>
       {(mode === 'SIM' || mode === 'STALE') && (
-        <p role="alert" className="mx-auto mt-2 w-fit rounded-full bg-amber/15 px-4 py-1 text-xs font-medium text-amber">
+        <p role="alert" className="hairline-t bg-amber/10 px-4 py-1 text-center text-xs font-medium text-amber">
           {mode === 'SIM' ? t('banner.sim') : t('banner.stale')}
         </p>
       )}
-      <div className="mt-2 md:hidden"><IslandPill /></div>
+      <div className="px-4 pb-2 md:hidden"><IslandPill /></div>
     </header>
   );
 }

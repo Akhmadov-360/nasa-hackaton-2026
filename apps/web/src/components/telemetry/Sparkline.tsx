@@ -26,7 +26,7 @@ export function Sparkline({ crewId, read, color, tick, points = 60 }: Props) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [crewId, tick, points]);
   return (
-    <svg viewBox="0 0 100 26" preserveAspectRatio="none" className="h-6 w-full" aria-hidden>
+    <svg viewBox="0 0 100 26" preserveAspectRatio="none" className="h-9 w-full" aria-hidden>
       <path d={d} fill="none" stroke={color} strokeWidth="1.5" vectorEffect="non-scaling-stroke" strokeLinecap="round" strokeLinejoin="round" opacity="0.85" />
     </svg>
   );

@@ -7,6 +7,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { useT } from '@/lib/i18n';
+import { downloadLogCsv } from '@/lib/exportCsv';
 import { logText } from '@/lib/logText';
 import { formatMet, STATUS_COLOR } from '@/lib/metrics';
 import { useMissionStore, type LogEntry } from '@/lib/store/missionStore';
@@ -35,17 +36,6 @@ function Row({ e }: { e: LogEntry }) {
   );
 }
 
-function exportCsv(rows: LogEntry[], locale: Parameters<typeof logText>[1]) {
-  const esc = (s: string) => `"${s.replace(/"/g, '""')}"`;
-  const body = rows.map((e) => [formatMet(e.t), e.kind, e.severity ?? '', logText(e, locale)].map(esc).join(','));
-  const blob = new Blob([['MET,kind,severity,text', ...body].join('\n')], { type: 'text/csv;charset=utf-8' });
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = 'flight-log.csv';
-  a.click();
-  setTimeout(() => URL.revokeObjectURL(a.href), 1000);
-}
-
 /** Black-box audit trail: every alert, link change and operator command, stamped with MET. */
 export function AuditLog() {
   const t = useT();
@@ -58,12 +48,12 @@ export function AuditLog() {
   }, [audit, filter]);
 
   return (
-    <section className="glass flex min-h-0 flex-1 flex-col gap-2 p-3.5" aria-label={t('log.title')}>
+    <section className="flex max-h-80 min-h-0 flex-1 flex-col gap-2 p-4 lg:max-h-none" aria-label={t('log.title')}>
       <header className="flex items-center justify-between gap-2">
         <h3 className="text-sm font-medium text-muted-foreground">{t('log.title')}</h3>
         <Tooltip>
           <TooltipTrigger asChild>
-            <Button variant="ghost" size="icon" className="size-8" onClick={() => exportCsv(audit, locale)} disabled={!audit.length} aria-label={t('log.export')}>
+            <Button variant="ghost" size="icon" className="size-8" onClick={() => downloadLogCsv(audit, locale)} disabled={!audit.length} aria-label={t('log.export')}>
               <Download />
             </Button>
           </TooltipTrigger>
