@@ -36,6 +36,7 @@ function CrewButton({ id, name, role }: { id: string; name: string; role: string
       className="group relative flex h-[84px] w-full flex-col items-center justify-center gap-1 rounded-2xl"
     >
       <span
+        data-avatar
         className="relative grid size-14 place-items-center rounded-full border text-sm font-semibold transition-colors duration-500"
         style={{ borderColor: `color-mix(in srgb, ${color} 70%, transparent)`, background: 'rgba(11,18,32,0.7)' }}
       >
@@ -57,13 +58,20 @@ function useSlotCenter(selected: string, count: number) {
   const slots = useRef<Record<string, HTMLDivElement | null>>({});
   const [pos, setPos] = useState({ x: 0, y: 0 });
   useLayoutEffect(() => {
+    // centre of the avatar circle itself (not of the slot, which also holds the name below it)
     const measure = () => {
-      const el = slots.current[selected];
-      if (el) setPos({ x: el.offsetLeft + el.offsetWidth / 2, y: el.offsetTop + el.offsetHeight / 2 });
+      const avatar = slots.current[selected]?.querySelector('[data-avatar]');
+      const n = nav.current;
+      if (!avatar || !n) return;
+      const a = avatar.getBoundingClientRect();
+      const r = n.getBoundingClientRect();
+      setPos({ x: a.left - r.left - n.clientLeft + a.width / 2, y: a.top - r.top - n.clientTop + a.height / 2 });
     };
     measure();
+    const ro = new ResizeObserver(measure);
+    if (nav.current) ro.observe(nav.current);
     window.addEventListener('resize', measure);
-    return () => window.removeEventListener('resize', measure);
+    return () => { ro.disconnect(); window.removeEventListener('resize', measure); };
   }, [selected, count]);
   return { nav, slots, pos };
 }
@@ -92,9 +100,9 @@ export function CrewRail() {
       <h2 className="sr-only">{t('crew.title')}</h2>
       {/* liquid layer: solid blobs under the goo filter, dimmed as a whole so the avatars stay readable */}
       <div className="pointer-events-none absolute inset-0 opacity-30" style={{ filter: 'url(#goo-rail)' }} aria-hidden>
-        {blob(40, 70, 11)}
-        {blob(56, 150, 16)}
-        {blob(68, 320, 28)}
+        {blob(36, 70, 11)}
+        {blob(50, 150, 16)}
+        {blob(62, 320, 28)}
       </div>
       {crew.map((c) => (
         <div key={c.id} ref={(el) => { slots.current[c.id] = el; }} className="relative z-10 flex-1 lg:flex-none">
