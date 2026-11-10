@@ -34,7 +34,9 @@ pnpm --filter @astro/web dev       # http://localhost:3000
 ```
 
 Open http://localhost:3000 and press **Enter Mission Control** (this click enables sound and voice alerts).
-To reset the scenario (clear injected events), restart the API.
+To clear injected events use **Reset scenario** in the Control deck (or `POST /reset`).
+
+Keyboard: **1–4** select crew, **T** back to live, **M** mute. Sound and voice can be toggled in the top bar; the language switch (EN / RU / UZ) also changes the voice language.
 
 Everything needed at runtime is in the repository, so the demo works without internet.
 
@@ -100,6 +102,7 @@ pnpm typecheck
 ## Known limits
 
 - Thresholds and the radiation / exertion / O₂ response models are provisional until the math team fills them in.
+- Voice: Uzbek has no installed voice in most browsers, so it falls back to Russian. Check that your presentation laptop has an English and a Russian voice (Windows: Settings, Time and language, Speech).
 - Sparklines keep showing the live trend while Time Travel is active (the main values and ECG are reconstructed).
 - Russian and Uzbek strings need review by native speakers.
 - Rendering was profiled in a headless browser without a GPU; check frame rate on the presentation laptop.

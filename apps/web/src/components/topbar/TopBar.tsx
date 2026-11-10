@@ -60,7 +60,7 @@ export function TopBar() {
               {isProvisional && (
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <span className="ml-2 cursor-help rounded-full bg-amber/15 px-2 py-0.5 font-sans text-[11px] text-amber">{t('badge.modeled')}</span>
+                    <span className="ml-2 cursor-help rounded-full bg-amber/15 px-2 py-0.5 font-sans text-xs text-amber">{t('badge.demo')}</span>
                   </TooltipTrigger>
                   <TooltipContent>{t('badge.provisional')}</TooltipContent>
                 </Tooltip>
@@ -81,7 +81,7 @@ export function TopBar() {
             <TooltipContent>{t('top.sound')} <Kbd>M</Kbd></TooltipContent>
           </Tooltip>
           <ToggleGroup
-            type="single" value={locale} aria-label={t('top.lang')} className="hidden sm:inline-flex"
+            type="single" value={locale} aria-label={t('top.lang')} className="inline-flex"
             onValueChange={(v) => v && setLocale(v as Locale)}
           >
             {(['en', 'ru', 'uz'] as Locale[]).map((l) => <ToggleGroupItem key={l} value={l} aria-label={l}>{l}</ToggleGroupItem>)}

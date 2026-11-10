@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
 import type { Alert } from '@astro/engine';
-import { notifyAlert } from './alertCenter';
+import { notifyAlert, voiceText } from './alertCenter';
+import { useMissionStore } from '../store/missionStore';
 
 const alert: Alert = { id: 'a', t: 1, crewId: 'A2', metric: 'spo2', severity: 'CRITICAL', message: 'spo2 critical (86.0 %)' };
 
@@ -21,5 +22,13 @@ describe('notifyAlert', () => {
     expect(d.toast).not.toHaveBeenCalled();
     expect(d.speak).not.toHaveBeenCalled();
     expect(d.log).toHaveBeenCalledTimes(1);
+  });
+
+  it('speaks in the interface language with the value and unit spelled out', () => {
+    const a: Alert = { ...alert, metric: 'spo2', value: 87.9, unit: '%', severity: 'CRITICAL' };
+    useMissionStore.setState({ locale: 'ru' });
+    expect(voiceText(a)).toBe('Авария. Arman Tashev: кислород в крови, 88 процентов.');
+    useMissionStore.setState({ locale: 'en' });
+    expect(voiceText(a)).toBe('Emergency. Arman Tashev: blood oxygen, 88 percent.');
   });
 });

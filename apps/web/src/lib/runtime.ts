@@ -13,8 +13,9 @@ import { WebSocketSource } from './sources/WebSocketSource';
 import { useMissionStore } from './store/missionStore';
 import { pushFrame, resetBus } from './telemetryBus';
 
-let manager: SourceManager | null = null;
-let timer: ReturnType<typeof setInterval> | undefined;
+// kept on globalThis so a dev hot-reload of this module cannot orphan the running manager
+const g = globalThis as unknown as { __astroMgr?: SourceManager | null; __astroTimer?: ReturnType<typeof setInterval> };
+const getManager = () => g.__astroMgr ?? null;
 let lastStoreUpdate = 0;
 const lastOverall: Record<string, Status> = {};
 
@@ -72,23 +73,24 @@ function logAlert(a: Alert): void {
 
 /** Called once, from the "Enter Mission Control" click (a user gesture, so audio can start). */
 export function startRuntime(): void {
-  if (manager) return;
+  if (getManager()) return;
   enableAudio();
   const live = new WebSocketSource(wsUrl);
   const poll = new PollSource(apiBase);
   const sim = new SimSource();
-  manager = new SourceManager({ live, poll, sim });
+  const manager = new SourceManager({ live, poll, sim });
+  g.__astroMgr = manager;
   manager.subscribe(handle);
   manager.start();
-  timer = setInterval(() => manager?.tick(), 500);
+  g.__astroTimer = setInterval(() => manager.tick(), 500);
   st().enter();
   st().addAudit({ t: st().t, kind: 'system', key: 'log.system.start' });
 }
 
 export function stopRuntime(): void {
-  clearInterval(timer);
-  manager?.stop();
-  manager = null;
+  clearInterval(g.__astroTimer);
+  getManager()?.stop();
+  g.__astroMgr = null;
 }
 
 const COMMAND_KEY: Record<EventType, DictKey> = {
@@ -105,7 +107,7 @@ export function sendCommand(type: EventType, crewId: string, params?: Record<str
   const ev: EngineEvent = { t, type, crewId, ...(params ? { params } : {}) };
   st().addEvent(ev);
   st().addAudit({ t, kind: 'command', key: COMMAND_KEY[type], params: { crewId } });
-  manager?.command(ev);
+  getManager()?.command(ev);
   // micro-action: undo for crew-specific commands
   if (type === 'exertion' || type === 'o2fault') {
     sileo.info({
@@ -124,5 +126,5 @@ export function resetScenario(): void {
   st().setTimeTravel(null);
   st().addAudit({ t, kind: 'command', key: 'log.cmd.reset' });
   void fetch(`${apiBase()}/reset`, { method: 'POST' }).catch(() => {});
-  manager?.resetLog();
+  getManager()?.resetLog();
 }
