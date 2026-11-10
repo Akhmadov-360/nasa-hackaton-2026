@@ -1,8 +1,9 @@
 'use client';
 import { useEffect, useState } from 'react';
-import { Orbit, Radio, Volume2, VolumeX, WifiOff } from 'lucide-react';
+import { ChevronDown, Globe, Orbit, Radio, Volume2, VolumeX, WifiOff } from 'lucide-react';
 import { Switch } from '@/components/ui/switch';
-import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
+import { Button } from '@/components/ui/button';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuLabel, DropdownMenuRadioGroup, DropdownMenuRadioItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { Kbd } from '@/components/ui/kbd';
 import { isProvisional } from '@/lib/engineConfig';
@@ -80,12 +81,21 @@ export function TopBar() {
             </TooltipTrigger>
             <TooltipContent>{t('top.sound')} <Kbd>M</Kbd></TooltipContent>
           </Tooltip>
-          <ToggleGroup
-            type="single" value={locale} aria-label={t('top.lang')} className="inline-flex"
-            onValueChange={(v) => v && setLocale(v as Locale)}
-          >
-            {(['en', 'ru', 'uz'] as Locale[]).map((l) => <ToggleGroupItem key={l} value={l} aria-label={l}>{l}</ToggleGroupItem>)}
-          </ToggleGroup>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="secondary" size="sm" className="gap-1.5 uppercase" aria-label={t('top.lang')}>
+                <Globe /> {locale} <ChevronDown className="opacity-60" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              <DropdownMenuLabel>{t('top.lang')}</DropdownMenuLabel>
+              <DropdownMenuRadioGroup value={locale} onValueChange={(v) => setLocale(v as Locale)}>
+                {(['en', 'ru', 'uz'] as Locale[]).map((l) => (
+                  <DropdownMenuRadioItem key={l} value={l}>{t(`lang.${l}` as DictKey)}</DropdownMenuRadioItem>
+                ))}
+              </DropdownMenuRadioGroup>
+            </DropdownMenuContent>
+          </DropdownMenu>
           <span className="rounded-full px-3 py-1 text-xs font-semibold md:hidden" style={{ color: STATUS_COLOR[status], background: `color-mix(in srgb, ${STATUS_COLOR[status]} 14%, transparent)` }}>
             {t(`status.${status}` as DictKey)}
           </span>

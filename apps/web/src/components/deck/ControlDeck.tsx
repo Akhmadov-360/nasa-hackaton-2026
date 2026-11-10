@@ -5,6 +5,7 @@ import { useFlares } from '@/lib/flares';
 import { useT } from '@/lib/i18n';
 import { resetScenario, sendCommand } from '@/lib/runtime';
 import { useMissionStore } from '@/lib/store/missionStore';
+import { Separator } from '@/components/ui/separator';
 import { WidgetBoundary } from '@/components/WidgetBoundary';
 import { AuditLog } from './AuditLog';
 import { HoldButton } from './HoldButton';
@@ -19,9 +20,9 @@ export function ControlDeck() {
   const wait = t('deck.wait');
 
   return (
-    <aside className="flex min-h-0 flex-col border-t border-white/[0.06] bg-rail lg:border-t-0 lg:border-l" aria-label={t('deck.title')}>
+    <aside className="flex min-h-0 flex-col bg-rail" aria-label={t('deck.title')}>
       <WidgetBoundary name={t('deck.title')}>
-        <section className="flex flex-col gap-2 border-b border-white/[0.06] p-4">
+        <section className="flex flex-col gap-2 p-4">
           <header className="flex items-baseline justify-between gap-2">
             <h2 className="text-sm font-medium text-muted-foreground">{t('deck.title')}</h2>
             <p className="text-xs text-muted-foreground">{ready ? t('deck.hint') : wait}</p>
@@ -48,7 +49,8 @@ export function ControlDeck() {
           />
         </section>
       </WidgetBoundary>
-      <WidgetBoundary name={t('log.title')} className="m-3 min-h-40 flex-1"><AuditLog /></WidgetBoundary>
+      <Separator className="mx-4 w-auto" />
+      <WidgetBoundary name={t('log.title')} className="min-h-40 flex-1"><AuditLog /></WidgetBoundary>
     </aside>
   );
 }

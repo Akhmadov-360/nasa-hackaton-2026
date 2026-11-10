@@ -5,6 +5,7 @@ import { useDisplayFrame } from '@/hooks/useDisplayFrame';
 import { useT } from '@/lib/i18n';
 import { ORGANS } from '@/lib/metrics';
 import { useMissionStore } from '@/lib/store/missionStore';
+import { Separator } from '@/components/ui/separator';
 import { WidgetBoundary } from '@/components/WidgetBoundary';
 import { EcgChart } from './EcgChart';
 import { RadiationCard } from './RadiationCard';
@@ -42,7 +43,15 @@ export function TelemetryGrid({ crewId }: { crewId: string }) {
     <div className="flex min-h-0 min-w-0 flex-col gap-3">
       <WidgetBoundary name="ECG"><EcgChart crewId={crewId} /></WidgetBoundary>
       {/* one flat plateau: hairline dividers between readings, no cards inside the card */}
-      <div className="grid flex-1 auto-rows-fr grid-cols-2 gap-px overflow-hidden rounded-[20px] bg-white/[0.06] md:grid-cols-4">
+      <div className="relative grid flex-1 auto-rows-fr grid-cols-2 gap-px overflow-hidden rounded-[20px] bg-white/10 md:grid-cols-4 md:gap-0 md:bg-transparent">
+        {/* continuous rules that cross cleanly: the radiation cell spans the last three columns, so its row has no inner verticals */}
+        <div className="pointer-events-none absolute inset-0 z-10 hidden md:block" aria-hidden>
+          <Separator orientation="vertical" className="absolute top-0 left-1/4" />
+          <Separator orientation="vertical" className="absolute top-0 left-1/2 data-[orientation=vertical]:h-2/3" />
+          <Separator orientation="vertical" className="absolute top-0 left-3/4 data-[orientation=vertical]:h-2/3" />
+          <Separator className="absolute top-1/3 left-0" />
+          <Separator className="absolute top-2/3 left-0" />
+        </div>
         {card('hr', t('metric.hr'), <HeartPulse className={ic} aria-hidden />, 'bpm', v?.hr, (f) => f.vitals.hr)}
         {card('spo2', t('metric.spo2'), <Droplets className={ic} aria-hidden />, '%', v?.spo2, (f) => f.vitals.spo2)}
         <WidgetBoundary name={t('metric.bp')} key="bp">

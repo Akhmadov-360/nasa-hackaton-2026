@@ -3,6 +3,7 @@ import { useMemo, useState } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
 import { AlertTriangle, Download, Info, Radio, Terminal } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { LogDrawer } from './LogDrawer';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
@@ -51,6 +52,8 @@ export function AuditLog() {
     <section className="flex max-h-80 min-h-0 flex-1 flex-col gap-2 p-4 lg:max-h-none" aria-label={t('log.title')}>
       <header className="flex items-center justify-between gap-2">
         <h3 className="text-sm font-medium text-muted-foreground">{t('log.title')}</h3>
+        <div className="flex items-center">
+        <LogDrawer />
         <Tooltip>
           <TooltipTrigger asChild>
             <Button variant="ghost" size="icon" className="size-8" onClick={() => downloadLogCsv(audit, locale)} disabled={!audit.length} aria-label={t('log.export')}>
@@ -59,6 +62,7 @@ export function AuditLog() {
           </TooltipTrigger>
           <TooltipContent>{t('log.export')}</TooltipContent>
         </Tooltip>
+        </div>
       </header>
       <Tabs value={filter} onValueChange={(v) => setFilter(v as Filter)}>
         <TabsList aria-label={t('log.title')}>

@@ -7,11 +7,12 @@ import { StatusBadge } from '@/components/StatusBadge';
 import { ProvenanceMark } from './VitalCard';
 import { useDisplayFrame, historyConfig } from '@/hooks/useDisplayFrame';
 import { useT } from '@/lib/i18n';
-import { STATUS_COLOR } from '@/lib/metrics';
 import { useMissionStore } from '@/lib/store/missionStore';
 import { ecgRings } from '@/lib/telemetryBus';
 
 const WINDOW_SEC = 4;
+/** The trace is always red, like a bedside monitor; the status badge carries the health state. */
+const ECG_RED = '#FF4D4F';
 const ECG_HZ = 360;
 
 /** Static 4 s ECG reconstructed for the Time Travel moment. */
@@ -29,8 +30,8 @@ export function EcgChart({ crewId }: { crewId: string }) {
   const tt = useMissionStore((s) => s.timeTravelT);
   const events = useMissionStore((s) => s.events);
   const status = frame?.status.overall ?? 'NOMINAL';
-  const colorRef = useRef(STATUS_COLOR.NOMINAL);
-  colorRef.current = STATUS_COLOR[status];
+  const colorRef = useRef(ECG_RED);
+  colorRef.current = ECG_RED;
   const replaySamples = useMemo(() => (tt === null ? null : historyEcg(crewId, tt, events)), [tt, crewId, events]);
   const replayRef = useRef<Float32Array | null>(null);
   replayRef.current = replaySamples;
