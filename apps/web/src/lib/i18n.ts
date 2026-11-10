@@ -1,8 +1,9 @@
 'use client';
+import { reportEn, reportRu } from './i18n.report';
 import type { Status } from '@astro/engine';
 import { useMissionStore, type Locale } from './store/missionStore';
 
-const en = {
+const enBase = {
   'app.title': 'Astronaut Health Monitor',
   'top.met': 'MET',
   'top.link': 'Link',
@@ -130,11 +131,13 @@ const en = {
   'toast.ack': 'Acknowledge',
   'keys.hint': 'Keys: 1–4 crew · T back to live · M mute',
 } as const;
+const en = { ...enBase, ...reportEn } as const;
 
 export type DictKey = keyof typeof en;
 type Dict = Partial<Record<DictKey, string>>;
 
 const ru: Dict = {
+  ...reportRu,
   'app.title': 'Монитор здоровья астронавтов',
   'top.met': 'MET',
   'top.link': 'Связь',

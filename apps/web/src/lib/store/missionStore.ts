@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { createJSONStorage, persist, type StateStorage } from 'zustand/middleware';
-import type { Alert, EngineEvent, Status, TelemetryFrame } from '@astro/engine';
+import type { Alert, EngineEvent, Status, TelemetryFrame, TelemetryPackage } from '@astro/engine';
 import type { SourceMode } from '../sources/types';
 import type { DictKey, Params } from '../i18n';
 import { crew } from '../engineConfig';
@@ -25,6 +25,21 @@ export interface LogEntry {
   trail?: Status[];
 }
 
+export interface ProtocolView {
+  /** key into protocols.json */
+  protocolId: string;
+  /** stable key for the checklist state: an incident id or a log entry id */
+  key: string;
+  crewId?: string;
+  t?: number;
+}
+
+export interface ImportedPackage {
+  pkg: TelemetryPackage;
+  name: string;
+  bytes: number;
+}
+
 export interface MissionState {
   entered: boolean;
   selectedCrewId: string;
@@ -43,6 +58,22 @@ export interface MissionState {
   /** MET to inspect, or null for live */
   timeTravelT: number | null;
   locale: Locale;
+  /** mission time of the first frame of this session (start of the whole-session report) */
+  startT: number;
+  /** id of the server run, from the hello message */
+  sessionId: string;
+  reportOpen: boolean;
+  imported: ImportedPackage | null;
+  protocolView: ProtocolView | null;
+  /** ticked checklist steps, keyed by "<view key>:<step index>" */
+  checks: Record<string, boolean>;
+  setSessionId: (id: string) => void;
+  setReportOpen: (open: boolean) => void;
+  setImported: (p: ImportedPackage | null) => void;
+  openProtocol: (v: ProtocolView) => void;
+  closeProtocol: () => void;
+  toggleCheck: (key: string) => void;
+  clearChecks: (prefix: string) => void;
 
   enter: () => void;
   selectCrew: (id: string) => void;
@@ -106,6 +137,19 @@ export const useMissionStore = create<MissionState>()(
       island: null,
       timeTravelT: null,
       locale: 'en',
+      startT: 0,
+      sessionId: 'local',
+      reportOpen: false,
+      imported: null,
+      protocolView: null,
+      checks: {},
+      setSessionId: (id) => set({ sessionId: id }),
+      setReportOpen: (open) => set({ reportOpen: open }),
+      setImported: (p) => set({ imported: p }),
+      openProtocol: (v) => set({ protocolView: v }),
+      closeProtocol: () => set({ protocolView: null }),
+      toggleCheck: (key) => set((s) => ({ checks: { ...s.checks, [key]: !s.checks[key] } })),
+      clearChecks: (prefix) => set((s) => ({ checks: Object.fromEntries(Object.entries(s.checks).filter(([k]) => !k.startsWith(prefix))) })),
       soundOn: true,
       setSound: (on) => set({ soundOn: on }),
       clearEvents: () => set({ events: [] }),
@@ -118,7 +162,7 @@ export const useMissionStore = create<MissionState>()(
         set((s) => {
           const latest = { ...s.latest };
           for (const f of frames) latest[f.crewId] = f;
-          return { t, latest, degraded: { ...s.degraded, ...degraded }, lastFrameAt: Date.now() };
+          return { t, startT: s.startT || t, latest, degraded: { ...s.degraded, ...degraded }, lastFrameAt: Date.now() };
         }),
       addAudit: (e) =>
         set((s) => {

@@ -57,6 +57,13 @@ Without it the button injects a generic X-class flare.
 Raw downloads live in `packages/data/data-raw/` (git-ignored): `bidmc/bidmc_NN_Numerics.csv` and `mitdb/NNN.{hea,dat}`.
 `pnpm --filter @astro/data build:pack` regenerates `packs/demo.pack.json` from them.
 
+## Report, protocols and telemetry packages
+
+- **Report** (top bar): summary of a period (last 5 min / 30 min / hour / whole session) for all crew or one member: incidents with their probable cause, radiation added, and what is real versus modeled. Copy the summary as text, print it, or export it.
+- **Response protocol**: click the checklist icon on any alert in the flight log, or *Open protocol* on an incident. The steps are illustrative and not validated by flight surgeons.
+- **Telemetry package**: *Export package* saves a `.json` or `.json.gz` file (the finished report plus session info). *Import package* (button or drag and drop) opens one from another run or machine in review mode. Files are validated, limited to 5 MB and never executed.
+- **Time to threshold**: when a reading drifts steadily towards its limit, its card shows when it will be reached.
+
 ## Demo script (3 minutes)
 
 1. **Baseline.** All four crew nominal; the ECG is a real MIT-BIH trace, heart rate and SpO₂ come from BIDMC.

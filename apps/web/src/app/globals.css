@@ -141,3 +141,17 @@ body {
   .beat, .scanline, .halo { animation: none !important; }
   * { transition-duration: 0.01ms !important; }
 }
+
+/* Print: only the open report, on white, without controls. */
+@media print {
+  body > *:not([role='dialog']) { display: none !important; }
+  [data-vaul-overlay] { display: none !important; }
+  [role='dialog'] {
+    position: static !important; transform: none !important; width: 100% !important; max-width: none !important;
+    height: auto !important; box-shadow: none !important; background: #fff !important; color: #111 !important;
+  }
+  [role='dialog'] * { color: #111 !important; background: transparent !important; box-shadow: none !important; border-color: #ccc !important; }
+  [role='dialog'] .no-print { display: none !important; }
+  [role='dialog'] .report-scroll { overflow: visible !important; height: auto !important; }
+  [role='dialog'] tr, [role='dialog'] li { break-inside: avoid; }
+}

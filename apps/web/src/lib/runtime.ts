@@ -34,6 +34,7 @@ function handle(e: ManagerEvent): void {
   }
   if (e.type === 'hello') {
     st().setEvents(e.log);
+    if (e.sessionId) st().setSessionId(e.sessionId);
     return;
   }
 

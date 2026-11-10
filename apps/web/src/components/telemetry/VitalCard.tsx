@@ -5,14 +5,22 @@ import type { Status, TelemetryFrame } from '@astro/engine';
 import { StatusBadge } from '@/components/StatusBadge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
-import { useT } from '@/lib/i18n';
+import { useEta } from '@/hooks/useEta';
+import { formatDuration } from '@/lib/duration';
+import { statusWord, useT } from '@/lib/i18n';
+import { useMissionStore } from '@/lib/store/missionStore';
 import { SOURCE_OF, STATUS_COLOR, STATUS_RANK } from '@/lib/metrics';
+import { Timer } from 'lucide-react';
 import { Sparkline } from './Sparkline';
 
 interface Props {
   crewId: string;
   /** key into SOURCE_OF for the provenance mark */
   sourceKey: string;
+  /** metric whose trend is projected (thresholds key) */
+  metricKey: string;
+  /** false while replaying history: no live projection then */
+  live: boolean;
   label: string;
   icon: ReactNode;
   unit: string;
@@ -50,8 +58,10 @@ export function ProvenanceMark({ sourceKey }: { sourceKey: string }) {
   );
 }
 
-export function VitalCard({ crewId, sourceKey, label, icon, unit, value, value2, decimals = 0, status, read, tick, highlighted, degraded }: Props) {
+export function VitalCard({ crewId, sourceKey, metricKey, live, label, icon, unit, value, value2, decimals = 0, status, read, tick, highlighted, degraded }: Props) {
   const t = useT();
+  const locale = useMissionStore((s) => s.locale);
+  const eta = useEta(crewId, metricKey, read, status, tick, live);
   const fmt = { minimumFractionDigits: decimals, maximumFractionDigits: decimals };
   const color = STATUS_COLOR[status];
   const alert = STATUS_RANK[status] >= STATUS_RANK.WARNING;
@@ -86,6 +96,12 @@ export function VitalCard({ crewId, sourceKey, label, icon, unit, value, value2,
         )}
         <span className="text-xs text-muted-foreground">{unit}</span>
       </div>
+      {eta && (
+        <p className="flex items-center gap-1.5 text-xs font-medium" style={{ color: eta.level === 'critical' ? STATUS_COLOR.CRITICAL : STATUS_COLOR.WARNING }}>
+          <Timer className="size-3.5 shrink-0" aria-hidden />
+          {t('trend.eta', { level: statusWord(eta.level === 'critical' ? 'CRITICAL' : 'WARNING', locale).toLowerCase(), time: formatDuration(eta.etaSec, locale) })}
+        </p>
+      )}
       <div className="mt-auto pt-2 [@media(max-height:820px)]:hidden"><Sparkline crewId={crewId} read={read} color={color} tick={tick} /></div>
     </article>
   );

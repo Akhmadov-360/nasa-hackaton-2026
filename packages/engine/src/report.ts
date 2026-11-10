@@ -90,6 +90,9 @@ export const PROTOCOL_OF_METRIC: Record<string, string> = {
 };
 
 const rank = (s: Status) => STATUS_ORDER.indexOf(s);
+/** When several metrics are equally severe, the body comes first and the environment last. */
+const METRIC_PRIORITY = ['spo2', 'hr', 'hrv', 'bpSys', 'bpDia', 'respRate', 'temp', 'stress', 'co2', 'o2', 'doseRate', 'dose'];
+const priority = (m: string) => { const i = METRIC_PRIORITY.indexOf(m); return i < 0 ? METRIC_PRIORITY.length : i; };
 const MERGE_GAP_SEC = 120;
 const CAUSE_LOOKBACK_SEC = 180;
 const REPORTED = ['hr', 'hrv', 'spo2', 'bpSys', 'bpDia', 'respRate', 'temp', 'stress', 'co2', 'o2', 'doseRate'];
@@ -167,7 +170,7 @@ export function buildReport(cfg: EngineConfig, opts: ReportOptions): MissionRepo
     const incidents: Incident[] = groups.map((g, i) => {
       const startT = Math.min(...g.map((e) => e.startT));
       const endT = Math.max(...g.map((e) => e.endT));
-      const primary = [...g].sort((a, b) => rank(b.severity) - rank(a.severity) || a.startT - b.startT)[0];
+      const primary = [...g].sort((a, b) => rank(b.severity) - rank(a.severity) || priority(a.metric) - priority(b.metric) || a.startT - b.startT)[0];
       const causes = events
         .filter((e) => e.type !== 'normalize' && (e.crewId === id || e.crewId === 'ALL') && e.t >= startT - CAUSE_LOOKBACK_SEC && e.t <= endT)
         .map((e) => ({ t: e.t, type: e.type, crewId: e.crewId, ...(e.params ? { params: e.params } : {}) }));

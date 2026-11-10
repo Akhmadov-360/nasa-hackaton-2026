@@ -40,6 +40,7 @@ NASA_API_KEY=... pnpm --filter @astro/data fetch:donki
 - **Voice** (`lib/audio.ts`) speaks in the interface language (Uzbek falls back to Russian), spells out units, and never lets a warning cut off an emergency.
 - **UI kit**: shadcn-style components in `components/ui` (Radix via the `radix-ui` package, `cn()` in `lib/utils.ts`). They were added by hand because the shadcn CLI was too slow on the venue network; theme tokens are mapped in `globals.css`.
 - **Provenance**: every reading is marked recorded (PhysioNet) or modeled (`SOURCE_OF` in `lib/metrics.ts`). Do not credit a source in the UI or in the pack metadata unless its data is really loaded.
+- **Report and package** (ADR in `docs/adr/0001-*.md`): `buildReport` (engine) turns the event log into incidents with causes and an illustrative protocol; `TelemetryPackage` is the validated file that is exported and re-imported (`lib/packageIO.ts`, zod schema in the engine). Protocol text lives in `packages/data/protocols.json` (en/ru, provisional). `timeToThreshold` feeds the "reaches warning in ..." line on vital cards.
 - Only preferences are persisted (`locale`, `selectedCrewId`); events and the flight log belong to one server run.
 - Status is always icon + word + colour. Dark theme only. Respect `prefers-reduced-motion`.
 

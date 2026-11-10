@@ -12,8 +12,8 @@ export interface Eta {
 }
 
 const MIN_POINTS = 20;
-const MIN_R2 = 0.5;
-const MAX_ETA_SEC = 3600;
+const MIN_R2 = 0.7;
+const MAX_ETA_SEC = 600;
 
 /** Least-squares line through the points (time in seconds). Null when the data has no variation to fit. */
 export function linearFit(points: TrendPoint[]): { slope: number; fittedLast: number; r2: number } | null {
@@ -43,7 +43,7 @@ export function linearFit(points: TrendPoint[]): { slope: number; fittedLast: nu
 /**
  * When will a steadily drifting value reach the warning or critical limit?
  * Returns null unless the trend is clear (enough points, a good straight-line fit, a meaningful slope),
- * heads towards the limit, has not crossed it yet, and would arrive within the hour.
+ * heads towards the limit, has not crossed it yet, and would arrive within ten minutes (further out, a straight line says too little to be useful).
  */
 export function timeToThreshold(points: TrendPoint[], th: MetricThreshold, target: 'warning' | 'critical'): Eta | null {
   if (points.length < MIN_POINTS) return null;

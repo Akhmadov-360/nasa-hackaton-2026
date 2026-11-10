@@ -1,6 +1,6 @@
 'use client';
 import { useEffect, useState } from 'react';
-import { ChevronDown, Globe, Orbit, Radio, Volume2, VolumeX, WifiOff } from 'lucide-react';
+import { ChevronDown, FileText, Globe, Orbit, Radio, Volume2, VolumeX, WifiOff } from 'lucide-react';
 import { Switch } from '@/components/ui/switch';
 import { Button } from '@/components/ui/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuLabel, DropdownMenuRadioGroup, DropdownMenuRadioItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
@@ -48,6 +48,8 @@ export function TopBar() {
   const soundOn = useMissionStore((s) => s.soundOn);
   const setSound = useMissionStore((s) => s.setSound);
   const status = globalStatus(latest);
+  const setReportOpen = useMissionStore((s) => s.setReportOpen);
+  const hasImport = useMissionStore((s) => !!s.imported);
 
   return (
     <header className="hairline-b relative z-30 bg-bar">
@@ -71,6 +73,9 @@ export function TopBar() {
         </div>
         <div className="hidden md:block"><IslandPill /></div>
         <div className="flex items-center justify-end gap-3">
+          <Button size="sm" onClick={() => setReportOpen(true)} className="gap-2">
+            <FileText /> {t('report.open')}{hasImport && <span className="size-1.5 rounded-full bg-primary" aria-hidden />}
+          </Button>
           <LinkReadout />
           <Tooltip>
             <TooltipTrigger asChild>

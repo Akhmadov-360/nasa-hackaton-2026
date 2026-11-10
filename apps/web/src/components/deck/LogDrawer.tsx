@@ -1,6 +1,7 @@
 'use client';
 import { useMemo, useState } from 'react';
-import { Download, Maximize2, X } from 'lucide-react';
+import { Download, ListChecks, Maximize2, X } from 'lucide-react';
+import { PROTOCOL_OF_METRIC } from '@astro/engine';
 import { Button } from '@/components/ui/button';
 import { Drawer, DrawerClose, DrawerContent, DrawerDescription, DrawerHeader, DrawerTitle, DrawerTrigger } from '@/components/ui/drawer';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -22,6 +23,7 @@ export function LogDrawer() {
   const t = useT();
   const audit = useMissionStore((s) => s.audit);
   const locale = useMissionStore((s) => s.locale);
+  const openProtocol = useMissionStore((s) => s.openProtocol);
   const [filter, setFilter] = useState<Filter>('all');
   const rows = useMemo(() => {
     const f = audit.filter((e) => filter === 'all' || (filter === 'alerts' ? e.kind === 'alert' : filter === 'commands' ? e.kind === 'command' : e.kind === 'link'));
@@ -86,7 +88,19 @@ export function LogDrawer() {
                   <td className="px-2 py-2.5 whitespace-nowrap">{e.crewId ? crewName(e.crewId) : '—'}</td>
                   <td className="px-2 py-2.5 first-letter:uppercase">{e.metric ? metricName(e.metric) : '—'}</td>
                   <td className="num px-2 py-2.5 text-right whitespace-nowrap">{formatValue(e.metric, e.value, e.unit) || '—'}</td>
-                  <td className="px-5 py-2.5">{logText(e, locale)}</td>
+                  <td className="px-5 py-2.5">
+                    <span className="flex items-start justify-between gap-3">
+                      <span>{logText(e, locale)}</span>
+                      {e.kind === 'alert' && e.metric && (
+                        <Button
+                          variant="ghost" size="icon" className="-my-1 size-8 shrink-0" aria-label={t('protocol.open')}
+                          onClick={() => openProtocol({ protocolId: PROTOCOL_OF_METRIC[e.metric as string] ?? 'general', key: e.id, crewId: e.crewId, t: e.t })}
+                        >
+                          <ListChecks />
+                        </Button>
+                      )}
+                    </span>
+                  </td>
                 </tr>
               ))}
               {!rows.length && (

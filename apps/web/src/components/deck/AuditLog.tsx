@@ -1,7 +1,8 @@
 'use client';
 import { useMemo, useState } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
-import { AlertTriangle, Download, Info, Radio, Terminal } from 'lucide-react';
+import { AlertTriangle, Download, Info, ListChecks, Radio, Terminal } from 'lucide-react';
+import { PROTOCOL_OF_METRIC } from '@astro/engine';
 import { Button } from '@/components/ui/button';
 import { LogDrawer } from './LogDrawer';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -18,6 +19,8 @@ type Filter = 'all' | 'alerts' | 'commands';
 
 function Row({ e }: { e: LogEntry }) {
   const locale = useMissionStore((s) => s.locale);
+  const openProtocol = useMissionStore((s) => s.openProtocol);
+  const t = useT();
   const Icon = ICON[e.kind];
   const color = e.severity ? STATUS_COLOR[e.severity] : 'var(--color-muted-foreground)';
   return (
@@ -29,10 +32,23 @@ function Row({ e }: { e: LogEntry }) {
       className="flex gap-2 py-1.5 text-[13px]"
     >
       <Icon className="mt-0.5 size-3.5 shrink-0" style={{ color }} aria-hidden />
-      <div className="min-w-0">
+      <div className="min-w-0 flex-1">
         <p className="num text-xs text-muted-foreground">{formatMet(e.t)}</p>
         <p className="break-words">{logText(e, locale)}</p>
       </div>
+      {e.kind === 'alert' && e.metric && (
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              variant="ghost" size="icon" className="size-8 shrink-0 self-center" aria-label={t('protocol.open')}
+              onClick={() => openProtocol({ protocolId: PROTOCOL_OF_METRIC[e.metric as string] ?? 'general', key: e.id, crewId: e.crewId, t: e.t })}
+            >
+              <ListChecks />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>{t('protocol.open')}</TooltipContent>
+        </Tooltip>
+      )}
     </motion.li>
   );
 }

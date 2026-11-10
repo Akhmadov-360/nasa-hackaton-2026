@@ -5,7 +5,7 @@ import { emitter, type Batch, type TelemetrySource } from './types';
 export class WebSocketSource implements TelemetrySource {
   private ws?: WebSocket;
   private batches = emitter<Batch>();
-  private hellos = emitter<{ t: number; log: EngineEvent[] }>();
+  private hellos = emitter<{ t: number; log: EngineEvent[]; sessionId?: string }>();
   private retry = 1000;
   private timer?: ReturnType<typeof setTimeout>;
   private running = false;
@@ -15,7 +15,7 @@ export class WebSocketSource implements TelemetrySource {
   onBatch(cb: (b: Batch) => void) {
     return this.batches.on(cb);
   }
-  onHello(cb: (h: { t: number; log: EngineEvent[] }) => void) {
+  onHello(cb: (h: { t: number; log: EngineEvent[]; sessionId?: string }) => void) {
     return this.hellos.on(cb);
   }
 
@@ -52,14 +52,14 @@ export class WebSocketSource implements TelemetrySource {
       this.retry = 1000;
     };
     ws.onmessage = (m) => {
-      let d: { type?: string; t?: number; frames?: unknown[]; alerts?: Batch['alerts']; log?: EngineEvent[] };
+      let d: { type?: string; t?: number; frames?: unknown[]; alerts?: Batch['alerts']; log?: EngineEvent[]; sessionId?: string };
       try {
         d = JSON.parse(String(m.data));
       } catch {
         return; // garbage on the wire: ignore
       }
       if (d.type === 'frames') this.batches.emit({ t: d.t ?? 0, frames: d.frames ?? [], alerts: d.alerts ?? [] });
-      else if (d.type === 'hello') this.hellos.emit({ t: d.t ?? 0, log: d.log ?? [] });
+      else if (d.type === 'hello') this.hellos.emit({ t: d.t ?? 0, log: d.log ?? [], sessionId: typeof d.sessionId === 'string' ? d.sessionId : undefined });
       else if (d.type === 'heartbeat') this.batches.emit({ t: d.t ?? 0, frames: [], alerts: [] });
     };
     ws.onclose = () => this.scheduleRetry();

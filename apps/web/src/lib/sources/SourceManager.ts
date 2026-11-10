@@ -5,7 +5,7 @@ import { emitter, type Batch, type SourceMode, type TelemetrySource } from './ty
 export type ManagerEvent =
   | { type: 'frames'; t: number; frames: TelemetryFrame[]; alerts: Alert[]; degraded: Record<string, boolean>; mode: SourceMode }
   | { type: 'mode'; mode: SourceMode; everLive: boolean }
-  | { type: 'hello'; t: number; log: EngineEvent[] };
+  | { type: 'hello'; t: number; log: EngineEvent[]; sessionId?: string };
 
 const RESTART_JUMP_SEC = 30;
 
@@ -121,12 +121,12 @@ export class SourceManager {
     this.o.sim.reset?.();
   }
 
-  private onHello(h: { t: number; log: EngineEvent[] }): void {
+  private onHello(h: { t: number; log: EngineEvent[]; sessionId?: string }): void {
     // a (re)connected server may have restarted: its clock can be behind ours
     this.lastT = {};
     this.maxT = 0;
     this.eventLog = this.queue.reduce(appendEvent, [...h.log]);
-    this.bus.emit({ type: 'hello', t: h.t, log: this.eventLog });
+    this.bus.emit({ type: 'hello', t: h.t, log: this.eventLog, sessionId: h.sessionId });
   }
 
   private onLive(b: Batch): void {

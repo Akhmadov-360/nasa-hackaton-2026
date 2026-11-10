@@ -28,6 +28,15 @@ function DropdownMenuLabel({ className, ...props }: React.ComponentProps<typeof 
   return <DropdownMenuPrimitive.Label className={cn('px-2.5 py-1.5 text-xs text-muted-foreground', className)} {...props} />;
 }
 
+function DropdownMenuItem({ className, ...props }: React.ComponentProps<typeof DropdownMenuPrimitive.Item>) {
+  return (
+    <DropdownMenuPrimitive.Item
+      className={cn('flex min-h-10 cursor-pointer items-center gap-2 rounded-xl px-2.5 py-2 text-sm outline-none select-none data-[highlighted]:bg-accent', className)}
+      {...props}
+    />
+  );
+}
+
 function DropdownMenuRadioItem({ className, children, ...props }: React.ComponentProps<typeof DropdownMenuPrimitive.RadioItem>) {
   return (
     <DropdownMenuPrimitive.RadioItem
@@ -45,4 +54,4 @@ function DropdownMenuRadioItem({ className, children, ...props }: React.Componen
   );
 }
 
-export { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuLabel, DropdownMenuRadioGroup, DropdownMenuRadioItem };
+export { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuRadioGroup, DropdownMenuRadioItem };

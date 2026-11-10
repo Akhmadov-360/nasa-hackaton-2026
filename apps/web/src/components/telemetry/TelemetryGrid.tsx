@@ -15,7 +15,7 @@ const ic = 'size-4 shrink-0';
 
 export function TelemetryGrid({ crewId }: { crewId: string }) {
   const t = useT();
-  const { frame } = useDisplayFrame(crewId);
+  const { frame, replay } = useDisplayFrame(crewId);
   const focused = useMissionStore((s) => s.focusedOrgan);
   const degraded = useMissionStore((s) => s.degraded[crewId]);
   const tick = useMissionStore((s) => s.t);
@@ -32,7 +32,7 @@ export function TelemetryGrid({ crewId }: { crewId: string }) {
   ) => (
     <WidgetBoundary name={label} key={key}>
       <VitalCard
-        crewId={crewId} sourceKey={key}
+        crewId={crewId} sourceKey={key} metricKey={key} live={!replay}
         label={label} icon={icon} unit={unit} value={value} decimals={opts.decimals}
         status={s(key)} read={read} tick={tick} highlighted={hl(key)} degraded={degraded}
       />
@@ -56,7 +56,7 @@ export function TelemetryGrid({ crewId }: { crewId: string }) {
         {card('spo2', t('metric.spo2'), <Droplets className={ic} aria-hidden />, '%', v?.spo2, (f) => f.vitals.spo2)}
         <WidgetBoundary name={t('metric.bp')} key="bp">
           <VitalCard
-            crewId={crewId} sourceKey="bp" label={t('metric.bp')} icon={<Gauge className={ic} aria-hidden />} unit="mmHg"
+            crewId={crewId} sourceKey="bp" metricKey="bpSys" live={!replay} label={t('metric.bp')} icon={<Gauge className={ic} aria-hidden />} unit="mmHg"
             value={v?.bpSys} value2={v?.bpDia} status={worstStatus([s('bpSys'), s('bpDia')])}
             read={(f) => f.vitals.bpSys} tick={tick} highlighted={hl('bpSys', 'bpDia')} degraded={degraded}
           />

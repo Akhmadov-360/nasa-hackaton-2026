@@ -20,6 +20,7 @@ describe('buildReport', () => {
     expect(inc.worst).toBe('CRITICAL');
     expect(inc.metrics).toContain('spo2');
     expect(inc.protocol).toBe('hypoxia');
+    expect(inc.primaryMetric).toBe('spo2'); // blood oxygen outranks cabin oxygen when both are critical
     expect(inc.causes.map((e) => e.type)).toEqual(['o2fault']);
     expect(inc.endT).toBeGreaterThan(inc.startT);
     expect(a2.stats.spo2.min).toBeLessThan(90);

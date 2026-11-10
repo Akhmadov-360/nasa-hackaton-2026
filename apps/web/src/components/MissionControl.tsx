@@ -10,6 +10,8 @@ import { EnterMissionControl } from '@/components/EnterMissionControl';
 import { GooeyFilter } from '@/components/GooeyFilter';
 import { TelemetryGrid } from '@/components/telemetry/TelemetryGrid';
 import { TimeTravelBar } from '@/components/time/TimeTravelBar';
+import { ProtocolDialog } from '@/components/report/ProtocolDialog';
+import { ReportDrawer } from '@/components/report/ReportDrawer';
 import { TopBar } from '@/components/topbar/TopBar';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import { WidgetBoundary } from '@/components/WidgetBoundary';
@@ -21,7 +23,7 @@ function useShortcuts() {
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       const el = e.target as HTMLElement | null;
-      if (e.ctrlKey || e.metaKey || e.altKey || el?.closest('input, textarea, [contenteditable]')) return;
+      if (e.ctrlKey || e.metaKey || e.altKey || (el instanceof Element && el.closest('input, textarea, [contenteditable]'))) return;
       const s = useMissionStore.getState();
       if (!s.entered) return;
       const n = Number(e.key);
@@ -76,6 +78,8 @@ export function MissionControl() {
           </div>
           <WidgetBoundary name="Time travel"><TimeTravelBar /></WidgetBoundary>
         </div>
+        <ReportDrawer />
+        <ProtocolDialog />
         <AnimatePresence>{!entered && <EnterMissionControl key="enter" />}</AnimatePresence>
       </TooltipProvider>
     </QueryClientProvider>
