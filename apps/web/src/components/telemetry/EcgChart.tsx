@@ -4,8 +4,8 @@ import { animate } from 'animejs';
 import { HeartPulse } from 'lucide-react';
 import { computeFrame } from '@astro/engine';
 import { StatusBadge } from '@/components/StatusBadge';
+import { ProvenanceMark } from './VitalCard';
 import { useDisplayFrame, historyConfig } from '@/hooks/useDisplayFrame';
-import { baseCfg } from '@/lib/engineConfig';
 import { useT } from '@/lib/i18n';
 import { STATUS_COLOR } from '@/lib/metrics';
 import { useMissionStore } from '@/lib/store/missionStore';
@@ -120,18 +120,15 @@ export function EcgChart({ crewId }: { crewId: string }) {
   }, [crewId]);
 
   return (
-    <section className="glass relative overflow-hidden p-4" aria-label={t('ecg.title')}>
+    <section className="glass relative overflow-hidden p-3" aria-label={t('ecg.title')}>
       <header className="mb-2 flex items-center justify-between gap-2">
-        <h3 className="flex items-center gap-2 text-sm font-medium text-mist">
+        <h3 className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
           <HeartPulse className="size-4 text-teal" aria-hidden /> {t('ecg.title')}
           {replay && <span className="rounded-full bg-amber/15 px-2 py-0.5 text-xs text-amber">{t('tt.replay')}</span>}
         </h3>
-        <StatusBadge status={status} />
+        <span className="flex items-center"><StatusBadge status={status} /><ProvenanceMark sourceKey="hr" /></span>
       </header>
-      <canvas ref={canvasRef} className="h-28 w-full" role="img" aria-label={t('ecg.title')} />
-      <p className="num mt-1 text-xs text-mist">
-        {baseCfg.pack.baselines[crewId] ? `MIT-BIH ${baseCfg.pack.baselines[crewId].ecgHz} Hz` : ''}
-      </p>
+      <canvas ref={canvasRef} className="h-24 w-full [@media(max-height:820px)]:h-20" role="img" aria-label={t('ecg.title')} />
     </section>
   );
 }

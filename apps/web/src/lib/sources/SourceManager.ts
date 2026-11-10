@@ -114,6 +114,13 @@ export class SourceManager {
     if (!delivered) this.queue.push(ev);
   }
 
+  /** Forget injected events (scenario reset). */
+  resetLog(): void {
+    this.eventLog = [];
+    this.queue = [];
+    this.o.sim.reset?.();
+  }
+
   private onHello(h: { t: number; log: EngineEvent[] }): void {
     // a (re)connected server may have restarted: its clock can be behind ours
     this.lastT = {};

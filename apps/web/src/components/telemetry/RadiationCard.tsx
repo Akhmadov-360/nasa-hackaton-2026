@@ -3,6 +3,9 @@ import NumberFlow from '@number-flow/react';
 import { Radiation } from 'lucide-react';
 import type { TelemetryFrame } from '@astro/engine';
 import { StatusBadge } from '@/components/StatusBadge';
+import { Badge } from '@/components/ui/badge';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { useT } from '@/lib/i18n';
 import { STATUS_COLOR, STATUS_RANK } from '@/lib/metrics';
 import { Sparkline } from './Sparkline';
@@ -18,32 +21,39 @@ export function RadiationCard({ frame, crewId, tick }: { frame: TelemetryFrame |
   const ok = (v?: number): v is number => typeof v === 'number' && Number.isFinite(v);
   return (
     <section
-      className="glass grid grid-cols-[1fr_auto] gap-x-6 gap-y-2 p-4 sm:grid-cols-[auto_auto_1fr]"
+      className="glass grid min-w-0 grid-cols-[auto_auto_1fr] items-center gap-x-6 gap-y-1 p-3"
       style={STATUS_RANK[status] >= 2 ? { borderColor: `color-mix(in srgb, ${color} 55%, transparent)` } : undefined}
       aria-label={t('rad.title')}
     >
       <header className="col-span-full flex items-center justify-between gap-2">
-        <h3 className="flex items-center gap-2 text-sm font-medium text-mist">
+        <h3 className="flex items-center gap-2 text-[13px] font-medium text-muted-foreground">
           <Radiation className="size-4" style={{ color }} aria-hidden /> {t('rad.title')}
-          <span className="rounded-full bg-panel-2 px-2 py-0.5 text-xs text-mist">{t('badge.modeled')}</span>
+          <Tooltip>
+            <TooltipTrigger asChild><Badge variant="modeled" tabIndex={0} className="cursor-help">{t('badge.modeled')}</Badge></TooltipTrigger>
+            <TooltipContent>{t('src.modeled')}</TooltipContent>
+          </Tooltip>
         </h3>
         <StatusBadge status={status} />
       </header>
       <div>
-        <p className="text-xs text-mist">{t('rad.rate')}</p>
-        <p className="num text-2xl leading-[1.3] font-medium">
-          {ok(rate) ? <NumberFlow value={rate} format={{ maximumFractionDigits: 0 }} locales="en-US" /> : '—'}
-          <span className="ml-1 text-xs text-mist">µSv/h</span>
-        </p>
+        <p className="text-xs text-muted-foreground">{t('rad.rate')}</p>
+        {ok(rate) ? (
+          <p className="num text-xl leading-[1.3] font-medium">
+            <NumberFlow value={rate} format={{ maximumFractionDigits: 0 }} locales="en-US" />
+            <span className="ml-1 text-xs text-muted-foreground">µSv/h</span>
+          </p>
+        ) : <Skeleton className="mt-1 h-6 w-20" />}
       </div>
       <div>
-        <p className="text-xs text-mist">{t('rad.total')}</p>
-        <p className="num text-2xl leading-[1.3] font-medium">
-          {ok(total) ? <NumberFlow value={total} format={{ minimumFractionDigits: 3, maximumFractionDigits: 3 }} locales="en-US" /> : '—'}
-          <span className="ml-1 text-xs text-mist">mSv</span>
-        </p>
+        <p className="text-xs text-muted-foreground">{t('rad.total')}</p>
+        {ok(total) ? (
+          <p className="num text-xl leading-[1.3] font-medium">
+            <NumberFlow value={total} format={{ minimumFractionDigits: 3, maximumFractionDigits: 3 }} locales="en-US" />
+            <span className="ml-1 text-xs text-muted-foreground">mSv</span>
+          </p>
+        ) : <Skeleton className="mt-1 h-6 w-24" />}
       </div>
-      <div className="col-span-full self-end sm:col-span-1">
+      <div className="self-end [@media(max-height:820px)]:hidden">
         <Sparkline crewId={crewId} read={(f) => f.radiation.doseRateUSvH} color={color} tick={tick} points={120} />
       </div>
     </section>

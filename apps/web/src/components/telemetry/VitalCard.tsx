@@ -3,11 +3,16 @@ import NumberFlow from '@number-flow/react';
 import type { ReactNode } from 'react';
 import type { Status, TelemetryFrame } from '@astro/engine';
 import { StatusBadge } from '@/components/StatusBadge';
-import { STATUS_COLOR, STATUS_RANK } from '@/lib/metrics';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import { useT } from '@/lib/i18n';
+import { SOURCE_OF, STATUS_COLOR, STATUS_RANK } from '@/lib/metrics';
 import { Sparkline } from './Sparkline';
 
 interface Props {
   crewId: string;
+  /** key into SOURCE_OF for the provenance mark */
+  sourceKey: string;
   label: string;
   icon: ReactNode;
   unit: string;
@@ -24,34 +29,64 @@ interface Props {
 
 const finite = (v: number | undefined): v is number => typeof v === 'number' && Number.isFinite(v);
 
-export function VitalCard({ crewId, label, icon, unit, value, value2, decimals = 0, status, read, tick, highlighted, degraded }: Props) {
+/** Filled dot = recorded signal, ring = our model. The meaning is in the tooltip and the legend, not in colour alone. */
+export function ProvenanceMark({ sourceKey }: { sourceKey: string }) {
+  const t = useT();
+  const s = SOURCE_OF[sourceKey];
+  if (!s) return null;
+  const text = s.kind === 'real' ? t('src.real', { src: s.src }) : t('src.modeled');
+  return (
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <span tabIndex={0} className="inline-grid size-5 cursor-help place-items-center rounded-full" aria-label={text}>
+          <span
+            className={`size-2 rounded-full ${s.kind === 'real' ? 'bg-teal' : 'border border-amber bg-transparent'}`}
+            aria-hidden
+          />
+        </span>
+      </TooltipTrigger>
+      <TooltipContent>{text}</TooltipContent>
+    </Tooltip>
+  );
+}
+
+export function VitalCard({ crewId, sourceKey, label, icon, unit, value, value2, decimals = 0, status, read, tick, highlighted, degraded }: Props) {
+  const t = useT();
   const fmt = { minimumFractionDigits: decimals, maximumFractionDigits: decimals };
   const color = STATUS_COLOR[status];
   const alert = STATUS_RANK[status] >= STATUS_RANK.WARNING;
+  const waiting = value === undefined;
   return (
     <article
       aria-current={highlighted ? 'true' : undefined}
-      className="glass relative flex flex-col gap-1 p-3 transition-[box-shadow,border-color] duration-500"
+      className="glass relative flex min-w-0 flex-col gap-0.5 p-3 transition-[box-shadow,border-color] duration-500"
       style={{
         borderColor: alert ? `color-mix(in srgb, ${color} 55%, transparent)` : highlighted ? 'rgba(79,182,168,0.55)' : undefined,
         boxShadow: highlighted ? '0 0 0 1px rgba(79,182,168,0.35), 0 0 28px -8px rgba(79,182,168,0.5)' : undefined,
       }}
     >
-      <header className="flex items-center justify-between gap-2 text-sm text-mist">
-        <span className="flex items-center gap-1.5">{icon}{label}</span>
-        {status !== 'NOMINAL' ? <StatusBadge status={status} /> : degraded ? <span className="text-xs text-amber">est.</span> : null}
+      <header className="flex items-center justify-between gap-1 text-[13px] text-muted-foreground">
+        <span className="flex min-w-0 items-center gap-1.5 truncate">{icon}<span className="truncate">{label}</span></span>
+        <span className="flex shrink-0 items-center">
+          {status !== 'NOMINAL' ? <StatusBadge status={status} /> : degraded ? <span className="text-xs text-amber">{t('est')}</span> : null}
+          <ProvenanceMark sourceKey={sourceKey} />
+        </span>
       </header>
       <div className="flex items-baseline gap-1.5">
-        <span className="num text-[1.6rem] leading-[1.3] font-medium" aria-live="off">
-          {finite(value) ? <NumberFlow value={value} format={fmt} locales="en-US" /> : '—'}
-          {finite(value2) && (<>
-            <span className="text-mist">/</span>
-            <NumberFlow value={value2} format={fmt} locales="en-US" />
-          </>)}
-        </span>
-        <span className="text-xs text-mist">{unit}</span>
+        {waiting ? (
+          <Skeleton className="my-1 h-7 w-20" />
+        ) : (
+          <span className="num text-[1.55rem] leading-[1.3] font-medium">
+            {finite(value) ? <NumberFlow value={value} format={fmt} locales="en-US" /> : '—'}
+            {finite(value2) && (<>
+              <span className="text-muted-foreground">/</span>
+              <NumberFlow value={value2} format={fmt} locales="en-US" />
+            </>)}
+          </span>
+        )}
+        <span className="text-xs text-muted-foreground">{unit}</span>
       </div>
-      <Sparkline crewId={crewId} read={read} color={color} tick={tick} />
+      <div className="[@media(max-height:820px)]:hidden"><Sparkline crewId={crewId} read={read} color={color} tick={tick} /></div>
     </article>
   );
 }

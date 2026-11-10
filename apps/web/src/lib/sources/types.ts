@@ -22,6 +22,8 @@ export interface TelemetrySource {
   onBatch(cb: (b: Batch) => void): () => void;
   /** Optional: authoritative event log sent when a server connection opens. */
   onHello?(cb: (h: { t: number; log: EngineEvent[] }) => void): () => void;
+  /** Optional: forget all injected events. */
+  reset?(): void;
   /** Returns false if the command could not be delivered. */
   send(ev: EngineEvent): boolean;
 }

@@ -2,9 +2,12 @@
 import { useEffect, useRef, useState } from 'react';
 import { animate, svg } from 'animejs';
 import { worstStatus, type Status } from '@astro/engine';
+import { StatusBadge } from '@/components/StatusBadge';
+import { Popover, PopoverAnchor, PopoverContent } from '@/components/ui/popover';
 import { useDisplayFrame } from '@/hooks/useDisplayFrame';
-import { useT, type DictKey } from '@/lib/i18n';
-import { metricLabel, METRICS, ORGANS, STATUS_COLOR, STATUS_WORD } from '@/lib/metrics';
+import { useT, metricName, statusWord, type DictKey } from '@/lib/i18n';
+import { formatValue } from '@/lib/logText';
+import { ORGANS, STATUS_COLOR } from '@/lib/metrics';
 import { useMissionStore } from '@/lib/store/missionStore';
 
 type OrganId = (typeof ORGANS)[number]['id'];
@@ -20,11 +23,13 @@ const SPOTS: Record<OrganId, Array<{ cx: number; cy: number; rx: number; ry: num
   ],
 };
 
-function fmt(key: string, v: number | undefined): string {
-  const m = METRICS[key];
-  if (!m || typeof v !== 'number' || !Number.isFinite(v)) return '—';
-  return `${v.toFixed(m.decimals)} ${m.unit}`;
-}
+/** Where each organ's popover is anchored (percent of the SVG box) and which side it opens to. */
+const ANCHOR: Record<OrganId, { x: number; y: number; side: 'left' | 'right' }> = {
+  brain: { x: 66, y: 8.6, side: 'right' },
+  heart: { x: 54.5, y: 32.9, side: 'right' },
+  lungs: { x: 59, y: 30.5, side: 'left' },
+  muscle: { x: 75, y: 70.5, side: 'right' },
+};
 
 export function BodyScan({ crewId }: { crewId: string }) {
   const t = useT();
@@ -50,17 +55,14 @@ export function BodyScan({ crewId }: { crewId: string }) {
     const o = ORGANS.find((x) => x.id === id)!;
     return worstStatus(o.metrics.map((m) => frame?.status.byMetric[m] ?? 'NOMINAL'));
   };
-
   const pick = (id: OrganId) => setPinned((p) => (p === id ? null : id));
-
   const vals: Record<string, number> = frame ? { ...frame.vitals, co2: frame.cabin.co2, o2: frame.cabin.o2 } : {};
-  const activeOrgan = ORGANS.find((o) => o.id === active);
 
   return (
-    <section className="glass glass-blur flex flex-col items-center gap-3 p-4" aria-label={t('scan.title')}>
-      <h3 className="self-start text-sm font-medium text-mist">{t('scan.title')}</h3>
-      <div className="relative w-full max-w-[210px]">
-        <svg ref={root} viewBox="0 0 200 420" className="w-full" role="group" aria-label={t('scan.title')}>
+    <section className="glass glass-blur flex h-full min-h-0 flex-col items-center gap-2 p-3" aria-label={t('scan.title')}>
+      <h3 className="self-start text-[13px] font-medium text-muted-foreground">{t('scan.title')}</h3>
+      <div className="relative mx-auto min-h-0 w-full max-w-[200px] flex-1">
+        <svg ref={root} viewBox="0 0 200 420" className="mx-auto h-full max-h-[540px] w-full" role="group" aria-label={t('scan.title')}>
           <defs>
             <linearGradient id="scan-grad" x1="0" y1="0" x2="0" y2="1">
               <stop offset="0" stopColor="#4FB6A8" stopOpacity="0" />
@@ -82,7 +84,6 @@ export function BodyScan({ crewId }: { crewId: string }) {
             <path className="body-line" d="M138 90 L156 150 L164 212 L152 214 L138 160 Z" />
             <path className="body-line" d="M66 224 L100 232 L134 224 L128 330 L124 410 L108 410 L100 250 L92 410 L76 410 L72 330 Z" />
           </g>
-          {/* scan line, clipped to the silhouette */}
           <g clipPath="url(#body-clip)" aria-hidden>
             <rect className="scanline" x="0" y="0" width="200" height="60" fill="url(#scan-grad)" style={{ transformBox: 'view-box' }} />
           </g>
@@ -96,10 +97,10 @@ export function BodyScan({ crewId }: { crewId: string }) {
                 role="button"
                 tabIndex={0}
                 aria-pressed={pinned === o.id}
-                aria-label={`${t(`organ.${o.id}` as DictKey)}: ${STATUS_WORD[st]}`}
+                aria-label={`${t(`organ.${o.id}` as DictKey)}: ${statusWord(st)}`}
                 className="cursor-pointer outline-none"
                 onClick={() => pick(o.id)}
-                onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); pick(o.id); } }}
+                onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); pick(o.id); } if (e.key === 'Escape') setPinned(null); }}
                 onPointerEnter={() => setHover(o.id)}
                 onPointerLeave={() => setHover(null)}
                 onFocus={() => setHover(o.id)}
@@ -120,46 +121,43 @@ export function BodyScan({ crewId }: { crewId: string }) {
             );
           })}
         </svg>
-      </div>
-      <ul className="grid w-full grid-cols-1 gap-1 text-xs">
+
+        {/* readings of the organ under the pointer / pinned: a popover right next to the hotspot */}
         {ORGANS.map((o) => {
+          const a = ANCHOR[o.id];
           const st = organStatus(o.id);
           return (
-            <li key={o.id}>
-              <button
-                onClick={() => pick(o.id)}
-                onPointerEnter={() => setHover(o.id)}
-                onPointerLeave={() => setHover(null)}
-                className={`flex w-full items-center gap-2 rounded-lg px-2 py-1.5 text-left transition-colors ${active === o.id ? 'bg-teal/15' : 'hover:bg-panel-2'}`}
+            <Popover key={o.id} open={active === o.id}>
+              <PopoverAnchor asChild>
+                <span className="pointer-events-none absolute size-1" style={{ left: `${a.x}%`, top: `${a.y}%` }} aria-hidden />
+              </PopoverAnchor>
+              <PopoverContent
+                side={a.side}
+                align="start"
+                className="w-60"
+                onOpenAutoFocus={(e) => e.preventDefault()}
+                onCloseAutoFocus={(e) => e.preventDefault()}
+                onPointerDownOutside={() => setPinned(null)}
+                onEscapeKeyDown={() => setPinned(null)}
               >
-                <span className="size-2 shrink-0 rounded-full" style={{ background: STATUS_COLOR[st] }} aria-hidden />
-                <span className="truncate">{t(`organ.${o.id}` as DictKey)}</span>
-                <span className="ml-auto text-[10px] text-mist">{STATUS_WORD[st]}</span>
-              </button>
-            </li>
+                <div className="mb-2 flex items-center justify-between gap-2">
+                  <p className="text-sm font-medium">{t(`organ.${o.id}` as DictKey)}</p>
+                  <StatusBadge status={st} />
+                </div>
+                <dl className="grid grid-cols-[1fr_auto] gap-x-3 gap-y-1 text-[13px]">
+                  {o.metrics.map((m) => (
+                    <div key={m} className="contents">
+                      <dt className="text-muted-foreground first-letter:uppercase">{metricName(m)}</dt>
+                      <dd className="num text-right">{formatValue(m, vals[m]) || '—'}</dd>
+                    </div>
+                  ))}
+                </dl>
+              </PopoverContent>
+            </Popover>
           );
         })}
-      </ul>
-      {/* micro-metrics of the organ under the pointer / pinned: right next to the silhouette */}
-      <div className="min-h-[92px] w-full rounded-xl bg-ink/50 p-3" aria-live="polite">
-        {activeOrgan ? (
-          <>
-            <p className="mb-1.5 text-sm font-medium" style={{ color: STATUS_COLOR[organStatus(activeOrgan.id)] }}>
-              {t(`organ.${activeOrgan.id}` as DictKey)} · {STATUS_WORD[organStatus(activeOrgan.id)]}
-            </p>
-            <dl className="grid grid-cols-[1fr_auto] gap-x-3 gap-y-0.5 text-xs">
-              {activeOrgan.metrics.map((m) => (
-                <div key={m} className="contents">
-                  <dt className="truncate text-mist">{metricLabel(m)}</dt>
-                  <dd className="num text-right">{fmt(m, vals[m])}</dd>
-                </div>
-              ))}
-            </dl>
-          </>
-        ) : (
-          <p className="text-xs text-mist">{t('scan.hint')}</p>
-        )}
       </div>
+      <p className="text-center text-xs text-muted-foreground">{t('scan.hint')}</p>
     </section>
   );
 }

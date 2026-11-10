@@ -36,6 +36,12 @@ export class SimSource implements TelemetrySource {
     this.timer = undefined;
   }
 
+  reset(): void {
+    this.log = [];
+    this.prevStatus = {};
+    this.prevFrame = {};
+  }
+
   send(ev: EngineEvent): boolean {
     this.log = appendEvent(this.log, ev);
     return true;

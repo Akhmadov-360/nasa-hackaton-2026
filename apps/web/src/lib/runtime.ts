@@ -2,9 +2,10 @@ import { sileo } from 'sileo';
 import type { Alert, EngineEvent, EventType, Status } from '@astro/engine';
 import { enableAudio } from './audio';
 import { apiBase, wsUrl } from './constants';
-import { alertValueText, notifyAlert } from './alerts/alertCenter';
+import { notifyAlert } from './alerts/alertCenter';
 import { crewName } from './engineConfig';
-import { metricLabel, STATUS_RANK } from './metrics';
+import { tr, type DictKey } from './i18n';
+import { STATUS_RANK } from './metrics';
 import { PollSource } from './sources/PollSource';
 import { SimSource } from './sources/SimSource';
 import { SourceManager, type ManagerEvent } from './sources/SourceManager';
@@ -23,14 +24,11 @@ function handle(e: ManagerEvent): void {
   if (e.type === 'mode') {
     st().setMode(e.mode, e.everLive);
     resetBus();
-    const text =
-      e.mode === 'LIVE' ? 'Live telemetry link established'
-      : e.mode === 'SIM' ? 'Signal lost: switched to onboard simulation'
-      : e.mode === 'POLL' ? 'WebSocket down: polling over HTTP'
-      : 'Telemetry stream interrupted';
-    st().addAudit({ t: st().t, kind: 'link', severity: e.mode === 'LIVE' ? 'NOMINAL' : 'WARNING', text });
-    if (e.mode === 'SIM') sileo.warning({ title: 'Signal lost', description: 'Using estimated telemetry (onboard simulation).' });
-    if (e.mode === 'LIVE' && e.everLive) sileo.success({ title: 'Link restored', description: 'Live telemetry resumed.' });
+    st().addAudit({
+      t: st().t, kind: 'link', severity: e.mode === 'LIVE' ? 'NOMINAL' : 'WARNING', key: `log.link.${e.mode}` as DictKey,
+    });
+    if (e.mode === 'SIM') sileo.warning({ title: tr('banner.sim'), duration: 5000 });
+    if (e.mode === 'LIVE' && e.everLive) sileo.success({ title: tr('log.link.LIVE'), duration: 3000 });
     return;
   }
   if (e.type === 'hello') {
@@ -56,8 +54,7 @@ function handle(e: ManagerEvent): void {
     if (!cur || STATUS_RANK[a.severity] > STATUS_RANK[cur.severity]) worst.set(a.crewId, a);
   }
   for (const a of e.alerts) {
-    const loud = worst.get(a.crewId) === a;
-    if (loud) {
+    if (worst.get(a.crewId) === a) {
       notifyAlert(a, logAlert); // toast + sound + voice + log
       if (STATUS_RANK[a.severity] >= STATUS_RANK.WARNING) st().setIsland(a);
     } else {
@@ -68,8 +65,8 @@ function handle(e: ManagerEvent): void {
 
 function logAlert(a: Alert): void {
   st().addAudit({
-    t: a.t, kind: 'alert', severity: a.severity,
-    text: `${crewName(a.crewId)}: ${metricLabel(a.metric)} · ${alertValueText(a)}`,
+    t: a.t, kind: 'alert', severity: a.severity, key: 'log.alert',
+    crewId: a.crewId, metric: a.metric, value: a.value, unit: a.unit,
   });
 }
 
@@ -85,7 +82,7 @@ export function startRuntime(): void {
   manager.start();
   timer = setInterval(() => manager?.tick(), 500);
   st().enter();
-  st().addAudit({ t: st().t, kind: 'system', text: 'Mission Control session started' });
+  st().addAudit({ t: st().t, kind: 'system', key: 'log.system.start' });
 }
 
 export function stopRuntime(): void {
@@ -94,21 +91,38 @@ export function stopRuntime(): void {
   manager = null;
 }
 
-const COMMAND_TEXT: Record<EventType, string> = {
-  flare: 'Solar flare event injected',
-  exertion: 'Physical exertion scenario started',
-  o2fault: 'O2 supply fault injected',
-  normalize: 'Normalize command issued',
+const COMMAND_KEY: Record<EventType, DictKey> = {
+  flare: 'log.cmd.flare',
+  exertion: 'log.cmd.exertion',
+  o2fault: 'log.cmd.o2fault',
+  normalize: 'log.cmd.normalize',
 };
 
 /** Operator command from the Control Deck. The event time is stamped here so server and browser agree. */
 export function sendCommand(type: EventType, crewId: string, params?: Record<string, number | string>): void {
   const t = Math.round(st().t * 10) / 10;
+  if (t <= 0) return; // no telemetry yet: nothing to act on
   const ev: EngineEvent = { t, type, crewId, ...(params ? { params } : {}) };
   st().addEvent(ev);
-  st().addAudit({
-    t, kind: 'command',
-    text: `${COMMAND_TEXT[type]} (${crewId === 'ALL' ? 'all crew' : crewName(crewId)})`,
-  });
+  st().addAudit({ t, kind: 'command', key: COMMAND_KEY[type], params: { crewId } });
   manager?.command(ev);
+  // micro-action: undo for crew-specific commands
+  if (type === 'exertion' || type === 'o2fault') {
+    sileo.info({
+      title: tr(type === 'exertion' ? 'deck.exertion' : 'deck.o2'),
+      description: crewName(crewId),
+      duration: 6000,
+      button: { title: tr('deck.undo'), onClick: () => sendCommand('normalize', crewId) },
+    });
+  }
+}
+
+/** Clears injected events on the server and in this browser. */
+export function resetScenario(): void {
+  const t = Math.round(st().t * 10) / 10;
+  st().clearEvents();
+  st().setTimeTravel(null);
+  st().addAudit({ t, kind: 'command', key: 'log.cmd.reset' });
+  void fetch(`${apiBase()}/reset`, { method: 'POST' }).catch(() => {});
+  manager?.resetLog();
 }

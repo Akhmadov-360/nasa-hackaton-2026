@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { createJSONStorage, persist, type StateStorage } from 'zustand/middleware';
 import type { Alert, EngineEvent, Status, TelemetryFrame } from '@astro/engine';
 import type { SourceMode } from '../sources/types';
+import type { DictKey, Params } from '../i18n';
 import { crew } from '../engineConfig';
 import { STATUS_RANK } from '../metrics';
 
@@ -13,7 +14,15 @@ export interface LogEntry {
   t: number;
   kind: 'alert' | 'command' | 'link' | 'system';
   severity?: Status;
-  text: string;
+  /** text is built from a dictionary key at display time, so a language switch re-translates old entries */
+  key: DictKey;
+  params?: Params;
+  /** alert entries: lets repeated alerts for one metric collapse into one row */
+  crewId?: string;
+  metric?: string;
+  value?: number;
+  unit?: string;
+  trail?: Status[];
 }
 
 export interface MissionState {
@@ -41,6 +50,9 @@ export interface MissionState {
   setMode: (mode: SourceMode, everLive: boolean) => void;
   applyFrames: (t: number, frames: TelemetryFrame[], degraded: Record<string, boolean>) => void;
   addAudit: (e: Omit<LogEntry, 'id'>) => void;
+  soundOn: boolean;
+  setSound: (on: boolean) => void;
+  clearEvents: () => void;
   setIsland: (a: Alert | null) => void;
   addEvent: (e: EngineEvent) => void;
   setEvents: (log: EngineEvent[]) => void;
@@ -94,6 +106,9 @@ export const useMissionStore = create<MissionState>()(
       island: null,
       timeTravelT: null,
       locale: 'en',
+      soundOn: true,
+      setSound: (on) => set({ soundOn: on }),
+      clearEvents: () => set({ events: [] }),
 
       enter: () => set({ entered: true }),
       selectCrew: (id) => set({ selectedCrewId: id, focusedOrgan: null }),
@@ -105,7 +120,21 @@ export const useMissionStore = create<MissionState>()(
           for (const f of frames) latest[f.crewId] = f;
           return { t, latest, degraded: { ...s.degraded, ...degraded }, lastFrameAt: Date.now() };
         }),
-      addAudit: (e) => set((s) => ({ audit: cap([...s.audit, { ...e, id: `${Date.now()}-${seq++}` }], 200) })),
+      addAudit: (e) =>
+        set((s) => {
+          // collapse an escalating alert (same crew member and metric, within 90 s) into one row
+          if (e.kind === 'alert') {
+            for (let i = s.audit.length - 1; i >= Math.max(0, s.audit.length - 12); i--) {
+              const prev = s.audit[i];
+              if (prev.kind === 'alert' && prev.crewId === e.crewId && prev.metric === e.metric && e.t - prev.t < 90) {
+                const trail = [...(prev.trail ?? [prev.severity as Status]), e.severity as Status].slice(-3);
+                const merged: LogEntry = { ...prev, severity: e.severity, value: e.value, unit: e.unit, trail };
+                return { audit: [...s.audit.slice(0, i), ...s.audit.slice(i + 1), merged] };
+              }
+            }
+          }
+          return { audit: cap([...s.audit, { ...e, id: `${Date.now()}-${seq++}` }], 200) };
+        }),
       setIsland: (a) => set({ island: a }),
       addEvent: (e) => set((s) => ({ events: cap([...s.events, e], 500) })),
       setEvents: (log) => set({ events: cap(log, 500) }),

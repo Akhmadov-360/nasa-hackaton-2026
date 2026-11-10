@@ -103,16 +103,17 @@ for (const [ci, c] of CREW.entries()) {
   console.log(c.id, `ECG ${c.mit}: ${e.bpm.toFixed(1)} bpm, ${(e.ecg.length / e.fs).toFixed(1)} s loop; BIDMC ${v.id} window @${v.start}s`);
 }
 
+const donkiLoaded = existsSync(raw('donki/flr-2024-05.json'));
 const pack: ScenarioPack = {
   meta: {
     id: 'demo',
-    title: 'Demo crew: PhysioNet baselines + NASA DONKI flares',
+    title: donkiLoaded ? 'Demo crew: PhysioNet baselines + NASA DONKI flares' : 'Demo crew: PhysioNet baselines',
     sources: [
       'PhysioNet BIDMC PPG and Respiration Dataset (HR, SpO2, respiration) — https://physionet.org/content/bidmc/1.0.0/',
       'PhysioNet MIT-BIH Arrhythmia Database (ECG waveform) — https://physionet.org/content/mitdb/1.0.0/',
-      'NASA DONKI solar flare catalogue — https://kauai.ccmc.gsfc.nasa.gov/DONKI/',
+      ...(donkiLoaded ? ['NASA DONKI solar flare catalogue — https://kauai.ccmc.gsfc.nasa.gov/DONKI/'] : []),
     ],
-    licenses: ['PhysioNet datasets: Open Data Commons Attribution License v1.0 (verify on each dataset page)', 'NASA DONKI: public domain, NASA Open APIs'],
+    licenses: ['PhysioNet datasets: Open Data Commons Attribution License v1.0 (verify on each dataset page)', ...(donkiLoaded ? ['NASA DONKI: public domain, NASA Open APIs'] : [])],
     provisional: true,
   },
   crew: CREW.map(({ id, name, role }) => ({ id, name, role })),

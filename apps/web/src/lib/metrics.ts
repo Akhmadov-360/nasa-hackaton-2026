@@ -1,28 +1,26 @@
 import type { Status, VitalKey } from '@astro/engine';
 
 export interface MetricInfo {
-  label: string;
   unit: string;
   decimals: number;
 }
 
+/** Units and precision only. Names are translated: see `metricName` in i18n.ts. */
 export const METRICS: Record<string, MetricInfo> = {
-  hr: { label: 'heart rate', unit: 'bpm', decimals: 0 },
-  hrv: { label: 'heart rate variability', unit: 'ms', decimals: 0 },
-  spo2: { label: 'oxygen saturation', unit: '%', decimals: 0 },
-  bpSys: { label: 'systolic pressure', unit: 'mmHg', decimals: 0 },
-  bpDia: { label: 'diastolic pressure', unit: 'mmHg', decimals: 0 },
-  respRate: { label: 'respiration', unit: '/min', decimals: 0 },
-  temp: { label: 'body temperature', unit: '°C', decimals: 1 },
-  stress: { label: 'stress level', unit: 'idx', decimals: 0 },
-  eeg: { label: 'neural activity', unit: 'µV', decimals: 1 },
-  co2: { label: 'cabin CO2', unit: 'mmHg', decimals: 1 },
-  o2: { label: 'cabin oxygen', unit: '%', decimals: 1 },
-  doseRate: { label: 'radiation dose rate', unit: 'µSv/h', decimals: 0 },
-  dose: { label: 'accumulated radiation dose', unit: 'mSv', decimals: 2 },
+  hr: { unit: 'bpm', decimals: 0 },
+  hrv: { unit: 'ms', decimals: 0 },
+  spo2: { unit: '%', decimals: 0 },
+  bpSys: { unit: 'mmHg', decimals: 0 },
+  bpDia: { unit: 'mmHg', decimals: 0 },
+  respRate: { unit: '/min', decimals: 0 },
+  temp: { unit: '°C', decimals: 1 },
+  stress: { unit: 'idx', decimals: 0 },
+  eeg: { unit: 'µV', decimals: 1 },
+  co2: { unit: 'mmHg', decimals: 1 },
+  o2: { unit: '%', decimals: 1 },
+  doseRate: { unit: 'µSv/h', decimals: 0 },
+  dose: { unit: 'mSv', decimals: 2 },
 };
-
-export const metricLabel = (k: string) => METRICS[k]?.label ?? k;
 
 export interface OrganInfo {
   id: 'brain' | 'heart' | 'lungs' | 'muscle';
@@ -35,11 +33,21 @@ export const ORGANS: OrganInfo[] = [
   { id: 'muscle', metrics: ['temp'] },
 ];
 
-export const STATUS_RANK: Record<Status, number> = { NOMINAL: 0, CAUTION: 1, WARNING: 2, CRITICAL: 3 };
-/** Operator-facing name of a status: CRITICAL is shown as EMERGENCY. */
-export const STATUS_WORD: Record<Status, string> = {
-  NOMINAL: 'NOMINAL', CAUTION: 'CAUTION', WARNING: 'WARNING', CRITICAL: 'EMERGENCY',
+/** Where each reading comes from: a recorded PhysioNet signal, or our model on top of it. */
+export type Provenance = 'real' | 'modeled';
+export const SOURCE_OF: Record<string, { kind: Provenance; src: string }> = {
+  hr: { kind: 'real', src: 'PhysioNet MIT-BIH + BIDMC' },
+  spo2: { kind: 'real', src: 'PhysioNet BIDMC' },
+  respRate: { kind: 'real', src: 'PhysioNet BIDMC' },
+  hrv: { kind: 'modeled', src: '' },
+  bp: { kind: 'modeled', src: '' },
+  temp: { kind: 'modeled', src: '' },
+  stress: { kind: 'modeled', src: '' },
+  eeg: { kind: 'modeled', src: '' },
+  o2: { kind: 'modeled', src: '' },
 };
+
+export const STATUS_RANK: Record<Status, number> = { NOMINAL: 0, CAUTION: 1, WARNING: 2, CRITICAL: 3 };
 export const STATUS_COLOR: Record<Status, string> = {
   NOMINAL: 'var(--color-teal)', CAUTION: 'var(--color-amber)', WARNING: 'var(--color-coral)', CRITICAL: 'var(--color-crimson)',
 };

@@ -1,8 +1,8 @@
 'use client';
 import { motion, useReducedMotion } from 'motion/react';
 import { crew } from '@/lib/engineConfig';
-import { useT } from '@/lib/i18n';
-import { STATUS_COLOR, STATUS_WORD } from '@/lib/metrics';
+import { statusWord, useT } from '@/lib/i18n';
+import { STATUS_COLOR } from '@/lib/metrics';
 import { useMissionStore } from '@/lib/store/missionStore';
 import { useDisplayFrame } from '@/hooks/useDisplayFrame';
 import { WidgetBoundary } from '@/components/WidgetBoundary';
@@ -31,7 +31,7 @@ function CrewButton({ id, name, role }: { id: string; name: string; role: string
     <button
       onClick={() => select(id)}
       aria-pressed={selected}
-      aria-label={`${name}, ${role}, ${STATUS_WORD[status]}`}
+      aria-label={`${name}, ${role}, ${statusWord(status)}`}
       className="group relative flex h-[84px] w-full flex-col items-center justify-center gap-1 rounded-2xl"
     >
       <span
