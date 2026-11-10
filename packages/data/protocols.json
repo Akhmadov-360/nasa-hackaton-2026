@@ -1,0 +1,72 @@
+{
+  "provisional": true,
+  "note": "ILLUSTRATIVE procedures for the demo. They are NOT validated by flight surgeons and are not medical advice. Replace with approved SOP text before any real use.",
+  "protocols": {
+    "hypoxia": {
+      "title": { "en": "Low blood oxygen", "ru": "Низкий уровень кислорода в крови" },
+      "steps": [
+        { "en": "Stop physical activity and let the crew member rest.", "ru": "Прекратить физическую нагрузку, дать астронавту отдохнуть." },
+        { "en": "Check the suit or cabin oxygen supply and switch to the backup source.", "ru": "Проверить подачу кислорода в скафандре или отсеке и переключиться на резервный источник." },
+        { "en": "Confirm cabin O₂ and CO₂ levels on the environmental panel.", "ru": "Проверить уровни O₂ и CO₂ в отсеке на панели жизнеобеспечения." },
+        { "en": "Monitor blood oxygen every minute until it is back above the caution level.", "ru": "Следить за кислородом в крови каждую минуту, пока он не вернётся выше уровня «внимание»." },
+        { "en": "Notify the flight surgeon and record the event in the flight log.", "ru": "Сообщить врачу экипажа и записать событие в бортовой журнал." }
+      ]
+    },
+    "co2": {
+      "title": { "en": "High cabin CO₂", "ru": "Повышенный CO₂ в отсеке" },
+      "steps": [
+        { "en": "Check that ventilation is running and air paths are clear.", "ru": "Проверить, что вентиляция работает и воздушные каналы свободны." },
+        { "en": "Switch to the backup CO₂ scrubber.", "ru": "Переключиться на резервный поглотитель CO₂." },
+        { "en": "Reduce activity of all crew to lower CO₂ production.", "ru": "Снизить активность экипажа, чтобы уменьшить выделение CO₂." },
+        { "en": "Watch the CO₂ trend until it falls below the caution level.", "ru": "Следить за трендом CO₂, пока он не опустится ниже уровня «внимание»." },
+        { "en": "Notify the ground team and record the event.", "ru": "Сообщить наземной группе и записать событие." }
+      ]
+    },
+    "cardio": {
+      "title": { "en": "Abnormal heart or blood pressure readings", "ru": "Отклонения пульса или давления" },
+      "steps": [
+        { "en": "Have the crew member stop and sit down.", "ru": "Попросить астронавта остановиться и сесть." },
+        { "en": "Check sensor placement and signal quality before trusting the numbers.", "ru": "Проверить положение датчиков и качество сигнала, прежде чем доверять цифрам." },
+        { "en": "Re-measure after two minutes of rest.", "ru": "Повторить измерение после двух минут отдыха." },
+        { "en": "If readings stay abnormal, notify the flight surgeon.", "ru": "Если показатели остаются отклонёнными, сообщить врачу экипажа." },
+        { "en": "Record the event in the flight log.", "ru": "Записать событие в бортовой журнал." }
+      ]
+    },
+    "thermal": {
+      "title": { "en": "Body temperature out of range", "ru": "Температура тела вне нормы" },
+      "steps": [
+        { "en": "Reduce workload and move to a cooler (or warmer) area.", "ru": "Снизить нагрузку и перейти в более прохладную (или тёплую) зону." },
+        { "en": "Check suit cooling or heating settings and cabin temperature.", "ru": "Проверить настройки охлаждения или обогрева скафандра и температуру отсека." },
+        { "en": "Encourage fluids and monitor temperature every five minutes.", "ru": "Предложить воду и контролировать температуру каждые пять минут." },
+        { "en": "Notify the flight surgeon if it does not improve.", "ru": "Если нет улучшения, сообщить врачу экипажа." }
+      ]
+    },
+    "exertion": {
+      "title": { "en": "Overexertion or high stress", "ru": "Перегрузка или высокий стресс" },
+      "steps": [
+        { "en": "Pause the task and schedule a rest period.", "ru": "Приостановить задачу и назначить время отдыха." },
+        { "en": "Watch heart-rate recovery; it should fall steadily.", "ru": "Следить за восстановлением пульса: он должен плавно снижаться." },
+        { "en": "Review the work schedule and shorten the next activity.", "ru": "Пересмотреть график работ и сократить следующую задачу." },
+        { "en": "Record the event in the flight log.", "ru": "Записать событие в бортовой журнал." }
+      ]
+    },
+    "radiation": {
+      "title": { "en": "Elevated radiation", "ru": "Повышенная радиация" },
+      "steps": [
+        { "en": "Move the crew to the most shielded area of the vehicle.", "ru": "Перевести экипаж в наиболее защищённую зону корабля." },
+        { "en": "Postpone any spacewalk until the dose rate falls.", "ru": "Отложить выход в открытый космос, пока мощность дозы не снизится." },
+        { "en": "Record the accumulated dose for each crew member.", "ru": "Зафиксировать накопленную дозу каждого астронавта." },
+        { "en": "Notify the ground team and follow the space-weather forecast.", "ru": "Сообщить наземной группе и следить за прогнозом космической погоды." },
+        { "en": "Resume normal operations only after the rate stays below the caution level.", "ru": "Вернуться к обычной работе только когда мощность дозы устойчиво ниже уровня «внимание»." }
+      ]
+    },
+    "general": {
+      "title": { "en": "Abnormal reading", "ru": "Отклонение показателя" },
+      "steps": [
+        { "en": "Verify the sensor and the signal before acting.", "ru": "Проверить датчик и сигнал, прежде чем действовать." },
+        { "en": "Check on the crew member and reduce workload.", "ru": "Проверить состояние астронавта и снизить нагрузку." },
+        { "en": "Notify the flight surgeon and record the event.", "ru": "Сообщить врачу экипажа и записать событие." }
+      ]
+    }
+  }
+}

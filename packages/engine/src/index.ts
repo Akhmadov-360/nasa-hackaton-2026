@@ -5,3 +5,6 @@ export * from './status';
 export * from './frame';
 export { mulberry32, hashSeed } from './prng';
 export * from './log';
+export * from './trend';
+export * from './report';
+export * from './telemetryPackage';
