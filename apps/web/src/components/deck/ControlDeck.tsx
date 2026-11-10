@@ -49,7 +49,7 @@ export function ControlDeck() {
           />
         </section>
       </WidgetBoundary>
-      <Separator className="mx-4 w-auto" />
+      <div className="px-4"><Separator /></div>
       <WidgetBoundary name={t('log.title')} className="min-h-40 flex-1"><AuditLog /></WidgetBoundary>
     </aside>
   );

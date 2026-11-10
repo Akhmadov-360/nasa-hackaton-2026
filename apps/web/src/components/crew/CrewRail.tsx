@@ -1,4 +1,5 @@
 'use client';
+import { useLayoutEffect, useRef, useState } from 'react';
 import { motion, useReducedMotion } from 'motion/react';
 import { crew } from '@/lib/engineConfig';
 import { statusWord, useT } from '@/lib/i18n';
@@ -50,28 +51,53 @@ function CrewButton({ id, name, role }: { id: string; name: string; role: string
   );
 }
 
+/** Slot size used to place the liquid indicator. Measured from the real buttons, so it also works in the horizontal mobile rail. */
+function useSlotCenter(selected: string, count: number) {
+  const nav = useRef<HTMLElement>(null);
+  const slots = useRef<Record<string, HTMLDivElement | null>>({});
+  const [pos, setPos] = useState({ x: 0, y: 0 });
+  useLayoutEffect(() => {
+    const measure = () => {
+      const el = slots.current[selected];
+      if (el) setPos({ x: el.offsetLeft + el.offsetWidth / 2, y: el.offsetTop + el.offsetHeight / 2 });
+    };
+    measure();
+    window.addEventListener('resize', measure);
+    return () => window.removeEventListener('resize', measure);
+  }, [selected, count]);
+  return { nav, slots, pos };
+}
+
+/**
+ * One liquid indicator for the whole rail. Three blobs chase the selected avatar with different spring stiffness;
+ * the goo filter fuses them, so on a jump the drop stretches into a thread, thins out and snaps onto the new avatar.
+ */
 export function CrewRail() {
   const t = useT();
   const selected = useMissionStore((s) => s.selectedCrewId);
   const reduce = useReducedMotion();
-  const spring = reduce ? { duration: 0 } : { type: 'spring' as const, stiffness: 190, damping: 17, mass: 0.8 };
+  const { nav, slots, pos } = useSlotCenter(selected, crew.length);
+  const spring = (stiffness: number, damping: number) => (reduce ? { duration: 0 } : { type: 'spring' as const, stiffness, damping, mass: 0.9 });
+  const blob = (size: number, stiffness: number, damping: number) => (
+    <motion.div
+      className="absolute top-0 left-0 rounded-full bg-teal"
+      style={{ width: size, height: size }}
+      initial={false}
+      animate={{ x: pos.x - size / 2, y: pos.y - size / 2 }}
+      transition={spring(stiffness, damping)}
+    />
+  );
   return (
-    <nav aria-label={t('crew.title')} className="relative flex flex-row items-stretch gap-1 border-b border-white/[0.06] bg-rail p-2 lg:flex-col lg:border-r lg:border-b-0 lg:p-3">
+    <nav ref={nav} aria-label={t('crew.title')} className="relative flex flex-row items-stretch gap-1 border-b border-white/[0.06] bg-rail p-2 lg:flex-col lg:border-r lg:border-b-0 lg:p-3">
       <h2 className="sr-only">{t('crew.title')}</h2>
-      {/* liquid layer: filtered blobs only, aligned 1:1 with the buttons above it */}
-      <div className="pointer-events-none absolute inset-2 flex flex-row gap-1 lg:inset-3 lg:flex-col" style={{ filter: 'url(#goo)' }} aria-hidden>
-        {crew.map((c) => {
-          const active = selected === c.id;
-          return (
-            <div key={c.id} className="relative flex h-[84px] flex-1 items-center justify-center lg:flex-none">
-              <motion.div className="absolute size-[68px] rounded-full bg-teal/25" animate={{ scale: active ? 1 : 0.2, opacity: active ? 1 : 0 }} transition={spring} />
-              {active && <motion.div layoutId="crew-drop" className="absolute size-9 rounded-full bg-teal/40" transition={spring} />}
-            </div>
-          );
-        })}
+      {/* liquid layer: solid blobs under the goo filter, dimmed as a whole so the avatars stay readable */}
+      <div className="pointer-events-none absolute inset-0 opacity-30" style={{ filter: 'url(#goo-rail)' }} aria-hidden>
+        {blob(40, 70, 11)}
+        {blob(56, 150, 16)}
+        {blob(68, 320, 28)}
       </div>
       {crew.map((c) => (
-        <div key={c.id} className="relative z-10 flex-1 lg:flex-none">
+        <div key={c.id} ref={(el) => { slots.current[c.id] = el; }} className="relative z-10 flex-1 lg:flex-none">
           <WidgetBoundary name={c.name}><CrewButton id={c.id} name={c.name} role={c.role} /></WidgetBoundary>
         </div>
       ))}
