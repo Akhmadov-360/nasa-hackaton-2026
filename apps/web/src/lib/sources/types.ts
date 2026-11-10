@@ -1,4 +1,4 @@
-import type { Alert, EngineEvent } from '@astro/engine';
+import type { Alert, EngineEvent, TelemetryFrame } from '@astro/engine';
 
 export type SourceMode = 'LIVE' | 'POLL' | 'STALE' | 'SIM';
 
@@ -12,6 +12,8 @@ export interface Batch {
 export interface StartOptions {
   fromT?: number;
   log?: EngineEvent[];
+  /** last known frames, so a fallback simulation does not re-announce existing alarms */
+  prev?: Record<string, TelemetryFrame>;
 }
 
 export interface TelemetrySource {

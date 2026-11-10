@@ -15,6 +15,7 @@ class FakeSource implements TelemetrySource {
   onBatch(cb: (b: Batch) => void) { return this.b.on(cb); }
   onHello(cb: (h: { t: number; log: EngineEvent[] }) => void) { return this.h.on(cb); }
   send(ev: EngineEvent) { if (!this.connected) return false; this.sent.push(ev); return true; }
+  hello(t: number, log: EngineEvent[] = []) { this.h.emit({ t, log }); }
   push(t: number, crews = ['A1', 'A2'], patch: Record<string, unknown> = {}) {
     this.b.emit({ t, alerts: [], frames: crews.map((c) => frame(c, t, patch[c])) });
   }
@@ -75,5 +76,25 @@ describe('SourceManager', () => {
     live.push(1, ['A1', 'A2'], { A2: { hr: 'null' } });
     const f = events.find((e) => e.type === 'frames');
     expect(f && f.type === 'frames' && f.degraded).toEqual({ A1: false, A2: true });
+  });
+
+  it('recovers when the server restarts inside the timeout and its clock goes backwards', () => {
+    const { m, live, events, at } = setup();
+    live.push(100000);
+    at(1000);
+    live.hello(50); // restarted server announces itself
+    live.push(60);
+    live.push(61);
+    const ts = events.flatMap((e) => (e.type === 'frames' ? [e.t] : []));
+    expect(ts).toEqual([100000, 60, 61]);
+    expect(m.mode).toBe('LIVE');
+  });
+
+  it('accepts frames after a large backwards clock jump even without a hello', () => {
+    const { live, events } = setup();
+    live.push(100000);
+    live.push(5);
+    const ts = events.flatMap((e) => (e.type === 'frames' ? [e.t] : []));
+    expect(ts).toEqual([100000, 5]);
   });
 });

@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { createJSONStorage, persist, type StateStorage } from 'zustand/middleware';
 import type { Alert, EngineEvent, Status, TelemetryFrame } from '@astro/engine';
 import type { SourceMode } from '../sources/types';
+import { crew } from '../engineConfig';
 import { STATUS_RANK } from '../metrics';
 
 export type Locale = 'en' | 'ru' | 'uz';
@@ -115,16 +116,15 @@ export const useMissionStore = create<MissionState>()(
       name: 'astro-monitor',
       version: 1,
       storage: createJSONStorage(() => safeStorage),
-      partialize: (s) => ({ audit: s.audit, events: s.events, locale: s.locale, selectedCrewId: s.selectedCrewId }),
+      // only preferences survive a reload; events and the flight log belong to one server run
+      partialize: (s) => ({ locale: s.locale, selectedCrewId: s.selectedCrewId }),
       // corrupt or foreign persisted data must never break startup
       merge: (persisted, current) => {
         const p = (persisted ?? {}) as Partial<MissionState>;
         return {
           ...current,
-          audit: Array.isArray(p.audit) ? p.audit : current.audit,
-          events: Array.isArray(p.events) ? p.events : current.events,
           locale: p.locale === 'ru' || p.locale === 'uz' ? p.locale : 'en',
-          selectedCrewId: typeof p.selectedCrewId === 'string' ? p.selectedCrewId : current.selectedCrewId,
+          selectedCrewId: crew.some((c) => c.id === p.selectedCrewId) ? (p.selectedCrewId as string) : current.selectedCrewId,
         };
       },
     },

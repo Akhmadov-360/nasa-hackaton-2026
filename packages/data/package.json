@@ -10,7 +10,6 @@
   "scripts": {
     "test": "vitest run --passWithNoTests",
     "typecheck": "tsc --noEmit",
-    "build:synth": "tsx scripts/make-synth-pack.ts",
     "build:pack": "tsx scripts/build-pack.ts",
     "fetch:donki": "tsx scripts/fetch-donki.ts"
   },

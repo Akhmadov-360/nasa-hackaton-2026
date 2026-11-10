@@ -7,6 +7,8 @@ export type ManagerEvent =
   | { type: 'mode'; mode: SourceMode; everLive: boolean }
   | { type: 'hello'; t: number; log: EngineEvent[] };
 
+const RESTART_JUMP_SEC = 30;
+
 export interface ManagerOptions {
   live: TelemetrySource;
   sim: TelemetrySource;
@@ -33,6 +35,7 @@ export class SourceManager {
   private lastT: Record<string, number> = {};
   private lastFrame: Record<string, TelemetryFrame> = {};
   private maxT = 0;
+  private pollActive = false;
   private queue: EngineEvent[] = [];
   private eventLog: EngineEvent[] = [];
   private unsubs: Array<() => void> = [];
@@ -73,40 +76,56 @@ export class SourceManager {
       if (this.o.poll) {
         this.lastPollAt = now;
         this.setMode('POLL');
-        this.o.poll.start();
+        this.startPoll();
       } else {
         this.staleSince = this.lastLiveAt + this.liveTimeout;
         this.setMode('STALE');
       }
     } else if (this.mode === 'POLL' && now - this.lastPollAt > this.liveTimeout) {
-      this.o.poll?.stop();
       this.staleSince = this.lastPollAt + this.liveTimeout;
       this.setMode('STALE');
     }
+    // WebSocket may be blocked from the start: after 2 s without data try the HTTP channel (also while simulating)
+    if ((this.mode === 'STALE' && now - this.staleSince >= 2000) || this.mode === 'SIM') this.startPoll();
     if (this.mode === 'STALE' && now - this.staleSince >= this.staleMs) {
       this.setMode('SIM');
       this.lastT = {};
-      this.o.sim.start({ fromT: this.maxT || undefined, log: this.eventLog });
+      this.o.sim.start({ fromT: this.maxT || undefined, log: this.eventLog, prev: { ...this.lastFrame } });
     }
+  }
+
+  private startPoll(): void {
+    if (!this.o.poll || this.pollActive) return;
+    this.pollActive = true;
+    this.o.poll.start();
+  }
+  private stopPoll(): void {
+    if (!this.pollActive) return;
+    this.pollActive = false;
+    this.o.poll?.stop();
   }
 
   command(ev: EngineEvent): void {
     this.eventLog = appendEvent(this.eventLog, ev);
     if (this.mode === 'SIM' || this.mode === 'STALE') this.o.sim.send(ev);
-    const delivered = this.mode === 'LIVE' || this.mode === 'POLL' ? this.o.live.send(ev) : false;
+    let delivered = false;
+    if (this.mode === 'LIVE') delivered = this.o.live.send(ev);
+    else if (this.mode === 'POLL') delivered = this.o.poll?.send(ev) ?? false;
     if (!delivered) this.queue.push(ev);
   }
 
   private onHello(h: { t: number; log: EngineEvent[] }): void {
-    const pending = this.queue;
-    this.eventLog = pending.reduce(appendEvent, [...h.log]);
-    this.bus.emit({ type: 'hello', t: h.t, log: h.log });
+    // a (re)connected server may have restarted: its clock can be behind ours
+    this.lastT = {};
+    this.maxT = 0;
+    this.eventLog = this.queue.reduce(appendEvent, [...h.log]);
+    this.bus.emit({ type: 'hello', t: h.t, log: this.eventLog });
   }
 
   private onLive(b: Batch): void {
     this.lastLiveAt = this.now();
     if (this.mode !== 'LIVE') {
-      this.o.poll?.stop();
+      this.stopPoll();
       this.o.sim.stop();
       this.lastT = {};
       this.everLive = true;
@@ -119,8 +138,16 @@ export class SourceManager {
   }
 
   private onPoll(b: Batch): void {
-    if (this.mode !== 'POLL') return;
+    if (this.mode === 'LIVE') return;
     this.lastPollAt = this.now();
+    if (this.mode !== 'POLL') {
+      this.o.sim.stop();
+      this.lastT = {};
+      this.setMode('POLL');
+      const pending = this.queue;
+      this.queue = [];
+      for (const ev of pending) if (!this.o.poll?.send(ev)) this.queue.push(ev);
+    }
     this.process(b);
   }
 
@@ -137,6 +164,12 @@ export class SourceManager {
       const id = (raw as { crewId?: unknown } | null)?.crewId;
       if (typeof id !== 'string') continue;
       const f = parseFrame(raw, this.lastFrame[id]);
+      const last = this.lastT[id];
+      if (last !== undefined && f.t < last - RESTART_JUMP_SEC) {
+        // the stream's clock jumped far back: the server restarted, not a late frame
+        this.lastT = {};
+        this.maxT = 0;
+      }
       if (f.t <= (this.lastT[id] ?? -Infinity)) continue; // duplicate or out of order
       this.lastT[id] = f.t;
       this.lastFrame[id] = f;

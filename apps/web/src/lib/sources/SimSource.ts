@@ -25,8 +25,9 @@ export class SimSource implements TelemetrySource {
     this.log = [...(opts.log ?? [])];
     this.fromT = opts.fromT ?? DEFAULT_MET_OFFSET_SEC;
     this.startMs = Date.now();
+    this.prevFrame = { ...(opts.prev ?? {}) };
     this.prevStatus = {};
-    this.prevFrame = {};
+    for (const [id, f] of Object.entries(this.prevFrame)) this.prevStatus[id] = f.status.byMetric;
     this.timer = setInterval(() => this.tick(), 100);
   }
 

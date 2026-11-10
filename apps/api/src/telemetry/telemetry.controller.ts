@@ -7,14 +7,19 @@ export class TelemetryController {
 
   @Get('telemetry/latest')
   latest() {
-    const { t, frames } = this.svc.tick();
-    return { t, frames };
+    return this.svc.peek();
   }
 
   @Get('scenarios')
   scenarios() {
     const { crew, meta, thresholdsProvisional } = this.svc.snapshot();
     return { meta, crew, thresholdsProvisional, flares: this.svc.flares() };
+  }
+
+  @Post('reset')
+  reset() {
+    this.svc.reset();
+    return { ok: true };
   }
 
   @Post('events')

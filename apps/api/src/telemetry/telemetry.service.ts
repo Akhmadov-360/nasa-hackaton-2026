@@ -14,6 +14,8 @@ export interface TickResult { t: number; frames: TelemetryFrame[]; alerts: Alert
 export interface ServiceOptions { metOffsetSec?: number; now?: () => number }
 
 const EVENT_TYPES: EventType[] = ['flare', 'exertion', 'o2fault', 'normalize'];
+const MAX_EVENTS = 300;
+const MAX_INTENSITY = 3;
 
 export class TelemetryService {
   private readonly cfgBase = {
@@ -25,6 +27,8 @@ export class TelemetryService {
   private log: EngineEvent[] = [];
   private prevStatus: Record<string, Record<string, Status>> = {};
   private prevFrame: Record<string, TelemetryFrame> = {};
+  /** changes on every server start; clients use it to drop state that belongs to an older run */
+  readonly sessionId = Math.random().toString(36).slice(2, 10);
   private readonly startMs: number;
   private readonly offset: number;
   private readonly now: () => number;
@@ -61,6 +65,18 @@ export class TelemetryService {
     return { t, frames, alerts };
   }
 
+  /** Like tick() but does not advance alert/status state (used by the REST polling endpoint). */
+  peek(t: number = this.nowT()): { t: number; frames: TelemetryFrame[] } {
+    const frames = this.crewIds.map((id) => computeFrame(this.cfg, id, t, this.prevStatus[id]));
+    return { t, frames };
+  }
+
+  reset(): void {
+    this.log = [];
+    this.prevStatus = {};
+    this.prevFrame = {};
+  }
+
   /** Validates and appends an operator command. Never throws. */
   command(raw: unknown): { ok: boolean; error?: string } {
     const e = raw as Partial<EngineEvent> | null;
@@ -71,13 +87,27 @@ export class TelemetryService {
     if (e.type === 'flare' && cls !== undefined && !(String(cls) in this.cfgBase.radiation.classes)) {
       return { ok: false, error: 'unknown flare class' };
     }
+    const params: Record<string, number | string> = {};
+    const intensity = e.params?.intensity;
+    if (intensity !== undefined) {
+      if (typeof intensity !== 'number' || !Number.isFinite(intensity) || intensity < 0 || intensity > MAX_INTENSITY) {
+        return { ok: false, error: 'intensity must be a number between 0 and ' + MAX_INTENSITY };
+      }
+      params.intensity = intensity;
+    }
+    if (cls !== undefined) params.class = String(cls);
+    if (e.t !== undefined && !Number.isFinite(e.t)) return { ok: false, error: 'invalid time' };
+    if (this.log.length >= MAX_EVENTS) return { ok: false, error: 'event log full, reset the scenario' };
     const t = Number.isFinite(e.t) ? Number(e.t) : this.nowT();
-    this.log = appendEvent(this.log, { t, type: e.type as EventType, crewId: String(e.crewId), params: e.params });
+    this.log = appendEvent(this.log, {
+      t, type: e.type as EventType, crewId: String(e.crewId), ...(Object.keys(params).length ? { params } : {}),
+    });
     return { ok: true };
   }
 
   snapshot() {
     return {
+      sessionId: this.sessionId,
       t: this.nowT(),
       log: this.log,
       crew: this.cfgBase.pack.crew,

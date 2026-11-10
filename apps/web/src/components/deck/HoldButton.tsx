@@ -9,6 +9,7 @@ interface Props {
   icon: ReactNode;
   tone: 'danger' | 'warn' | 'calm';
   onConfirm: () => void;
+  disabled?: boolean;
 }
 
 const TONE = {
@@ -17,8 +18,11 @@ const TONE = {
   calm: { fill: 'rgba(79,182,168,0.3)', ring: 'rgba(79,182,168,0.5)' },
 };
 
-/** Press and hold for 0.8 s. Early release, pointer-cancel or leaving the button does nothing. */
-export function HoldButton({ label, hint, icon, tone, onConfirm }: Props) {
+/**
+ * Press and hold for 0.8 s. Releasing early, pointer-cancel, sliding off the button, switching tabs
+ * or any non-primary mouse button does nothing.
+ */
+export function HoldButton({ label, hint, icon, tone, onConfirm, disabled }: Props) {
   const [progress, setProgress] = useState(0);
   const [done, setDone] = useState(false);
   const confirmRef = useRef(onConfirm);
@@ -37,22 +41,35 @@ export function HoldButton({ label, hint, icon, tone, onConfirm }: Props) {
       ),
     [],
   );
-  useEffect(() => () => { hold.cancel(); clearTimeout(doneTimer.current); }, [hold]);
+
+  // a release anywhere (even outside the window) cancels the hold
+  useEffect(() => {
+    const stop = () => hold.cancel();
+    window.addEventListener('pointerup', stop);
+    window.addEventListener('pointercancel', stop);
+    window.addEventListener('blur', stop);
+    return () => {
+      window.removeEventListener('pointerup', stop);
+      window.removeEventListener('pointercancel', stop);
+      window.removeEventListener('blur', stop);
+      hold.cancel();
+      clearTimeout(doneTimer.current);
+    };
+  }, [hold]);
 
   const c = TONE[tone];
   return (
     <button
       type="button"
-      onPointerDown={(e) => { e.currentTarget.setPointerCapture?.(e.pointerId); hold.start(); }}
-      onPointerUp={() => hold.cancel()}
-      onPointerCancel={() => hold.cancel()}
+      disabled={disabled}
+      onPointerDown={(e) => { if (e.button === 0 && e.isPrimary) hold.start(); }}
       onPointerLeave={() => hold.cancel()}
       onKeyDown={(e) => { if ((e.key === ' ' || e.key === 'Enter') && !e.repeat) { e.preventDefault(); hold.start(); } }}
       onKeyUp={(e) => { if (e.key === ' ' || e.key === 'Enter') hold.cancel(); }}
       onBlur={() => hold.cancel()}
       onContextMenu={(e) => e.preventDefault()}
       aria-label={`${label}. ${hint}`}
-      className="relative flex min-h-14 w-full touch-none items-center gap-3 overflow-hidden rounded-2xl border border-white/10 bg-panel-2/70 px-4 py-2.5 text-left select-none transition-colors hover:bg-panel-2"
+      className="relative flex min-h-14 w-full touch-none items-center gap-3 overflow-hidden rounded-2xl border border-white/10 bg-panel-2/70 px-4 py-2.5 text-left select-none transition-colors enabled:hover:bg-panel-2 disabled:cursor-not-allowed disabled:opacity-50"
       style={{ boxShadow: progress > 0 ? `0 0 0 1px ${c.ring}` : undefined }}
     >
       <span className="absolute inset-y-0 left-0 origin-left" style={{ width: '100%', background: c.fill, transform: `scaleX(${progress})` }} aria-hidden />
