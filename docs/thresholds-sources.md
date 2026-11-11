@@ -29,8 +29,9 @@ and the program requirements are authoritative. Re-verify against the current re
 | Hazardous noise | Below 85 dBA regardless of duration (off-nominal); impulse below 140 dB peak | [V2 6077], [V2 6083] |
 | Atmosphere alerting | Crew must be alerted on pressure, humidity, temperature, ppO₂, ppCO₂ outside safe limits; **no numbers** | [V2 6022] |
 
-Not confirmed in any document read: an airflow range of 0.05 to 0.2 m/s ([V2 6107] on ventilation is qualitative: it must
-prevent CO₂ and thermal pockets). NC-52 is not a NASA value (NC-50 is the current work-area curve). Daily hydration
+CORRECTION (2026-11-11, later): the airflow range **0.05 to 0.2 m/s is real**, but it is an ISS design parameter, not a
+NASA-STD-3001 requirement (see "ISS and Handbook sources" below). NC-52 is also real: it is the Orion continuous-noise
+requirement; NC-50 is the ISS US-module requirement. Daily hydration
 of 2.0 L (3.0 L EVA) does not match the briefs: the minimum is 2.5 L/day. The 1.8 L consumed value of a "Hydration" card
 would need a measured or modelled intake signal that we do not have, so that card is not built.
 
@@ -38,6 +39,26 @@ Sources:
 - https://www.nasa.gov/wp-content/uploads/2023/12/ochmo-tb-004-carbon-dioxide.pdf
 - https://www.nasa.gov/wp-content/uploads/2023/12/ochmo-tb-003-habitable-atmosphere.pdf
 - https://www.nasa.gov/wp-content/uploads/2023/03/radiation-protection-technical-brief-ochmo.pdf
+
+## ISS and Handbook sources (NTRS, read 2026-11-11)
+
+| Topic | Value | Source |
+|---|---|---|
+| ISS cabin design parameters at 101.3 kPa | Total pressure 97.9-102.7 kPa; CO₂ 0.7-1 kPa (about 5-7.5 mmHg, our conversion); O₂ 19.5-23.1 kPa; **RH 25-70 %**; temperature 17.8-26.7 °C; **ventilation 0.05-0.2 m/s**; particulates under 0.05 mg/m³ | Perry et al., ISS cabin atmosphere design table, NTRS 20120015343 (Table 1) |
+| Note | The older ISS CO₂ design range (5-7.5 mmHg) is far above today's 3 mmHg standard [V2 6004]. Do not mix them | same |
+| Hypoxia effects by ppO₂ | 160 mmHg normal; 137 accepted limit of alertness, loss of night vision; 114 performance seriously impaired; 100 coordination impaired, memory loss; 84 eventual irreversible unconsciousness; 0-46 anoxia, death in 90-180 s | Human Integration Design Handbook (NASA/SP-2010-3407 Rev 1) Table 6.2-4. The section is flagged "under evaluation" by NASA |
+| ppO₂ limits | Below 126 mmHg (2.50 psia) prevents hypoxia limit; comfortable range 139-178 mmHg; OSHA entry minimum 19.5 % = 148 mmHg; Shuttle donned masks below 121 mmHg | same, 6.2.2.2.3 |
+| Alveolar O₂ | PAO₂ = FiO₂(Pb-47) - PCO₂(FiO₂ + (1-FiO₂)/0.85). Degradation of novel tasks from about 85 to 69 mmHg alveolar; consciousness affected near 35 mmHg | same |
+| Noise requirements | ISS US modules NC-50 (plus NC-48 for payloads, about NC-52 together); crew quarters NC-40; Orion NC-52 (vehicle incl. payloads); Apollo LM measured 70-82 dBA; Shuttle 68 dBA mid-deck | Allen, ACOUSTICS 2017, NTRS 20170008857 |
+| Exercise intensity on ISS | Average in-flight exercise at 66 % (flight day 14) to 75 % (day 105) of peak heart rate; 82 to 158 min/week; prescription: above 75 % peak HR | Downs et al., NTRS 20140003747 (ACSM abstract). Absolute bpm not given |
+| Space weather input | GOES integral proton flux (>=1, 5, 10, 30, 50, 100 MeV), 5-minute data, JSON, no key: https://services.swpc.noaa.gov/json/goes/primary/integral-protons-1-day.json (also 3-day, 7-day) | NOAA SWPC. Converting flux to dose is a modelling step (OLTARIS or similar), not a published table |
+
+What this changes in our thresholds:
+- **Cabin O₂** is now genuinely derived: 19.5 / 18 / 16 % map to 148 / 137 / 122 mmHg, matching the OSHA minimum, the Handbook's "limit of alertness" row and the Shuttle mask-donning value. The O₂-fault scenario ends at 15 % (114 mmHg), the Handbook's "performance seriously impaired" row.
+- **Humidity** warning 25 / 75 % is [V2 6012]. The ISS design range is 25-70 %.
+- **Airflow** (0.05-0.2 m/s) can be added as a metric with tier `derived` (ISS design range, not a NASA-STD requirement).
+- **Exertion** HR can be anchored to "% of peak HR" rather than invented bpm; absolute values stay ours.
+- SpO₂ during hypoxia has **no** NASA table in these sources: the 85 % floor stays our assumption.
 
 ## Tier B: what NASA-STD-3001 Vol 1 Rev C does not give
 
