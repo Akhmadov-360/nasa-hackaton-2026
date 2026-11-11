@@ -32,6 +32,8 @@ export function metricValues(f: TelemetryFrame): Record<string, number> {
     ...f.vitals,
     co2: f.cabin.co2,
     o2: f.cabin.o2,
+    humidity: f.cabin.humidity,
+    noise: f.cabin.noise,
     doseRate: f.radiation.doseRateUSvH,
     dose: f.radiation.cumulativeMSv,
   };

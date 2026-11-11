@@ -3,7 +3,7 @@ import { parseFrame, VITAL_DEFAULTS, type TelemetryFrame } from './schemas';
 
 const good = (): TelemetryFrame => ({
   t: 10, crewId: 'A1', vitals: { ...VITAL_DEFAULTS, hr: 80 }, ecg: [0.1, 0.2],
-  radiation: { doseRateUSvH: 20, cumulativeMSv: 1 }, cabin: { co2: 3, o2: 21 },
+  radiation: { doseRateUSvH: 20, cumulativeMSv: 1 }, cabin: { co2: 2, o2: 21, humidity: 45, noise: 36 },
   status: { overall: 'NOMINAL', byMetric: {} }, degraded: false,
 });
 

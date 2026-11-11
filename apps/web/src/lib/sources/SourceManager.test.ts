@@ -23,7 +23,7 @@ class FakeSource implements TelemetrySource {
 
 const frame = (crewId: string, t: number, patch?: unknown): TelemetryFrame & Record<string, unknown> => ({
   t, crewId, vitals: { ...VITAL_DEFAULTS, ...(patch as object | undefined) }, ecg: [0],
-  radiation: { doseRateUSvH: 20, cumulativeMSv: 1 }, cabin: { co2: 3, o2: 21 },
+  radiation: { doseRateUSvH: 20, cumulativeMSv: 1 }, cabin: { co2: 2, o2: 21, humidity: 45, noise: 36 },
   status: { overall: 'NOMINAL', byMetric: {} }, degraded: false,
 });
 

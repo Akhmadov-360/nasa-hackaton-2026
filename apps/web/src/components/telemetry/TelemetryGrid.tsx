@@ -1,5 +1,5 @@
 'use client';
-import { Activity, Brain, Droplets, Gauge, HeartPulse, Thermometer, Waves, Wind, Zap } from 'lucide-react';
+import { Activity, Brain, Cloud, Droplet, Droplets, Gauge, HeartPulse, Thermometer, Volume2, Waves, Wind, Zap } from 'lucide-react';
 import { worstStatus } from '@astro/engine';
 import { useDisplayFrame } from '@/hooks/useDisplayFrame';
 import { useT } from '@/lib/i18n';
@@ -44,13 +44,14 @@ export function TelemetryGrid({ crewId }: { crewId: string }) {
       <WidgetBoundary name="ECG"><EcgChart crewId={crewId} /></WidgetBoundary>
       {/* one flat plateau: hairline dividers between readings, no cards inside the card */}
       <div className="relative grid flex-1 auto-rows-fr grid-cols-2 gap-px overflow-hidden rounded-[20px] bg-white/10 md:grid-cols-4 md:gap-0 md:bg-transparent">
-        {/* continuous rules that cross cleanly: the radiation cell spans the last three columns, so its row has no inner verticals */}
+        {/* continuous rules that cross cleanly: the radiation cell spans the whole last row, so that row has no inner verticals */}
         <div className="pointer-events-none absolute inset-0 z-10 hidden md:block" aria-hidden>
-          <Separator orientation="vertical" className="absolute top-0 left-1/4" />
-          <Separator orientation="vertical" className="absolute top-0 left-1/2 data-[orientation=vertical]:h-2/3" />
-          <Separator orientation="vertical" className="absolute top-0 left-3/4 data-[orientation=vertical]:h-2/3" />
-          <Separator className="absolute top-1/3 left-0" />
-          <Separator className="absolute top-2/3 left-0" />
+          <Separator orientation="vertical" className="absolute top-0 left-1/4 data-[orientation=vertical]:h-3/4" />
+          <Separator orientation="vertical" className="absolute top-0 left-1/2 data-[orientation=vertical]:h-3/4" />
+          <Separator orientation="vertical" className="absolute top-0 left-3/4 data-[orientation=vertical]:h-3/4" />
+          <Separator className="absolute top-1/4 left-0" />
+          <Separator className="absolute top-1/2 left-0" />
+          <Separator className="absolute top-3/4 left-0" />
         </div>
         {card('hr', t('metric.hr'), <HeartPulse className={ic} aria-hidden />, 'bpm', v?.hr, (f) => f.vitals.hr)}
         {card('spo2', t('metric.spo2'), <Droplets className={ic} aria-hidden />, '%', v?.spo2, (f) => f.vitals.spo2)}
@@ -67,7 +68,10 @@ export function TelemetryGrid({ crewId }: { crewId: string }) {
         {card('hrv', t('metric.hrv'), <Activity className={ic} aria-hidden />, 'ms', v?.hrv, (f) => f.vitals.hrv)}
         {card('temp', t('metric.temp'), <Thermometer className={ic} aria-hidden />, '°C', v?.temp, (f) => f.vitals.temp, { decimals: 1 })}
         {card('o2', t('metric.o2'), <Waves className={ic} aria-hidden />, '%', frame?.cabin.o2, (f) => f.cabin.o2, { decimals: 1 })}
-        <div className="col-span-2 md:col-span-3">
+        {card('co2', t('metric.co2'), <Cloud className={ic} aria-hidden />, 'mmHg', frame?.cabin.co2, (f) => f.cabin.co2, { decimals: 1 })}
+        {card('humidity', t('metric.humidity'), <Droplet className={ic} aria-hidden />, '%', frame?.cabin.humidity, (f) => f.cabin.humidity)}
+        {card('noise', t('metric.noise'), <Volume2 className={ic} aria-hidden />, 'NC', frame?.cabin.noise, (f) => f.cabin.noise)}
+        <div className="col-span-2 md:col-span-4">
           <WidgetBoundary name="Radiation"><RadiationCard frame={frame} crewId={crewId} tick={tick} /></WidgetBoundary>
         </div>
       </div>

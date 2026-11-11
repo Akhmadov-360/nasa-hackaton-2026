@@ -17,8 +17,8 @@ export interface TelemetryFrame {
   vitals: Vitals;
   ecg: number[];
   radiation: { doseRateUSvH: number; cumulativeMSv: number };
-  /** co2 in mmHg (partial pressure), o2 in % of atmosphere */
-  cabin: { co2: number; o2: number };
+  /** co2 in mmHg (partial pressure), o2 in % of atmosphere, humidity in % RH, noise as a simulated NC rating */
+  cabin: { co2: number; o2: number; humidity: number; noise: number };
   status: { overall: Status; byMetric: Record<string, Status> };
   /** true when any value was substituted because the input was invalid */
   degraded: boolean;
@@ -136,7 +136,12 @@ export function parseFrame(input: unknown, last?: TelemetryFrame): TelemetryFram
       doseRateUSvH: pick(sr.doseRateUSvH, last?.radiation.doseRateUSvH ?? 0),
       cumulativeMSv: pick(sr.cumulativeMSv, last?.radiation.cumulativeMSv ?? 0),
     },
-    cabin: { co2: pick(sc.co2, last?.cabin.co2 ?? 3), o2: pick(sc.o2, last?.cabin.o2 ?? 21) },
+    cabin: {
+      co2: pick(sc.co2, last?.cabin.co2 ?? 2),
+      o2: pick(sc.o2, last?.cabin.o2 ?? 21),
+      humidity: pick(sc.humidity, last?.cabin.humidity ?? 45),
+      noise: pick(sc.noise, last?.cabin.noise ?? 36),
+    },
     status: { overall, byMetric },
     degraded: input === undefined ? true : degraded || src.degraded === true,
   };

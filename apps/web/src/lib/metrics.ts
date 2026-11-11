@@ -18,6 +18,8 @@ export const METRICS: Record<string, MetricInfo> = {
   eeg: { unit: 'µV', decimals: 1 },
   co2: { unit: 'mmHg', decimals: 1 },
   o2: { unit: '%', decimals: 1 },
+  humidity: { unit: '%', decimals: 0 },
+  noise: { unit: 'NC', decimals: 0 },
   doseRate: { unit: 'µSv/h', decimals: 0 },
   dose: { unit: 'mSv', decimals: 2 },
 };
@@ -45,6 +47,9 @@ export const SOURCE_OF: Record<string, { kind: Provenance; src: string }> = {
   stress: { kind: 'modeled', src: '' },
   eeg: { kind: 'modeled', src: '' },
   o2: { kind: 'modeled', src: '' },
+  co2: { kind: 'modeled', src: '' },
+  humidity: { kind: 'modeled', src: '' },
+  noise: { kind: 'modeled', src: '' },
 };
 
 export const STATUS_RANK: Record<Status, number> = { NOMINAL: 0, CAUTION: 1, WARNING: 2, CRITICAL: 3 };

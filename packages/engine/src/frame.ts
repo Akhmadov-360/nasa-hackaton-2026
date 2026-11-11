@@ -74,6 +74,8 @@ export function computeFrame(
     cabin: {
       co2: cab.co2Baseline + noise() * cab.co2Noise,
       o2: cab.o2Baseline - m.o2fault.cabinO2Drop * lv.o2fault + noise() * cab.o2Noise,
+      humidity: cab.humidityBaseline + cab.humidityDrift * Math.sin((2 * Math.PI * t) / cab.humidityPeriodSec) + noise() * cab.humidityNoise,
+      noise: cab.noiseBaseline + cab.noiseExertionAdd * lv.exertion + noise() * cab.noiseNoise,
     },
     status: { overall: 'NOMINAL', byMetric: {} },
     degraded: false,

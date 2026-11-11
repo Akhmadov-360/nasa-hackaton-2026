@@ -12,8 +12,18 @@ export interface O2FaultCfg {
   hrDecompStartSec: number; hrDecompDrop: number; hrDecompSpanSec: number;
   respAdd: number; cabinO2Drop: number; stressAdd: number; eegDrop: number;
 }
-export interface CabinCfg { co2Baseline: number; co2Noise: number; o2Baseline: number; o2Noise: number }
-export const DEFAULT_CABIN: CabinCfg = { co2Baseline: 2, co2Noise: 0.2, o2Baseline: 21, o2Noise: 0.05 };
+export interface CabinCfg {
+  co2Baseline: number; co2Noise: number; o2Baseline: number; o2Noise: number;
+  /** % relative humidity: baseline, slow drift amplitude and period, jitter */
+  humidityBaseline: number; humidityDrift: number; humidityPeriodSec: number; humidityNoise: number;
+  /** simulated NC rating; exercise equipment adds `noiseExertionAdd` at full exertion */
+  noiseBaseline: number; noiseNoise: number; noiseExertionAdd: number;
+}
+export const DEFAULT_CABIN: CabinCfg = {
+  co2Baseline: 2, co2Noise: 0.2, o2Baseline: 21, o2Noise: 0.05,
+  humidityBaseline: 45, humidityDrift: 4, humidityPeriodSec: 900, humidityNoise: 0.4,
+  noiseBaseline: 36, noiseNoise: 1, noiseExertionAdd: 6,
+};
 export interface ModifiersConfig { recoverSec: number; exertion: ExertionCfg; o2fault: O2FaultCfg; cabin?: CabinCfg }
 export interface FlareClass {
   /** peak dose rate in uSv/h: [at magnitude 1, at the largest magnitude] */

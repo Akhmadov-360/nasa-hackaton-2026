@@ -29,8 +29,17 @@ describe('computeFrame', () => {
     for (let t = 0; t < 300; t += 7) {
       const f = computeFrame(cfg([]), 'A1', 3 * 86400 + t);
       expect(f.cabin.co2).toBeLessThan(2.5);
-      for (const k of ['co2', 'o2', 'doseRate', 'dose']) expect(f.status.byMetric[k]).toBe('NOMINAL');
+      for (const k of ['co2', 'o2', 'humidity', 'noise', 'doseRate', 'dose']) expect(f.status.byMetric[k]).toBe('NOMINAL');
     }
+  });
+
+  it('humidity warning limits are the NASA 25 to 75 % RH and exertion raises noise', () => {
+    const h = (thresholds as Thresholds).metrics.humidity;
+    expect([h.low?.warning, h.high?.warning]).toEqual([25, 75]);
+    const n = (thresholds as Thresholds).metrics.noise;
+    expect([n.high?.caution, n.high?.warning]).toEqual([40, 50]);
+    const ev: EngineEvent = { t: 100, type: 'exertion', crewId: 'A1' };
+    expect(computeFrame(cfg([ev]), 'A1', 130).cabin.noise).toBeGreaterThan(computeFrame(cfg([]), 'A1', 130).cabin.noise + 3);
   });
 
   it('every threshold names its tier, and the CO2 caution level is the NASA 3 mmHg', () => {
