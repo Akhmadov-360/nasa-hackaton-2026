@@ -50,7 +50,7 @@ pnpm --filter @astro/data fetch:donki
 pnpm --filter @astro/data build:pack
 ```
 
-The Control Deck's flare button then shows the real event (for example the May 2024 X-class flares).
+The Control Deck's flare button then shows the real event (for example the X8.7 flare of 14 May 2024). If NASA's `/FLR` endpoint is down (it returned 404 in November 2026), the script reads the same flares from DONKI's flare notifications. Solar energetic particle events for May 2024 are saved to `data-raw/donki/` as well, for context.
 Without it the button injects a generic X-class flare.
 
 ### Rebuilding the scenario pack from raw PhysioNet files
