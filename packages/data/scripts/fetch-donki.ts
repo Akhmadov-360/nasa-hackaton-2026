@@ -1,6 +1,8 @@
 /**
  * Downloads real NASA DONKI solar flare events into data-raw/donki/.
- *   NASA_API_KEY=<your key> pnpm --filter @astro/data fetch:donki
+ *   put NASA_API_KEY=<your key> in the .env file at the repository root (git-ignored), then
+ *   pnpm --filter @astro/data fetch:donki
+ * (an NASA_API_KEY already set in the shell also works and wins over the file)
  * The shared DEMO_KEY is rate-limited (HTTP 429/503); a free personal key from https://api.nasa.gov works reliably.
  * Afterwards run `pnpm --filter @astro/data build:pack` to write events/donki-flares.json.
  */
@@ -8,8 +10,15 @@ import { mkdirSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-const root = join(dirname(fileURLToPath(import.meta.url)), '..', 'data-raw', 'donki');
-const key = process.env.NASA_API_KEY ?? 'DEMO_KEY';
+const here = dirname(fileURLToPath(import.meta.url));
+const root = join(here, '..', 'data-raw', 'donki');
+// load the repository-root .env if it exists; values already in the environment are kept
+try {
+  process.loadEnvFile(join(here, '..', '..', '..', '.env'));
+} catch {
+  /* no .env file: fall back to the shell environment or DEMO_KEY */
+}
+const key = process.env.NASA_API_KEY || 'DEMO_KEY'; // an empty value counts as missing
 mkdirSync(root, { recursive: true });
 
 const jobs = [

@@ -6,6 +6,7 @@ data-raw/
 docs/superpowers/
 *.log
 .env*
+!.env.example
 .claude/
 .playwright-mcp/
 shot-*.png

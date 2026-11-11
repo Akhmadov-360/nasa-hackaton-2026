@@ -45,7 +45,8 @@ Everything needed at runtime is in the repository, so the demo works without int
 `api.nasa.gov` rate-limits the shared `DEMO_KEY`. Get a free personal key at https://api.nasa.gov, then:
 
 ```bash
-NASA_API_KEY=your_key pnpm --filter @astro/data fetch:donki
+# copy .env.example to .env and put your key in it (the file is git-ignored)
+pnpm --filter @astro/data fetch:donki
 pnpm --filter @astro/data build:pack
 ```
 

@@ -13,7 +13,7 @@ pnpm typecheck
 pnpm --filter @astro/api start    # :3001  (restart to reset the event log)
 pnpm --filter @astro/web dev      # :3000
 pnpm --filter @astro/data build:pack      # rebuild packs/demo.pack.json from data-raw/
-NASA_API_KEY=... pnpm --filter @astro/data fetch:donki
+pnpm --filter @astro/data fetch:donki   # reads NASA_API_KEY from the git-ignored root .env (see .env.example)
 ```
 
 ## Package boundaries
