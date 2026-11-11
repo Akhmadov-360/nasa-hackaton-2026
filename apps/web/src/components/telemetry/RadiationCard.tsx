@@ -9,6 +9,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip
 import { useT } from '@/lib/i18n';
 import { STATUS_COLOR, STATUS_RANK } from '@/lib/metrics';
 import { Sparkline } from './Sparkline';
+import { SpaceWeatherStrip } from './SpaceWeatherStrip';
 
 export function RadiationCard({ frame, crewId, tick }: { frame: TelemetryFrame | undefined; crewId: string; tick: number }) {
   const t = useT();
@@ -60,6 +61,7 @@ export function RadiationCard({ frame, crewId, tick }: { frame: TelemetryFrame |
       <div className="self-end [@media(max-height:820px)]:hidden">
         <Sparkline crewId={crewId} read={(f) => f.radiation.doseRateUSvH} color={color} tick={tick} points={120} />
       </div>
+      <SpaceWeatherStrip />
     </section>
   );
 }

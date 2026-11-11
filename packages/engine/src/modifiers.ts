@@ -2,6 +2,11 @@ import type { EngineEvent } from './schemas';
 
 export interface Shape { riseSec: number; holdSec: number; decaySec: number }
 export interface ExertionCfg extends Shape {
+  /**
+   * Heart rate at full exertion is `targetFracPeak` x `peakHrBpm` (Downs et al., NTRS 20140003747: ISS crew averaged
+   * 66-75 % of peak HR in flight). `peakHrBpm` is our assumption. Without both, `hrAdd` bpm is added instead.
+   */
+  peakHrBpm?: number; targetFracPeak?: number;
   hrAdd: number; hrvDrop: number; spo2Drop: number; respAdd: number; bpSysAdd: number; tempAdd: number; stressAdd: number;
 }
 export interface O2FaultCfg {
@@ -12,7 +17,14 @@ export interface O2FaultCfg {
   hrDecompStartSec: number; hrDecompDrop: number; hrDecompSpanSec: number;
   respAdd: number; cabinO2Drop: number; stressAdd: number; eegDrop: number;
 }
+/** bpm added to the baseline heart rate at full exertion */
+export function exertionHrOffset(c: ExertionCfg, baseHr: number): number {
+  if (c.peakHrBpm && c.targetFracPeak) return Math.max(0, c.targetFracPeak * c.peakHrBpm - baseHr);
+  return c.hrAdd;
+}
 export interface CabinCfg {
+  /** ventilation in m/s: baseline, slow drift amplitude and period, jitter */
+  airflowBaseline: number; airflowDrift: number; airflowPeriodSec: number; airflowNoise: number;
   co2Baseline: number; co2Noise: number; o2Baseline: number; o2Noise: number;
   /** % relative humidity: baseline, slow drift amplitude and period, jitter */
   humidityBaseline: number; humidityDrift: number; humidityPeriodSec: number; humidityNoise: number;
@@ -20,6 +32,7 @@ export interface CabinCfg {
   noiseBaseline: number; noiseNoise: number; noiseExertionAdd: number;
 }
 export const DEFAULT_CABIN: CabinCfg = {
+  airflowBaseline: 0.12, airflowDrift: 0.02, airflowPeriodSec: 600, airflowNoise: 0.005,
   co2Baseline: 2, co2Noise: 0.2, o2Baseline: 21, o2Noise: 0.05,
   humidityBaseline: 45, humidityDrift: 4, humidityPeriodSec: 900, humidityNoise: 0.4,
   noiseBaseline: 36, noiseNoise: 1, noiseExertionAdd: 6,
@@ -122,7 +135,7 @@ export function ecgWarp(log: EngineEvent[], crewId: string, t: number, cfg: Modi
     const end = Math.min(t, e.t + horizon + cfg.recoverSec);
     for (let tau = e.t; tau < end; tau += 1) {
       const hrOff = e.type === 'exertion'
-        ? cfg.exertion.hrAdd * eventLevel(e, cfg.exertion, cutoff, cfg.recoverSec, tau)
+        ? exertionHrOffset(cfg.exertion, hrMean) * eventLevel(e, cfg.exertion, cutoff, cfg.recoverSec, tau)
         : o2faultAt(e, cutoff, tau, cfg).hrOffset;
       extra += hrOff / hrMean;
     }

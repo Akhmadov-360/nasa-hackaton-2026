@@ -7,4 +7,5 @@ export { mulberry32, hashSeed } from './prng';
 export * from './log';
 export * from './trend';
 export * from './report';
+export * from './spaceweather';
 export * from './telemetryPackage';

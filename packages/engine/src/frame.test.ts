@@ -29,7 +29,7 @@ describe('computeFrame', () => {
     for (let t = 0; t < 300; t += 7) {
       const f = computeFrame(cfg([]), 'A1', 3 * 86400 + t);
       expect(f.cabin.co2).toBeLessThan(2.5);
-      for (const k of ['co2', 'o2', 'humidity', 'noise', 'doseRate', 'dose']) expect(f.status.byMetric[k]).toBe('NOMINAL');
+      for (const k of ['co2', 'o2', 'humidity', 'noise', 'airflow', 'doseRate', 'dose']) expect(f.status.byMetric[k]).toBe('NOMINAL');
     }
   });
 
@@ -40,6 +40,21 @@ describe('computeFrame', () => {
     expect([n.high?.caution, n.high?.warning]).toEqual([40, 50]);
     const ev: EngineEvent = { t: 100, type: 'exertion', crewId: 'A1' };
     expect(computeFrame(cfg([ev]), 'A1', 130).cabin.noise).toBeGreaterThan(computeFrame(cfg([]), 'A1', 130).cabin.noise + 3);
+  });
+
+  it('exertion drives HR to the configured share of peak HR (66 %), not a fixed offset', () => {
+    const ex = (modifiers as unknown as ModifiersConfig).exertion;
+    const peak = ex.peakHrBpm! * ex.targetFracPeak!;
+    const f = computeFrame(cfg([{ t: 100, type: 'exertion', crewId: 'A1' }]), 'A1', 130);
+    expect(f.vitals.hr).toBeGreaterThan(peak - 3);
+    expect(f.vitals.hr).toBeLessThan(peak + 3);
+    expect(ex.targetFracPeak!).toBeGreaterThanOrEqual(0.66);
+    expect(ex.targetFracPeak!).toBeLessThanOrEqual(0.75);
+  });
+
+  it('airflow warning limits are the ISS design range 0.05 to 0.2 m/s', () => {
+    const a = (thresholds as Thresholds).metrics.airflow;
+    expect([a.low?.warning, a.high?.warning]).toEqual([0.05, 0.2]);
   });
 
   it('every threshold names its tier, and the CO2 caution level is the NASA 3 mmHg', () => {

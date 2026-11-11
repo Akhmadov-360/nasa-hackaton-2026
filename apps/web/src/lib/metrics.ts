@@ -20,6 +20,7 @@ export const METRICS: Record<string, MetricInfo> = {
   o2: { unit: '%', decimals: 1 },
   humidity: { unit: '%', decimals: 0 },
   noise: { unit: 'NC', decimals: 0 },
+  airflow: { unit: 'm/s', decimals: 2 },
   doseRate: { unit: 'µSv/h', decimals: 0 },
   dose: { unit: 'mSv', decimals: 2 },
 };
@@ -50,6 +51,9 @@ export const SOURCE_OF: Record<string, { kind: Provenance; src: string }> = {
   co2: { kind: 'modeled', src: '' },
   humidity: { kind: 'modeled', src: '' },
   noise: { kind: 'modeled', src: '' },
+  airflow: { kind: 'modeled', src: '' },
+  /** the live space-weather strip; only shown as a source once data has really arrived */
+  goes: { kind: 'real', src: 'NOAA SWPC GOES' },
 };
 
 export const STATUS_RANK: Record<Status, number> = { NOMINAL: 0, CAUTION: 1, WARNING: 2, CRITICAL: 3 };

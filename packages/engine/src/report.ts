@@ -91,11 +91,11 @@ export const PROTOCOL_OF_METRIC: Record<string, string> = {
 
 const rank = (s: Status) => STATUS_ORDER.indexOf(s);
 /** When several metrics are equally severe, the body comes first and the environment last. */
-const METRIC_PRIORITY = ['spo2', 'hr', 'hrv', 'bpSys', 'bpDia', 'respRate', 'temp', 'stress', 'co2', 'o2', 'humidity', 'noise', 'doseRate', 'dose'];
+const METRIC_PRIORITY = ['spo2', 'hr', 'hrv', 'bpSys', 'bpDia', 'respRate', 'temp', 'stress', 'co2', 'o2', 'humidity', 'noise', 'airflow', 'doseRate', 'dose'];
 const priority = (m: string) => { const i = METRIC_PRIORITY.indexOf(m); return i < 0 ? METRIC_PRIORITY.length : i; };
 const MERGE_GAP_SEC = 120;
 const CAUSE_LOOKBACK_SEC = 180;
-const REPORTED = ['hr', 'hrv', 'spo2', 'bpSys', 'bpDia', 'respRate', 'temp', 'stress', 'co2', 'o2', 'humidity', 'noise', 'doseRate'];
+const REPORTED = ['hr', 'hrv', 'spo2', 'bpSys', 'bpDia', 'respRate', 'temp', 'stress', 'co2', 'o2', 'humidity', 'noise', 'airflow', 'doseRate'];
 
 interface Open {
   metric: string;

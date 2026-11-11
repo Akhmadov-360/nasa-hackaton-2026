@@ -1,4 +1,4 @@
-import { DEFAULT_CABIN, ecgWarp, envelope, envelopeArea, levelsFor, type ModifiersConfig, type RadiationConfig } from './modifiers';
+import { DEFAULT_CABIN, ecgWarp, envelope, exertionHrOffset, envelopeArea, levelsFor, type ModifiersConfig, type RadiationConfig } from './modifiers';
 import { mulberry32, hashSeed } from './prng';
 import { sampleEcg, sampleVitals, trackMeanHr } from './baseline';
 import { applyStatus } from './status';
@@ -48,7 +48,7 @@ export function computeFrame(
 
   const base = sampleVitals(track, t);
   const hrMean = trackMeanHr(track);
-  const hr = Math.max(25, base.hr + m.exertion.hrAdd * lv.exertion + lv.o2faultHr);
+  const hr = Math.max(25, base.hr + exertionHrOffset(m.exertion, base.hr) * lv.exertion + lv.o2faultHr);
   const hrvBase = Math.max(5, 120 - base.hr);
 
   const tw = ecgWarp(events, crewId, t, m, hrMean);
@@ -76,6 +76,7 @@ export function computeFrame(
       o2: cab.o2Baseline - m.o2fault.cabinO2Drop * lv.o2fault + noise() * cab.o2Noise,
       humidity: cab.humidityBaseline + cab.humidityDrift * Math.sin((2 * Math.PI * t) / cab.humidityPeriodSec) + noise() * cab.humidityNoise,
       noise: cab.noiseBaseline + cab.noiseExertionAdd * lv.exertion + noise() * cab.noiseNoise,
+      airflow: cab.airflowBaseline + cab.airflowDrift * Math.sin((2 * Math.PI * t) / cab.airflowPeriodSec) + noise() * cab.airflowNoise,
     },
     status: { overall: 'NOMINAL', byMetric: {} },
     degraded: false,

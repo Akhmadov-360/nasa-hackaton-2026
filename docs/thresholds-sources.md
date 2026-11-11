@@ -60,6 +60,17 @@ What this changes in our thresholds:
 - **Exertion** HR can be anchored to "% of peak HR" rather than invented bpm; absolute values stay ours.
 - SpO₂ during hypoxia has **no** NASA table in these sources: the 85 % floor stays our assumption.
 
+## Applied later the same day
+
+- **Airflow** card (tier derived): warning at the ISS design range 0.05 / 0.2 m/s (Perry et al.); caution 0.07 / 0.18 and critical 0.03 / 0.3 are ours.
+- **Live space weather**: the API serves `/spaceweather` (cached 60 s, last good copy kept when NOAA is unreachable) from the NOAA SWPC GOES integral
+  proton JSON. The radiation card shows the >= 10 MeV flux, the NOAA S-scale (S1 at 10 pfu, one step per decade) and 24 h of data.
+  It is a real measurement at Earth orbit and is **not** fed into the crew's modelled dose.
+- **Exertion HR** is now `targetFracPeak` (0.66, the ISS in-flight average of Downs et al.) x `peakHrBpm` (180, our assumption). `hrAdd` remains only as a fallback.
+  Note: 66 % of an assumed peak reads CAUTION on the resting-range HR thresholds, so the thresholds describe rest, not exercise.
+- **HR and blood pressure** are tier `clinical` (AHA / 2017 ACC-AHA categories via heart.org, secondary reading of the public pages, not the guideline documents).
+  SpO₂, respiration, temperature, HRV and stress stay `provisional`. The 85 % SpO₂ floor of the O₂ fault is our assumption.
+
 ## Tier B: what NASA-STD-3001 Vol 1 Rev C does not give
 
 The text of Vol 1 Rev C (87 pages) was searched for heart rate, blood pressure, SpO₂/saturation, respiration, body temperature,

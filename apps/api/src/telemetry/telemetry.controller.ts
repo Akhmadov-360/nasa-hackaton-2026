@@ -1,9 +1,19 @@
 import { Body, Controller, Get, Inject, Post } from '@nestjs/common';
+import { SpaceWeatherService } from './spaceweather.service';
 import { TelemetryService } from './telemetry.service';
 
 @Controller()
 export class TelemetryController {
-  constructor(@Inject(TelemetryService) private readonly svc: TelemetryService) {}
+  constructor(
+    @Inject(TelemetryService) private readonly svc: TelemetryService,
+    @Inject(SpaceWeatherService) private readonly weather: SpaceWeatherService,
+  ) {}
+
+  /** Real NOAA GOES proton flux (cached 60 s); `{ ok: false }` when NOAA was never reachable. */
+  @Get('spaceweather')
+  spaceweather() {
+    return this.weather.get();
+  }
 
   @Get('telemetry/latest')
   latest() {

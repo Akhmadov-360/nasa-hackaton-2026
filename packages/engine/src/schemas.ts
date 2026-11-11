@@ -18,7 +18,7 @@ export interface TelemetryFrame {
   ecg: number[];
   radiation: { doseRateUSvH: number; cumulativeMSv: number };
   /** co2 in mmHg (partial pressure), o2 in % of atmosphere, humidity in % RH, noise as a simulated NC rating */
-  cabin: { co2: number; o2: number; humidity: number; noise: number };
+  cabin: { co2: number; o2: number; humidity: number; noise: number; /** ventilation, m/s */ airflow: number };
   status: { overall: Status; byMetric: Record<string, Status> };
   /** true when any value was substituted because the input was invalid */
   degraded: boolean;
@@ -85,8 +85,11 @@ export interface MetricThreshold {
   levelTier?: Partial<Record<'caution' | 'warning' | 'critical', LimitTier>>;
   source?: string;
 }
-/** nasa = value stated in NASA-STD-3001; derived = computed from a NASA reference; engineering = our choice; provisional = placeholder */
-export type LimitTier = 'nasa' | 'derived' | 'engineering' | 'provisional';
+/**
+ * nasa = value stated in NASA-STD-3001; derived = computed from or taken from another NASA document;
+ * clinical = general clinical reference (AHA/ACC), not NASA; engineering = our choice; provisional = placeholder
+ */
+export type LimitTier = 'nasa' | 'derived' | 'clinical' | 'engineering' | 'provisional';
 export interface Thresholds {
   provisional?: boolean;
   metrics: Record<string, MetricThreshold>;
@@ -141,6 +144,7 @@ export function parseFrame(input: unknown, last?: TelemetryFrame): TelemetryFram
       o2: pick(sc.o2, last?.cabin.o2 ?? 21),
       humidity: pick(sc.humidity, last?.cabin.humidity ?? 45),
       noise: pick(sc.noise, last?.cabin.noise ?? 36),
+      airflow: pick(sc.airflow, last?.cabin.airflow ?? 0.12),
     },
     status: { overall, byMetric },
     degraded: input === undefined ? true : degraded || src.degraded === true,
