@@ -37,7 +37,23 @@ export const DEFAULT_CABIN: CabinCfg = {
   humidityBaseline: 45, humidityDrift: 4, humidityPeriodSec: 900, humidityNoise: 0.4,
   noiseBaseline: 36, noiseNoise: 1, noiseExertionAdd: 6,
 };
-export interface ModifiersConfig { recoverSec: number; exertion: ExertionCfg; o2fault: O2FaultCfg; cabin?: CabinCfg }
+/** Slow natural variation of the modelled vitals, so they are not flat lines. Crew members differ by a fixed spread. */
+export interface DriftCfg {
+  /** exertion counts as exercise (limits switch) from this level on */
+  exerciseLevel: number;
+  bpSys: { base: number; spread: number; amp: number; periodSec: number };
+  bpDia: { base: number; spread: number; amp: number; periodSec: number };
+  temp: { base: number; spread: number; amp: number; periodSec: number };
+  stress: { base: number; spread: number; amp: number; periodSec: number };
+}
+export const DEFAULT_DRIFT: DriftCfg = {
+  exerciseLevel: 0.25,
+  bpSys: { base: 118, spread: 10, amp: 4, periodSec: 420 },
+  bpDia: { base: 76, spread: 6, amp: 2.5, periodSec: 420 },
+  temp: { base: 36.7, spread: 0.3, amp: 0.06, periodSec: 600 },
+  stress: { base: 20, spread: 6, amp: 5, periodSec: 300 },
+};
+export interface ModifiersConfig { recoverSec: number; exertion: ExertionCfg; o2fault: O2FaultCfg; cabin?: CabinCfg; drift?: DriftCfg }
 export interface FlareClass {
   /** peak dose rate in uSv/h: [at magnitude 1, at the largest magnitude] */
   peakUSvH: [number, number];

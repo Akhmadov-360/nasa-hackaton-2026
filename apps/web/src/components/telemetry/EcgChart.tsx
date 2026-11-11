@@ -4,6 +4,7 @@ import { animate } from 'animejs';
 import { HeartPulse } from 'lucide-react';
 import { computeFrame } from '@astro/engine';
 import { StatusBadge } from '@/components/StatusBadge';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { ProvenanceMark } from './VitalCard';
 import { useDisplayFrame, historyConfig } from '@/hooks/useDisplayFrame';
 import { useT } from '@/lib/i18n';
@@ -126,6 +127,12 @@ export function EcgChart({ crewId }: { crewId: string }) {
         <h3 className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
           <HeartPulse className="size-4 text-teal" aria-hidden /> {t('ecg.title')}
           {replay && <span className="rounded-full bg-amber/15 px-2 py-0.5 text-xs text-amber">{t('tt.replay')}</span>}
+          {frame?.exercise && (
+            <Tooltip>
+              <TooltipTrigger asChild><span tabIndex={0} className="cursor-help rounded-full bg-teal/15 px-2 py-0.5 text-xs text-teal">{t('state.exercise')}</span></TooltipTrigger>
+              <TooltipContent>{t('state.exercise.hint')}</TooltipContent>
+            </Tooltip>
+          )}
         </h3>
         <span className="flex items-center"><StatusBadge status={status} /><ProvenanceMark sourceKey="hr" limitKey="hr" /></span>
       </header>

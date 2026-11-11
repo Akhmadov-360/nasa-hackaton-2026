@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { crewName } from '@/lib/engineConfig';
 import { formatDuration } from '@/lib/duration';
-import { metricName, useT } from '@/lib/i18n';
+import { metricName, useT, type DictKey } from '@/lib/i18n';
 import { formatMet } from '@/lib/metrics';
 import { allIncidents, causeText, headline, incidentTitle, peakText } from '@/lib/reportText';
 import { useMissionStore } from '@/lib/store/missionStore';
@@ -39,6 +39,7 @@ export function Summary({ report, crewIds }: { report: MissionReport; crewIds?: 
   const affected = crew.filter((c) => c.incidents.length).length;
   const o2 = Math.min(...crew.map((c) => c.stats.spo2?.min ?? Infinity));
   const rad = crew.length ? crew.reduce((a, c) => a + c.radiation.deltaMSv, 0) / crew.length : 0;
+  const radTotal = crew.length ? crew.reduce((a, c) => a + c.radiation.endMSv, 0) / crew.length : 0;
   const clean = incidents.length === 0;
   return (
     <section aria-labelledby="rep-summary">
@@ -57,8 +58,25 @@ export function Summary({ report, crewIds }: { report: MissionReport; crewIds?: 
         <Stat label={t('report.stat.o2')} value={Number.isFinite(o2) ? `${fmt1(o2)} %` : '—'} />
         <Separator orientation="vertical" className="hidden self-stretch sm:block data-[orientation=vertical]:h-auto" />
         <Separator className="sm:hidden" />
-        <Stat label={t('report.stat.rad')} value={`${rad.toFixed(3)} mSv`} />
+        <Stat label={t('report.stat.rad')} value={`${rad.toFixed(3)} mSv`} sub={t('report.stat.radTotal', { v: radTotal.toFixed(3) })} />
       </div>
+    </section>
+  );
+}
+
+/** A short period must never hide what happened earlier: say so and offer the whole session. */
+export function EarlierNotice({ report, crewIds, onShowAll }: { report: MissionReport; crewIds?: string[]; onShowAll: () => void }) {
+  const t = useT();
+  const list = (report.earlier?.incidents ?? []).filter((i) => !crewIds || crewIds.includes(i.crewId));
+  if (!list.length) return null;
+  const last = list[list.length - 1];
+  return (
+    <section className="flex flex-wrap items-center justify-between gap-3 rounded-2xl bg-amber/10 px-5 py-3.5 text-sm" aria-label={t('report.earlier.title')}>
+      <p className="text-amber">
+        <span className="font-medium">{t('report.earlier.title')}. </span>
+        {t('report.earlier.some', { n: String(list.length), met: formatMet(last.endT), what: `${crewName(last.crewId)}, ${metricName(last.primaryMetric)}` })}
+      </p>
+      <Button variant="outline" size="sm" onClick={onShowAll}>{t('report.earlier.show')}</Button>
     </section>
   );
 }
@@ -200,6 +218,36 @@ export function Provenance({ report }: { report: MissionReport }) {
       <div className={`${plateau} space-y-4 p-5 text-sm leading-relaxed`}>
         <p className="rounded-xl bg-amber/10 px-3.5 py-2.5 text-amber">{t('report.prov.disclaimer')}</p>
         <p className="text-muted-foreground">{t('report.prov.modeled')}</p>
+        {report.limits && report.limits.length > 0 && (
+          <div>
+            <p className="mb-1.5 text-xs font-medium text-muted-foreground">{t('report.prov.limitsTitle')}</p>
+            <div className="overflow-x-auto rounded-xl bg-white/[0.03]">
+              <table className="w-full min-w-[640px] text-left text-xs">
+                <thead>
+                  <tr className="text-muted-foreground">
+                    <th className="px-3 py-2 font-medium">{t('report.prov.col.metric')}</th>
+                    <th className="px-3 py-2 font-medium">{t('report.prov.col.limits')}</th>
+                    <th className="px-3 py-2 font-medium">{t('report.prov.col.tier')}</th>
+                    <th className="px-3 py-2 font-medium">{t('report.prov.col.source')}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {report.limits.map((l) => (
+                    <tr key={l.metric} className="border-t border-white/5 align-top">
+                      <td className="px-3 py-2 whitespace-nowrap">{metricName(l.metric)}</td>
+                      <td className="num px-3 py-2 whitespace-nowrap text-muted-foreground">
+                        {l.low && <div>↓ {l.low.caution} / {l.low.warning} / {l.low.critical} {l.unit}</div>}
+                        {l.high && <div>↑ {l.high.caution} / {l.high.warning} / {l.high.critical} {l.unit}</div>}
+                      </td>
+                      <td className="px-3 py-2 whitespace-nowrap">{t(`tier.${l.tier}` as DictKey)}</td>
+                      <td className="px-3 py-2 break-words text-muted-foreground">{l.source}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
         {report.sources.length > 0 && (
           <div>
             <p className="mb-1.5 text-xs font-medium text-muted-foreground">{t('report.prov.sources')}</p>

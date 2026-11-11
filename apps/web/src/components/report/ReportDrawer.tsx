@@ -13,10 +13,11 @@ import { useReport } from '@/hooks/useReport';
 import { crew, crewName } from '@/lib/engineConfig';
 import { useT, type DictKey } from '@/lib/i18n';
 import { formatMet } from '@/lib/metrics';
+import { downloadReportXlsx } from '@/lib/exportReport';
 import { downloadPackage, formatBytes, MAX_FILE_BYTES, readPackageFile } from '@/lib/packageIO';
 import { reportPlainText } from '@/lib/reportText';
 import { useMissionStore } from '@/lib/store/missionStore';
-import { CrewOverview, Incidents, Provenance, RadiationSection, Summary } from './ReportSections';
+import { CrewOverview, EarlierNotice, Incidents, Provenance, RadiationSection, Summary } from './ReportSections';
 
 type Period = '300' | '1800' | '3600' | 'all';
 
@@ -57,6 +58,12 @@ export function ReportDrawer() {
     const pkg = buildPackage(report, { sessionId, exportedAtT: report.toT });
     const { name, bytes } = await downloadPackage(pkg, gzip);
     sileo.success({ title: t('report.export'), description: t('report.exported', { name, size: formatBytes(bytes) }), duration: 4000 });
+  };
+
+  const exportExcel = () => {
+    if (!report) return;
+    const name = downloadReportXlsx(report, locale);
+    sileo.success({ title: t('report.export'), description: t('report.exported', { name, size: '' }), duration: 4000 });
   };
 
   const copySummary = async () => {
@@ -124,6 +131,7 @@ export function ReportDrawer() {
                     <Button variant="secondary" size="sm" disabled={!report}><Download /> {t('report.export')} <ChevronDown className="opacity-60" /></Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent>
+                    <DropdownMenuItem onSelect={exportExcel}>{t('report.export.xlsx')}</DropdownMenuItem>
                     <DropdownMenuItem onSelect={() => void exportPackage(false)}>{t('report.export.json')}</DropdownMenuItem>
                     <DropdownMenuItem onSelect={() => void exportPackage(true)}>{t('report.export.gz')}</DropdownMenuItem>
                   </DropdownMenuContent>
@@ -155,6 +163,7 @@ export function ReportDrawer() {
           <div className="report-scroll thin-scroll relative min-h-0 flex-1 overflow-y-auto">
             {report ? (
               <div className="space-y-9 p-5 pb-10">
+                <EarlierNotice report={report} crewIds={crewIds} onShowAll={() => setPeriod('all')} />
                 <Summary report={report} crewIds={crewIds} />
                 <CrewOverview report={report} crewIds={crewIds} />
                 <Incidents report={report} crewIds={crewIds} onProtocol={protocolFor} />

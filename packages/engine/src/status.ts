@@ -40,10 +40,18 @@ export function metricValues(f: TelemetryFrame): Record<string, number> {
   };
 }
 
+/** The limits in force for a metric: exercise levels replace the resting ones while `exercise` is on. */
+export function limitsFor(th: Thresholds, metric: string, exercise: boolean | undefined): MetricThreshold | undefined {
+  const base = th.metrics[metric];
+  const ex = exercise ? th.exercise?.[metric] : undefined;
+  if (!base || !ex) return base;
+  return { ...base, ...(ex.high ? { high: ex.high } : {}), ...(ex.low ? { low: ex.low } : {}) };
+}
+
 export function applyStatus(frame: TelemetryFrame, th: Thresholds, prev?: Record<string, Status>): TelemetryFrame {
   const byMetric: Record<string, Status> = {};
   for (const [metric, value] of Object.entries(metricValues(frame))) {
-    const t = th.metrics[metric];
+    const t = limitsFor(th, metric, frame.exercise);
     if (t && Number.isFinite(value)) byMetric[metric] = evaluateMetric(value, t, prev?.[metric]);
   }
   return { ...frame, status: { overall: worstStatus(Object.values(byMetric)), byMetric } };

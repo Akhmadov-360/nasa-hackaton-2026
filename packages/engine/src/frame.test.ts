@@ -3,6 +3,7 @@ import modifiers from '../../data/modifiers.json';
 import radiation from '../../data/radiation-model.json';
 import thresholds from '../../data/thresholds.json';
 import { computeFrame, type EngineConfig } from './frame';
+import { applyStatus } from './status';
 import type { ModifiersConfig, RadiationConfig } from './modifiers';
 import type { EngineEvent, ScenarioPack, Thresholds, Track } from './schemas';
 
@@ -50,6 +51,26 @@ describe('computeFrame', () => {
     expect(f.vitals.hr).toBeLessThan(peak + 3);
     expect(ex.targetFracPeak!).toBeGreaterThanOrEqual(0.66);
     expect(ex.targetFracPeak!).toBeLessThanOrEqual(0.75);
+  });
+
+  it('normal exercise is not an alarm, but the same heart rate at rest would be', () => {
+    const f = computeFrame(cfg([{ t: 100, type: 'exertion', crewId: 'A1' }]), 'A1', 130);
+    expect(f.exercise).toBe(true);
+    expect(f.status.byMetric.hr).toBe('NOMINAL');
+    expect(f.status.byMetric.respRate).toBe('NOMINAL');
+    expect(f.status.byMetric.stress).toBe('NOMINAL');
+    expect(computeFrame(cfg([]), 'A1', 130).exercise).toBeUndefined();
+    // a 125 bpm reading without exertion is a warning
+    const rest = applyStatus({ ...computeFrame(cfg([]), 'A1', 130), vitals: { ...computeFrame(cfg([]), 'A1', 130).vitals, hr: 125 } }, thresholds as Thresholds);
+    expect(rest.status.byMetric.hr).toBe('WARNING');
+  });
+
+  it('modelled vitals drift slowly and crew members differ, within normal ranges', () => {
+    const bp = (id: string, t: number) => computeFrame(cfg([]), id, t).vitals.bpSys;
+    const series = Array.from({ length: 20 }, (_, i) => bp('A1', 1000 + i * 30));
+    expect(Math.max(...series) - Math.min(...series)).toBeGreaterThan(4);
+    expect(Math.abs(bp('A1', 1000) - bp('A2', 1000))).toBeGreaterThan(0.5);
+    for (const v of series) { expect(v).toBeGreaterThan(100); expect(v).toBeLessThan(130); }
   });
 
   it('airflow warning limits are the ISS design range 0.05 to 0.2 m/s', () => {

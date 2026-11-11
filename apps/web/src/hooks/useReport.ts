@@ -22,7 +22,7 @@ export function useReport(periodSec: number | null, enabled = true): { report: M
     if (t <= 0) return null;
     const toT = Math.floor(t);
     const fromT = Math.max(startT || toT - 10, periodSec ? toT - periodSec : 0, 0);
-    return buildReport({ ...baseCfg, log: events }, { fromT: Math.min(fromT, toT - 5), toT, generatedAtT: toT });
+    return buildReport({ ...baseCfg, log: events }, { fromT: Math.min(fromT, toT - 5), toT, generatedAtT: toT, sessionFromT: startT || undefined });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [enabled, imported, slot, startT, events, periodSec]);
 

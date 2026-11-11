@@ -13,7 +13,10 @@ export interface Eta {
 
 const MIN_POINTS = 20;
 const MIN_R2 = 0.7;
-const MAX_ETA_SEC = 600;
+/** Further out than this a straight line through a short window is a guess, and slow environmental drift looks like a trend. */
+const MAX_ETA_SEC = 180;
+/** The reading must have moved at least this many hysteresis widths across the fitted window to count as a trend. */
+const MIN_MOVE_IN_HYSTERESES = 2;
 
 /** Least-squares line through the points (time in seconds). Null when the data has no variation to fit. */
 export function linearFit(points: TrendPoint[]): { slope: number; fittedLast: number; r2: number } | null {
@@ -43,7 +46,8 @@ export function linearFit(points: TrendPoint[]): { slope: number; fittedLast: nu
 /**
  * When will a steadily drifting value reach the warning or critical limit?
  * Returns null unless the trend is clear (enough points, a good straight-line fit, a meaningful slope),
- * heads towards the limit, has not crossed it yet, and would arrive within ten minutes (further out, a straight line says too little to be useful).
+ * has moved clearly across the window (slow drift is not a trend), heads towards the limit, has not crossed it yet,
+ * and would arrive within three minutes (further out, a straight line says too little to be useful).
  */
 export function timeToThreshold(points: TrendPoint[], th: MetricThreshold, target: 'warning' | 'critical'): Eta | null {
   if (points.length < MIN_POINTS) return null;
@@ -51,6 +55,8 @@ export function timeToThreshold(points: TrendPoint[], th: MetricThreshold, targe
   if (!fit || fit.r2 < MIN_R2) return null;
   const perMin = fit.slope * 60;
   if (Math.abs(perMin) < Math.max(th.hysteresis * 0.3, 1e-6)) return null;
+  const span = points[points.length - 1].t - points[0].t;
+  if (Math.abs(fit.slope) * span < th.hysteresis * MIN_MOVE_IN_HYSTERESES) return null;
 
   const candidates: number[] = [];
   const low = th.low?.[target];

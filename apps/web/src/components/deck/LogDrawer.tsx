@@ -10,7 +10,7 @@ import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { StatusBadge } from '@/components/StatusBadge';
 import { crewName } from '@/lib/engineConfig';
-import { downloadLogCsv } from '@/lib/exportCsv';
+import { LogExportMenu } from './LogExportMenu';
 import { useT, metricName } from '@/lib/i18n';
 import { formatValue, logText } from '@/lib/logText';
 import { formatMet } from '@/lib/metrics';
@@ -50,9 +50,7 @@ export function LogDrawer() {
               <DrawerDescription>{t('log.count', { n: audit.length })}</DrawerDescription>
             </div>
             <div className="flex items-center gap-1">
-              <Button variant="secondary" size="sm" onClick={() => downloadLogCsv(audit, locale)} disabled={!audit.length}>
-                <Download /> {t('log.export')}
-              </Button>
+              <LogExportMenu />
               <DrawerClose asChild>
                 <Button variant="ghost" size="icon" aria-label={t('log.close')}><X /></Button>
               </DrawerClose>

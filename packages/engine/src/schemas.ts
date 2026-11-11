@@ -22,6 +22,8 @@ export interface TelemetryFrame {
   status: { overall: Status; byMetric: Record<string, Status> };
   /** true when any value was substituted because the input was invalid */
   degraded: boolean;
+  /** true while exertion is active: statuses use `Thresholds.exercise` for the metrics it lists */
+  exercise?: boolean;
 }
 
 export interface Alert {
@@ -93,6 +95,8 @@ export type LimitTier = 'nasa' | 'derived' | 'clinical' | 'engineering' | 'provi
 export interface Thresholds {
   provisional?: boolean;
   metrics: Record<string, MetricThreshold>;
+  /** replacement high/low levels used while the crew member is exercising (resting limits would call normal exercise an alarm) */
+  exercise?: Record<string, { high?: LevelSet; low?: LevelSet; source?: string }>;
 }
 
 const finite = z.number().finite();
@@ -148,5 +152,6 @@ export function parseFrame(input: unknown, last?: TelemetryFrame): TelemetryFram
     },
     status: { overall, byMetric },
     degraded: input === undefined ? true : degraded || src.degraded === true,
+    ...(src.exercise === true ? { exercise: true } : {}),
   };
 }

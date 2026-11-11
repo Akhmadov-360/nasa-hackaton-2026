@@ -54,6 +54,30 @@ export const CrewReportSchema = z.object({
   incidents: z.array(IncidentSchema).max(200),
 });
 
+const LevelSetZ = z.object({ caution: num, warning: num, critical: num });
+const TierZ = z.enum(['nasa', 'derived', 'clinical', 'engineering', 'provisional']);
+
+/** One line of "data and limits": the limits of a metric and where they come from. */
+export const LimitInfoSchema = z.object({
+  metric: short,
+  unit: short,
+  tier: TierZ,
+  levelTier: z.record(short, TierZ).optional(),
+  source: z.string().max(600),
+  low: LevelSetZ.optional(),
+  high: LevelSetZ.optional(),
+});
+
+/** What happened in the session before the reported period, so a short window never hides earlier incidents. */
+export const EarlierSchema = z.object({
+  fromT: num,
+  toT: num,
+  incidents: z.array(z.object({
+    id: short, crewId: short, startT: num, endT: num, worst: StatusZ, primaryMetric: short, protocol: short,
+  })).max(100),
+  eventCount: num,
+});
+
 export const MissionReportSchema = z.object({
   version: z.literal(1),
   fromT: num,
@@ -64,8 +88,13 @@ export const MissionReportSchema = z.object({
   sources: z.array(z.string().max(300)).max(20),
   crew: z.array(CrewReportSchema).max(16),
   events: z.array(ReportEventSchema).max(500),
+  /** absent in packages exported before limits were recorded */
+  limits: z.array(LimitInfoSchema).max(40).optional(),
+  earlier: EarlierSchema.optional(),
 });
 
+export type LimitInfo = z.infer<typeof LimitInfoSchema>;
+export type Earlier = z.infer<typeof EarlierSchema>;
 export type ReportEvent = z.infer<typeof ReportEventSchema>;
 export type Episode = z.infer<typeof EpisodeSchema>;
 export type Incident = z.infer<typeof IncidentSchema>;
@@ -77,6 +106,8 @@ export interface ReportOptions {
   toT: number;
   maxSamples?: number;
   generatedAtT?: number;
+  /** start of the session: when earlier than `fromT`, the report also lists incidents that happened before the period */
+  sessionFromT?: number;
 }
 
 /** Which illustrative protocol answers an abnormal reading. */
@@ -199,6 +230,26 @@ export function buildReport(cfg: EngineConfig, opts: ReportOptions): MissionRepo
     };
   });
 
+  const limits: LimitInfo[] = Object.entries(cfg.thresholds.metrics).map(([metric, th]) => ({
+    metric, unit: th.unit, tier: th.tier ?? 'provisional', source: (th.source ?? '').slice(0, 600),
+    ...(th.levelTier ? { levelTier: th.levelTier as Record<string, LimitInfo['tier']> } : {}),
+    ...(th.low ? { low: th.low } : {}),
+    ...(th.high ? { high: th.high } : {}),
+  }));
+
+  let earlier: Earlier | undefined;
+  if (opts.sessionFromT !== undefined && opts.sessionFromT < fromT - 1) {
+    const before = buildReport(cfg, { fromT: opts.sessionFromT, toT: fromT, maxSamples: 240 });
+    earlier = {
+      fromT: opts.sessionFromT,
+      toT: fromT,
+      incidents: before.crew.flatMap((c) => c.incidents)
+        .map((i) => ({ id: i.id, crewId: i.crewId, startT: i.startT, endT: i.endT, worst: i.worst, primaryMetric: i.primaryMetric, protocol: i.protocol }))
+        .sort((a, b) => a.startT - b.startT).slice(-100),
+      eventCount: cfg.log.filter((e) => e.t >= opts.sessionFromT! && e.t < fromT).length,
+    };
+  }
+
   return {
     version: 1,
     fromT,
@@ -208,5 +259,7 @@ export function buildReport(cfg: EngineConfig, opts: ReportOptions): MissionRepo
     sources: cfg.pack.meta.sources.slice(0, 20),
     crew,
     events: events.map((e) => ({ t: e.t, type: e.type, crewId: e.crewId, ...(e.params ? { params: e.params } : {}) })).slice(-500),
+    limits,
+    ...(earlier ? { earlier } : {}),
   };
 }

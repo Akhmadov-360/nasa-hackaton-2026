@@ -1,4 +1,4 @@
-import { DEFAULT_CABIN, ecgWarp, envelope, exertionHrOffset, envelopeArea, levelsFor, type ModifiersConfig, type RadiationConfig } from './modifiers';
+import { DEFAULT_CABIN, DEFAULT_DRIFT, type DriftCfg, ecgWarp, envelope, exertionHrOffset, envelopeArea, levelsFor, type ModifiersConfig, type RadiationConfig } from './modifiers';
 import { mulberry32, hashSeed } from './prng';
 import { sampleEcg, sampleVitals, trackMeanHr } from './baseline';
 import { applyStatus } from './status';
@@ -42,6 +42,11 @@ export function computeFrame(
   const events: EngineEvent[] = [...cfg.pack.events, ...cfg.log];
   const m = cfg.modifiers;
   const cab = m.cabin ?? DEFAULT_CABIN;
+  const dr = m.drift ?? DEFAULT_DRIFT;
+  // fixed per crew member: where in its spread the baseline sits (k) and where in its cycle it starts
+  const unit = (k: number) => mulberry32(hashSeed(crewId, k * 7919))();
+  const slow = (d: DriftCfg['bpSys'], k: number) =>
+    d.base + (unit(k) - 0.5) * d.spread + d.amp * Math.sin((2 * Math.PI * t) / d.periodSec + unit(k + 100) * 2 * Math.PI);
   const lv = levelsFor(events, crewId, t, m);
   const rnd = mulberry32(hashSeed(crewId, t));
   const noise = () => rnd() - 0.5;
@@ -62,11 +67,11 @@ export function computeFrame(
       hr,
       hrv: Math.max(2, hrvBase - m.exertion.hrvDrop * lv.exertion + noise() * 2),
       spo2: clamp(base.spo2 - m.exertion.spo2Drop * lv.exertion - Math.max(0, base.spo2 - m.o2fault.spo2Floor) * lv.o2fault + noise() * 0.4, 50, 100),
-      bpSys: 118 + noise() * 3 + m.exertion.bpSysAdd * lv.exertion,
-      bpDia: 76 + noise() * 2 + 0.4 * m.exertion.bpSysAdd * lv.exertion,
+      bpSys: slow(dr.bpSys, 11) + noise() * 3 + m.exertion.bpSysAdd * lv.exertion,
+      bpDia: slow(dr.bpDia, 12) + noise() * 2 + 0.4 * m.exertion.bpSysAdd * lv.exertion,
       respRate: base.resp + m.exertion.respAdd * lv.exertion + m.o2fault.respAdd * lv.o2fault,
-      temp: 36.7 + 0.05 * Math.sin(t / 60) + m.exertion.tempAdd * lv.exertion,
-      stress: clamp(20 + noise() * 4 + m.exertion.stressAdd * lv.exertion + m.o2fault.stressAdd * lv.o2fault, 0, 100),
+      temp: slow(dr.temp, 13) + m.exertion.tempAdd * lv.exertion,
+      stress: clamp(slow(dr.stress, 14) + noise() * 4 + m.exertion.stressAdd * lv.exertion + m.o2fault.stressAdd * lv.o2fault, 0, 100),
       eeg: 10 + 0.8 * Math.sin(t / 3) + noise() * 0.4 - m.o2fault.eegDrop * lv.o2fault,
     },
     ecg: sampleEcg(track, tw, speed),
@@ -80,6 +85,7 @@ export function computeFrame(
     },
     status: { overall: 'NOMINAL', byMetric: {} },
     degraded: false,
+    ...(lv.exertion >= dr.exerciseLevel ? { exercise: true } : {}),
   };
   return applyStatus(frame, cfg.thresholds, prevStatus);
 }

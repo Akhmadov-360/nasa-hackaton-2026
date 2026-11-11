@@ -9,7 +9,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { useT } from '@/lib/i18n';
-import { downloadLogCsv } from '@/lib/exportCsv';
+import { LogExportMenu } from './LogExportMenu';
 import { logText } from '@/lib/logText';
 import { formatMet, STATUS_COLOR } from '@/lib/metrics';
 import { useMissionStore, type LogEntry } from '@/lib/store/missionStore';
@@ -70,14 +70,7 @@ export function AuditLog() {
         <h3 className="text-sm font-medium text-muted-foreground">{t('log.title')}</h3>
         <div className="flex items-center">
         <LogDrawer />
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button variant="ghost" size="icon" className="size-8" onClick={() => downloadLogCsv(audit, locale)} disabled={!audit.length} aria-label={t('log.export')}>
-              <Download />
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>{t('log.export')}</TooltipContent>
-        </Tooltip>
+        <LogExportMenu variant="ghost" size="icon" iconOnly />
         </div>
       </header>
       <Tabs value={filter} onValueChange={(v) => setFilter(v as Filter)}>

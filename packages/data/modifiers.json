@@ -2,6 +2,13 @@
   "provisional": true,
   "note": "ASSUMED demo values, not measurements. Exertion HR = targetFracPeak (0.66, the in-flight average of Downs et al., NTRS 20140003747) x peakHrBpm (180, our assumption); hrAdd is only a fallback. Other magnitudes: exertion lowers HRV by 25 ms, lowers HRV by 25 ms, SpO2 by 1 point and raises breathing by 8 per minute. Oxygen fault: SpO2 decays exponentially towards 85 % over about 2-3 minutes while HR first rises by 30 bpm (compensation) and then falls (decompensation).",
   "recoverSec": 20,
+  "drift": {
+    "exerciseLevel": 0.25,
+    "bpSys":  { "base": 118,  "spread": 10,  "amp": 4,    "periodSec": 420 },
+    "bpDia":  { "base": 76,   "spread": 6,   "amp": 2.5,  "periodSec": 420 },
+    "temp":   { "base": 36.7, "spread": 0.3, "amp": 0.06, "periodSec": 600 },
+    "stress": { "base": 20,   "spread": 6,   "amp": 5,    "periodSec": 300 }
+  },
   "cabin": {
     "airflowBaseline": 0.12, "airflowDrift": 0.02, "airflowPeriodSec": 600, "airflowNoise": 0.005,
     "co2Baseline": 2.0, "co2Noise": 0.2, "o2Baseline": 21, "o2Noise": 0.05,
