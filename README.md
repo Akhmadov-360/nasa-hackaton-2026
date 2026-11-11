@@ -13,8 +13,8 @@ system reacts to anomalies with alerts, voice and an audit trail. It keeps worki
 | ECG waveform (360 Hz) | PhysioNet MIT-BIH Arrhythmia Database, records 100, 101, 103, 105 | Real recording, looped between two R-peaks |
 | Heart rate variation, SpO₂, respiration | PhysioNet BIDMC PPG and Respiration Dataset | Real; the four healthiest 60 s windows were picked automatically |
 | Solar flare events (class, time) | NASA DONKI | Real events. **Needs a NASA API key to download, see below** |
-| Radiation dose response to a flare | Our model (`packages/data/radiation-model.json`) | **Modeled.** DONKI gives class and times, not dose. Time-compressed for the demo |
-| Exertion / O₂-fault responses | Our model (`packages/data/modifiers.json`) | **Modeled** |
+| Radiation dose response to a flare | Our model (`packages/data/radiation-model.json`) | **Modeled, assumed values.** DONKI gives class, magnitude and times, not dose. Peak dose rate per class (C about 50, M about 300, X 2000–5000 µSv/h, scaled by the flare's real magnitude) is an assumption chosen for a visible demo, not a measurement; a real flare adds little dose indoors, the real hazard is the solar particles that follow. Time-compressed 180x |
+| Exertion / O₂-fault responses | Our model (`packages/data/modifiers.json`) | **Modeled, assumed values.** Exertion: HR +45 bpm, HRV −25 ms, SpO₂ −1, breathing +8/min. O₂ fault: SpO₂ decays exponentially to about 85 % in 2–3 min, HR rises +30 bpm then falls |
 | Alarm thresholds | `packages/data/thresholds.json` | **Provisional, illustrative.** To be replaced with values from NASA-STD-3001 |
 
 The UI shows a "Provisional thresholds" note and a "Modeled" badge on the radiation card. This is not a medical device.

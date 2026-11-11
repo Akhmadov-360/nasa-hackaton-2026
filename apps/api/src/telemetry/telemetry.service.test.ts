@@ -12,7 +12,7 @@ describe('TelemetryService', () => {
   it('o2fault hits only the targeted crew member', () => {
     const s = svc();
     expect(s.command({ type: 'o2fault', crewId: 'A2', t: 1000 }).ok).toBe(true);
-    const frames = s.tick(1040).frames;
+    const frames = s.tick(1100).frames;
     const spo2 = (id: string) => frames.find((f) => f.crewId === id)!.vitals.spo2;
     expect(spo2('A2')).toBeLessThan(90);
     expect(spo2('A1')).toBeGreaterThan(94);
@@ -41,6 +41,8 @@ describe('TelemetryService', () => {
     expect(s.command({ type: 'exertion', crewId: 'ALL', params: { intensity: 99 } }).ok).toBe(false);
     expect(s.command({ type: 'exertion', crewId: 'A1', t: 1000, params: { intensity: 1.5, evil: 1 } }).ok).toBe(true);
     expect(s.snapshot().log[0].params).toEqual({ intensity: 1.5 });
+    expect(s.command({ type: 'flare', crewId: 'ALL', params: { class: 'X', magnitude: 'big' } }).ok).toBe(false);
+    expect(s.command({ type: 'flare', crewId: 'ALL', t: 1001, params: { class: 'X', magnitude: 8.7 } }).ok).toBe(true);
   });
 
   it('caps the event log and can reset it', () => {

@@ -16,6 +16,7 @@ export function ControlDeck() {
   const ready = useMissionStore((s) => s.t > 0);
   const flare = useFlares()[0];
   const cls = flare?.classType?.[0] ?? 'X';
+  const magnitude = flare ? parseFloat(flare.classType.slice(1)) : NaN; // "X8.7" -> 8.7
   const flareHint = flare ? t('deck.flareReal', { cls: flare.classType, date: flare.peakTime.slice(0, 10) }) : t('deck.target.all');
   const wait = t('deck.wait');
 
@@ -29,7 +30,7 @@ export function ControlDeck() {
           </header>
           <HoldButton
             disabled={!ready} tone="danger" icon={<Sun className="size-5" aria-hidden />} label={t('deck.flare')}
-            hint={flareHint} onConfirm={() => sendCommand('flare', 'ALL', { class: cls })}
+            hint={flareHint} onConfirm={() => sendCommand('flare', 'ALL', Number.isFinite(magnitude) ? { class: cls, magnitude } : { class: cls })}
           />
           <HoldButton
             disabled={!ready} tone="warn" icon={<Dumbbell className="size-5" aria-hidden />} label={t('deck.exertion')}

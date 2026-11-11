@@ -3,6 +3,7 @@ import modifiers from '../../data/modifiers.json';
 import radiation from '../../data/radiation-model.json';
 import thresholds from '../../data/thresholds.json';
 import { computeFrame, type EngineConfig } from './frame';
+import type { ModifiersConfig, RadiationConfig } from './modifiers';
 import type { EngineEvent, ScenarioPack, Thresholds, Track } from './schemas';
 
 const track: Track = {
@@ -16,7 +17,7 @@ const pack: ScenarioPack = {
   baselines: { A1: track, A2: track }, events: [],
 };
 const cfg = (log: EngineEvent[]): EngineConfig => ({
-  pack, thresholds: thresholds as Thresholds, modifiers, radiation, log,
+  pack, thresholds: thresholds as Thresholds, modifiers: modifiers as unknown as ModifiersConfig, radiation: radiation as unknown as RadiationConfig, log,
 });
 
 describe('computeFrame', () => {
@@ -37,8 +38,8 @@ describe('computeFrame', () => {
 
   it('o2fault lowers SpO2 only for the targeted crew member', () => {
     const log: EngineEvent[] = [{ t: 100, type: 'o2fault', crewId: 'A2' }];
-    expect(computeFrame(cfg(log), 'A2', 140).vitals.spo2).toBeLessThan(90);
-    expect(computeFrame(cfg(log), 'A1', 140).vitals.spo2).toBeGreaterThan(95);
+    expect(computeFrame(cfg(log), 'A2', 250).vitals.spo2).toBeLessThan(90);
+    expect(computeFrame(cfg(log), 'A1', 250).vitals.spo2).toBeGreaterThan(95);
   });
 
   it('flare raises dose rate and cumulative dose never decreases', () => {
@@ -51,5 +52,27 @@ describe('computeFrame', () => {
       expect(c).toBeGreaterThanOrEqual(prev);
       prev = c;
     }
+  });
+
+  it('O2 fault: SpO2 decays exponentially towards the floor, HR first compensates upward and then falls', () => {
+    const log: EngineEvent[] = [{ t: 100, type: 'o2fault', crewId: 'A1' }];
+    const at = (x: number) => computeFrame(cfg(log), 'A1', 100 + x);
+    const base = computeFrame(cfg([]), 'A1', 160).vitals.hr;
+    expect(at(150).vitals.spo2).toBeLessThan(88);
+    expect(at(150).vitals.spo2).toBeGreaterThan(83);
+    expect(at(60).vitals.hr).toBeGreaterThan(base + 20); // compensatory tachycardia
+    expect(at(320).vitals.hr).toBeLessThan(at(60).vitals.hr - 30); // decompensation
+    expect(at(30).vitals.spo2).toBeGreaterThan(at(150).vitals.spo2); // monotone fall
+  });
+
+  it('flare dose rate follows the class table and scales with the real magnitude', () => {
+    const flare = (mag: number): EngineEvent[] => [{ t: 100, type: 'flare', crewId: 'ALL', params: { class: 'X', magnitude: mag } }];
+    const rate = (mag: number) => computeFrame(cfg(flare(mag)), 'A1', 125).radiation.doseRateUSvH;
+    expect(rate(1)).toBeGreaterThan(1500);
+    expect(rate(9)).toBeGreaterThan(rate(1) * 1.5);
+    expect(rate(9)).toBeLessThanOrEqual(5100);
+    const cRate = computeFrame(cfg([{ t: 100, type: 'flare', crewId: 'ALL', params: { class: 'C', magnitude: 5 } }]), 'A1', 125).radiation.doseRateUSvH;
+    expect(cRate).toBeLessThan(60);
+    expect(cRate).toBeGreaterThan(30);
   });
 });

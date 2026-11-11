@@ -2,6 +2,7 @@ import modifiers from '../../data/modifiers.json';
 import radiation from '../../data/radiation-model.json';
 import thresholds from '../../data/thresholds.json';
 import type { EngineConfig } from './frame';
+import type { ModifiersConfig, RadiationConfig } from './modifiers';
 import type { EngineEvent, ScenarioPack, Thresholds, Track } from './schemas';
 
 const track: Track = {
@@ -15,5 +16,5 @@ export const testPack: ScenarioPack = {
   baselines: { A1: track, A2: track }, events: [],
 };
 export const cfgForTests = (log: EngineEvent[]): EngineConfig => ({
-  pack: testPack, thresholds: thresholds as Thresholds, modifiers, radiation, log,
+  pack: testPack, thresholds: thresholds as Thresholds, modifiers: modifiers as unknown as ModifiersConfig, radiation: radiation as unknown as RadiationConfig, log,
 });

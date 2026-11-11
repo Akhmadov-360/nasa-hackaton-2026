@@ -16,6 +16,7 @@ export interface ServiceOptions { metOffsetSec?: number; now?: () => number }
 const EVENT_TYPES: EventType[] = ['flare', 'exertion', 'o2fault', 'normalize'];
 const MAX_EVENTS = 300;
 const MAX_INTENSITY = 3;
+const MAX_MAGNITUDE = 20;
 
 export class TelemetryService {
   private readonly cfgBase = {
@@ -94,6 +95,13 @@ export class TelemetryService {
         return { ok: false, error: 'intensity must be a number between 0 and ' + MAX_INTENSITY };
       }
       params.intensity = intensity;
+    }
+    const magnitude = e.params?.magnitude;
+    if (magnitude !== undefined) {
+      if (typeof magnitude !== 'number' || !Number.isFinite(magnitude) || magnitude < 0 || magnitude > MAX_MAGNITUDE) {
+        return { ok: false, error: 'magnitude must be a number between 0 and ' + MAX_MAGNITUDE };
+      }
+      params.magnitude = magnitude;
     }
     if (cls !== undefined) params.class = String(cls);
     if (e.t !== undefined && !Number.isFinite(e.t)) return { ok: false, error: 'invalid time' };

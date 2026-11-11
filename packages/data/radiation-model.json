@@ -1,11 +1,11 @@
 {
   "provisional": true,
-  "note": "Flare class -> dose-rate profile. DONKI gives class/times only; the dose response is MODELED. Illustrative until Appendix A2 is filled.",
+  "note": "ASSUMED demo values, not measurements and not from a cited source. Peak dose rates and durations per flare class were chosen to make the effect visible. A flare itself adds little dose inside a spacecraft; the real hazard is the solar energetic particles (SEP) that follow, and indoor doses are far lower than the X-class numbers here. DONKI supplies the class, magnitude and time only; the dose response is modeled. The hold times are our own assumption.",
   "backgroundUSvH": 20,
   "demoCompression": 180,
   "classes": {
-    "C": { "peakMultiplier": 1.5, "riseSec": 1800,  "holdSec": 1800,  "decaySec": 14400 },
-    "M": { "peakMultiplier": 3,   "riseSec": 2700,  "holdSec": 3600,  "decaySec": 21600 },
-    "X": { "peakMultiplier": 8,   "riseSec": 3600,  "holdSec": 7200,  "decaySec": 43200 }
+    "C": { "peakUSvH": [50, 50], "magnitudeMax": 9.9, "riseSec": 900, "holdSec": 600, "decaySec": 7200 },
+    "M": { "peakUSvH": [300, 300], "magnitudeMax": 9.9, "riseSec": 1800, "holdSec": 1200, "decaySec": 21600 },
+    "X": { "peakUSvH": [2000, 5000], "magnitudeMax": 10, "riseSec": 2700, "holdSec": 1800, "decaySec": 64800 }
   }
 }

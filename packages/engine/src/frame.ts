@@ -24,7 +24,10 @@ function radiationAt(cfg: EngineConfig, crewId: string, t: number) {
   for (const e of flares) {
     const cls = classes[String(e.params?.class ?? 'X')] ?? classes.X;
     const [r, h, d] = [cls.riseSec / c, cls.holdSec / c, cls.decaySec / c];
-    const extra = bg * (cls.peakMultiplier - 1);
+    const mag = Number(e.params?.magnitude);
+    const frac = Number.isFinite(mag) ? clamp(( mag - 1) / (cls.magnitudeMax - 1), 0, 1) : 0.5; // unknown magnitude: mid-range
+    const peak = cls.peakUSvH[0] + (cls.peakUSvH[1] - cls.peakUSvH[0]) * frac;
+    const extra = Math.max(0, peak - bg);
     rate += extra * envelope(t, e.t, r, h, d);
     areaUSv += (extra * envelopeArea(t, e.t, r, h, d) * c) / 3600;
   }
@@ -44,7 +47,7 @@ export function computeFrame(
 
   const base = sampleVitals(track, t);
   const hrMean = trackMeanHr(track);
-  const hr = base.hr + m.exertion.hrAddFrac * hrMean * lv.exertion + m.o2fault.hrAdd * lv.o2fault;
+  const hr = Math.max(25, base.hr + m.exertion.hrAdd * lv.exertion + lv.o2faultHr);
   const hrvBase = Math.max(5, 120 - base.hr);
 
   const tw = ecgWarp(events, crewId, t, m, hrMean);
@@ -56,11 +59,11 @@ export function computeFrame(
     crewId,
     vitals: {
       hr,
-      hrv: Math.max(2, hrvBase * (1 - m.exertion.hrvDropFrac * lv.exertion) + noise() * 2),
-      spo2: clamp(base.spo2 - m.o2fault.spo2Drop * lv.o2fault + noise() * 0.4, 50, 100),
+      hrv: Math.max(2, hrvBase - m.exertion.hrvDrop * lv.exertion + noise() * 2),
+      spo2: clamp(base.spo2 - m.exertion.spo2Drop * lv.exertion - Math.max(0, base.spo2 - m.o2fault.spo2Floor) * lv.o2fault + noise() * 0.4, 50, 100),
       bpSys: 118 + noise() * 3 + m.exertion.bpSysAdd * lv.exertion,
       bpDia: 76 + noise() * 2 + 0.4 * m.exertion.bpSysAdd * lv.exertion,
-      respRate: base.resp * (1 + m.exertion.respAddFrac * lv.exertion) + m.o2fault.respAdd * lv.o2fault,
+      respRate: base.resp + m.exertion.respAdd * lv.exertion + m.o2fault.respAdd * lv.o2fault,
       temp: 36.7 + 0.05 * Math.sin(t / 60) + m.exertion.tempAdd * lv.exertion,
       stress: clamp(20 + noise() * 4 + m.exertion.stressAdd * lv.exertion + m.o2fault.stressAdd * lv.o2fault, 0, 100),
       eeg: 10 + 0.8 * Math.sin(t / 3) + noise() * 0.4 - m.o2fault.eegDrop * lv.o2fault,
