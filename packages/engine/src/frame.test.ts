@@ -38,7 +38,7 @@ describe('computeFrame', () => {
     const h = (thresholds as Thresholds).metrics.humidity;
     expect([h.low?.warning, h.high?.warning]).toEqual([25, 75]);
     const n = (thresholds as Thresholds).metrics.noise;
-    expect([n.high?.caution, n.high?.warning]).toEqual([40, 50]);
+    expect(n.high?.warning).toBe(50);
     const ev: EngineEvent = { t: 100, type: 'exertion', crewId: 'A1' };
     expect(computeFrame(cfg([ev]), 'A1', 130).cabin.noise).toBeGreaterThan(computeFrame(cfg([]), 'A1', 130).cabin.noise + 3);
   });
@@ -59,6 +59,7 @@ describe('computeFrame', () => {
     expect(f.status.byMetric.hr).toBe('NOMINAL');
     expect(f.status.byMetric.respRate).toBe('NOMINAL');
     expect(f.status.byMetric.stress).toBe('NOMINAL');
+    expect(f.status.overall).toBe('NOMINAL'); // exercise equipment noise must not raise a caution either
     expect(computeFrame(cfg([]), 'A1', 130).exercise).toBeUndefined();
     // a 125 bpm reading without exertion is a warning
     const rest = applyStatus({ ...computeFrame(cfg([]), 'A1', 130), vitals: { ...computeFrame(cfg([]), 'A1', 130).vitals, hr: 125 } }, thresholds as Thresholds);

@@ -11,7 +11,7 @@ import { STATUS_COLOR, STATUS_RANK } from '@/lib/metrics';
 import { Sparkline } from './Sparkline';
 import { SpaceWeatherStrip } from './SpaceWeatherStrip';
 
-export function RadiationCard({ frame, crewId, tick }: { frame: TelemetryFrame | undefined; crewId: string; tick: number }) {
+export function RadiationCard({ frame, crewId, tick, large = false }: { frame: TelemetryFrame | undefined; crewId: string; tick: number; large?: boolean }) {
   const t = useT();
   const rate = frame?.radiation.doseRateUSvH;
   const total = frame?.radiation.cumulativeMSv;
@@ -58,10 +58,10 @@ export function RadiationCard({ frame, crewId, tick }: { frame: TelemetryFrame |
           </p>
         ) : <Skeleton className="mt-1 h-6 w-24" />}
       </div>
-      <div className="self-end [@media(max-height:820px)]:hidden">
-        <Sparkline crewId={crewId} read={(f) => f.radiation.doseRateUSvH} color={color} tick={tick} points={120} />
+      <div className={large ? 'self-end' : 'self-end [@media(max-height:820px)]:hidden'}>
+        <Sparkline crewId={crewId} read={(f) => f.radiation.doseRateUSvH} color={color} tick={tick} points={120} className={large ? 'h-24' : undefined} />
       </div>
-      <SpaceWeatherStrip />
+      <SpaceWeatherStrip large={large} />
     </section>
   );
 }

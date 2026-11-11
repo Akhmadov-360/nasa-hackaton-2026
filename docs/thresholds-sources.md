@@ -103,8 +103,7 @@ Every metric carries `tier` (nasa / derived / engineering / provisional), option
 - Dose rate (engineering): no NASA trigger exists; about 3x, 7x and 19x the 0.5 mSv/day background.
 - Humidity (tier nasa, critical engineering): warning at the 25 / 75 % RH health range [V2 6012], caution at the 30 / 60 % comfort zone [V2 6013],
   critical 20 / 80 % is ours. Baseline 45 % with a slow simulated drift.
-- Noise (tier nasa, critical engineering): caution NC-40 (sleep areas [V2 6079]), warning NC-50 (work areas [V2 6078]), critical NC-60 ours.
+- Noise (tier nasa, caution and critical engineering): warning NC-50 (work areas [V2 6078]); caution NC-45 and critical NC-60 ours. NC-40 is a sleep-area limit [V2 6079] and is not used as an alarm (exercise equipment alone reaches about NC-42).
   Real NC needs an octave-band spectrum; the app shows one simulated NC rating (baseline 36, exercise adds 6 per the ergometer remark in the brief).
-  The sleep limit only applies in crew quarters, so caution is a conservative simplification.
 - Cabin O₂ (derived): kept at 19.5 / 18 / 16 %, referenced to the 149 mmHg normoxia value; NASA gives no alarm value.
 - Everything in Tier B/C is `provisional` until the team chooses and cites primary sources.

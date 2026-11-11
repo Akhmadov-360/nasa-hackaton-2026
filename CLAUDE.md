@@ -12,6 +12,7 @@ pnpm test                         # all unit tests (vitest)
 pnpm typecheck
 pnpm --filter @astro/api start    # :3001  (restart to reset the event log)
 pnpm --filter @astro/web dev      # :3000
+pnpm --filter @astro/web build && pnpm --filter @astro/web start   # production build, use this for the demo (stop `dev` first: same .next folder)
 pnpm --filter @astro/data build:pack      # rebuild packs/demo.pack.json from data-raw/
 pnpm --filter @astro/data fetch:donki   # reads NASA_API_KEY from the git-ignored root .env (see .env.example)
 ```
@@ -41,6 +42,10 @@ pnpm --filter @astro/data fetch:donki   # reads NASA_API_KEY from the git-ignore
 - **UI kit**: shadcn-style components in `components/ui` (Radix via the `radix-ui` package, `cn()` in `lib/utils.ts`). They were added by hand because the shadcn CLI was too slow on the venue network; theme tokens are mapped in `globals.css`.
 - **Provenance**: every reading is marked recorded (PhysioNet) or modeled (`SOURCE_OF` in `lib/metrics.ts`). Do not credit a source in the UI or in the pack metadata unless its data is really loaded.
 - **Report and package** (ADR in `docs/adr/0001-*.md`): `buildReport` (engine) turns the event log into incidents with causes and an illustrative protocol; `TelemetryPackage` is the validated file that is exported and re-imported (`lib/packageIO.ts`, zod schema in the engine). Protocol text lives in `packages/data/protocols.json` (en/ru, provisional). `timeToThreshold` feeds the "reaches warning in ..." line on vital cards.
+- **Limits carry their basis**: every metric in `thresholds.json` has `tier` (nasa / derived / clinical / engineering / provisional), optional per-level `levelTier`, and a `source`. Never label a number `nasa` unless it is stated in NASA-STD-3001; see `docs/thresholds-sources.md`. While exercising (`frame.exercise`), `thresholds.exercise` replaces the resting HR / breathing / BP / stress / HRV limits (`limitsFor` in the engine), so normal effort is not an alarm.
+- **"Reaches warning in ..."** (`timeToThreshold`) only shows for a clear, fast trend: at least 2 hysteresis widths of movement across the window and an arrival within 3 minutes. Slow simulated drift must never produce it.
+- **Report** always carries `limits` and, for a short window, `earlier` (incidents before the window), so a 5-minute view never hides a flare from earlier. Exports: JSON / .json.gz package, Excel (`lib/xlsx.ts`, no dependency) for the report and the flight log, CSV with `sep=;`.
+- **Live space weather** is fetched by the API (`/spaceweather`, NOAA SWPC GOES) and shown as a real measurement; it is never mixed into the crew's modelled dose.
 - Only preferences are persisted (`locale`, `selectedCrewId`); events and the flight log belong to one server run.
 - Status is always icon + word + colour. Dark theme only. Respect `prefers-reduced-motion`.
 

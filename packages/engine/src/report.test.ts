@@ -27,6 +27,17 @@ describe('buildReport', () => {
     expect(r.crew.find((c) => c.crewId === 'A1')!.incidents).toHaveLength(0);
   });
 
+  it('a short window still lists incidents from earlier in the session, and carries the limits with their sources', () => {
+    const r = buildReport(cfgForTests(fault), { fromT: 2000, toT: 2300, sessionFromT: 900 });
+    expect(r.crew.flatMap((c) => c.incidents)).toHaveLength(0); // nothing inside the window
+    expect(r.earlier?.incidents.length).toBeGreaterThan(0);
+    expect(r.earlier?.incidents[0].crewId).toBe('A2');
+    expect(r.earlier?.eventCount).toBe(1);
+    expect(r.limits?.find((l) => l.metric === 'co2')?.tier).toBe('nasa');
+    // the whole session shows no "earlier" block
+    expect(buildReport(cfgForTests(fault), { fromT: 900, toT: 2300, sessionFromT: 900 }).earlier).toBeUndefined();
+  });
+
   it('reports radiation as the difference between the end and the start of the period', () => {
     const r = buildReport(cfgForTests([{ t: 1000, type: 'flare', crewId: 'ALL', params: { class: 'X' } }]), { fromT: 900, toT: 1300 });
     const a1 = r.crew[0];

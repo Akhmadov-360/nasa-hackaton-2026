@@ -9,10 +9,11 @@ interface Props {
   /** changes whenever new data arrived, so the memo recomputes */
   tick: number;
   points?: number;
+  className?: string;
 }
 
 /** Tiny SVG trend line over the last N ticks, read from the ring buffer. */
-export function Sparkline({ crewId, read, color, tick, points = 60 }: Props) {
+export function Sparkline({ crewId, read, color, tick, points = 60, className = 'h-9' }: Props) {
   const d = useMemo(() => {
     const all = frameBuffers[crewId]?.toArray() ?? [];
     const vals = all.slice(-points).map(read).filter(Number.isFinite);
@@ -26,7 +27,7 @@ export function Sparkline({ crewId, read, color, tick, points = 60 }: Props) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [crewId, tick, points]);
   return (
-    <svg viewBox="0 0 100 26" preserveAspectRatio="none" className="h-9 w-full" aria-hidden>
+    <svg viewBox="0 0 100 26" preserveAspectRatio="none" className={`${className} w-full`} aria-hidden>
       <path d={d} fill="none" stroke={color} strokeWidth="1.5" vectorEffect="non-scaling-stroke" strokeLinecap="round" strokeLinejoin="round" opacity="0.85" />
     </svg>
   );
