@@ -7,7 +7,8 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { useEta } from '@/hooks/useEta';
 import { formatDuration } from '@/lib/duration';
-import { statusWord, useT } from '@/lib/i18n';
+import { baseCfg } from '@/lib/engineConfig';
+import { statusWord, useT, type DictKey } from '@/lib/i18n';
 import { useMissionStore } from '@/lib/store/missionStore';
 import { SOURCE_OF, STATUS_COLOR, STATUS_RANK } from '@/lib/metrics';
 import { Timer } from 'lucide-react';
@@ -38,11 +39,14 @@ interface Props {
 const finite = (v: number | undefined): v is number => typeof v === 'number' && Number.isFinite(v);
 
 /** Filled dot = recorded signal, ring = our model. The meaning is in the tooltip and the legend, not in colour alone. */
-export function ProvenanceMark({ sourceKey }: { sourceKey: string }) {
+export function ProvenanceMark({ sourceKey, limitKey }: { sourceKey: string; limitKey?: string }) {
   const t = useT();
   const s = SOURCE_OF[sourceKey];
   if (!s) return null;
-  const text = s.kind === 'real' ? t('src.real', { src: s.src }) : t('src.modeled');
+  const th = limitKey ? baseCfg.thresholds.metrics[limitKey] : undefined;
+  const limit = th?.tier ? `${t(`limit.${th.tier}` as DictKey)}${th.source ? `. ${th.source}` : ''}` : '';
+  const base = s.kind === 'real' ? t('src.real', { src: s.src }) : t('src.modeled');
+  const text = limit ? `${base} ${limit}` : base;
   return (
     <Tooltip>
       <TooltipTrigger asChild>
@@ -79,7 +83,7 @@ export function VitalCard({ crewId, sourceKey, metricKey, live, label, icon, uni
         <span className="flex min-w-0 items-center gap-1.5 truncate">{icon}<span className="truncate">{label}</span></span>
         <span className="flex shrink-0 items-center">
           {status !== 'NOMINAL' ? <StatusBadge status={status} /> : degraded ? <span className="text-xs text-amber">{t('est')}</span> : null}
-          <ProvenanceMark sourceKey={sourceKey} />
+          <ProvenanceMark sourceKey={sourceKey} limitKey={metricKey} />
         </span>
       </header>
       <div className="flex items-baseline gap-1.5">

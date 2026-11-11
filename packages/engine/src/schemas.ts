@@ -79,8 +79,14 @@ export interface MetricThreshold {
   low?: LevelSet;
   /** how far back past a threshold a value must return to release the status */
   hysteresis: number;
+  /** where the numbers come from; see docs/thresholds-sources.md */
+  tier?: LimitTier;
+  /** per-level override of `tier` (e.g. CO2: caution is NASA, critical is our choice) */
+  levelTier?: Partial<Record<'caution' | 'warning' | 'critical', LimitTier>>;
   source?: string;
 }
+/** nasa = value stated in NASA-STD-3001; derived = computed from a NASA reference; engineering = our choice; provisional = placeholder */
+export type LimitTier = 'nasa' | 'derived' | 'engineering' | 'provisional';
 export interface Thresholds {
   provisional?: boolean;
   metrics: Record<string, MetricThreshold>;

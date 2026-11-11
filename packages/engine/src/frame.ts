@@ -1,4 +1,4 @@
-import { ecgWarp, envelope, envelopeArea, levelsFor, type ModifiersConfig, type RadiationConfig } from './modifiers';
+import { DEFAULT_CABIN, ecgWarp, envelope, envelopeArea, levelsFor, type ModifiersConfig, type RadiationConfig } from './modifiers';
 import { mulberry32, hashSeed } from './prng';
 import { sampleEcg, sampleVitals, trackMeanHr } from './baseline';
 import { applyStatus } from './status';
@@ -41,6 +41,7 @@ export function computeFrame(
   const track = cfg.pack.baselines[crewId];
   const events: EngineEvent[] = [...cfg.pack.events, ...cfg.log];
   const m = cfg.modifiers;
+  const cab = m.cabin ?? DEFAULT_CABIN;
   const lv = levelsFor(events, crewId, t, m);
   const rnd = mulberry32(hashSeed(crewId, t));
   const noise = () => rnd() - 0.5;
@@ -70,7 +71,10 @@ export function computeFrame(
     },
     ecg: sampleEcg(track, tw, speed),
     radiation: radiationAt(cfg, crewId, t),
-    cabin: { co2: 3 + noise() * 0.2, o2: 21 - m.o2fault.cabinO2Drop * lv.o2fault + noise() * 0.05 },
+    cabin: {
+      co2: cab.co2Baseline + noise() * cab.co2Noise,
+      o2: cab.o2Baseline - m.o2fault.cabinO2Drop * lv.o2fault + noise() * cab.o2Noise,
+    },
     status: { overall: 'NOMINAL', byMetric: {} },
     degraded: false,
   };

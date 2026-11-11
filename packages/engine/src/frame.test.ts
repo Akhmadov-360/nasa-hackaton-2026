@@ -25,6 +25,21 @@ describe('computeFrame', () => {
     expect(computeFrame(cfg([]), 'A1', 42)).toEqual(computeFrame(cfg([]), 'A1', 42));
   });
 
+  it('cabin baseline stays clearly under the NASA CO2 limit and the environment metrics stay NOMINAL', () => {
+    for (let t = 0; t < 300; t += 7) {
+      const f = computeFrame(cfg([]), 'A1', 3 * 86400 + t);
+      expect(f.cabin.co2).toBeLessThan(2.5);
+      for (const k of ['co2', 'o2', 'doseRate', 'dose']) expect(f.status.byMetric[k]).toBe('NOMINAL');
+    }
+  });
+
+  it('every threshold names its tier, and the CO2 caution level is the NASA 3 mmHg', () => {
+    const ms = (thresholds as Thresholds).metrics;
+    for (const [k, m] of Object.entries(ms)) expect(m.tier, k).toBeTruthy();
+    expect(ms.co2.tier).toBe('nasa');
+    expect(ms.co2.high?.caution).toBe(3);
+  });
+
   it('exertion raises HR and lowers HRV at peak, normalize brings it back', () => {
     const ev: EngineEvent = { t: 100, type: 'exertion', crewId: 'A1' };
     const base = computeFrame(cfg([]), 'A1', 130);

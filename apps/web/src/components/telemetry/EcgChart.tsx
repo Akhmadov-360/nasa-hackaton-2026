@@ -127,7 +127,7 @@ export function EcgChart({ crewId }: { crewId: string }) {
           <HeartPulse className="size-4 text-teal" aria-hidden /> {t('ecg.title')}
           {replay && <span className="rounded-full bg-amber/15 px-2 py-0.5 text-xs text-amber">{t('tt.replay')}</span>}
         </h3>
-        <span className="flex items-center"><StatusBadge status={status} /><ProvenanceMark sourceKey="hr" /></span>
+        <span className="flex items-center"><StatusBadge status={status} /><ProvenanceMark sourceKey="hr" limitKey="hr" /></span>
       </header>
       <canvas ref={canvasRef} className="h-24 w-full [@media(max-height:820px)]:h-20" role="img" aria-label={t('ecg.title')} />
     </section>

@@ -1,18 +1,18 @@
 {
   "provisional": true,
-  "note": "ILLUSTRATIVE values until the math team fills Appendix A1 from NASA-STD-3001. Not clinical guidance.",
+  "note": "Mixed provenance, see each metric's tier and docs/thresholds-sources.md. nasa = number stated in NASA-STD-3001; derived = computed from a NASA reference; engineering = our choice; provisional = placeholder, not clinical guidance.",
   "metrics": {
-    "hr":       { "unit": "bpm",   "high": { "caution": 100, "warning": 120, "critical": 150 }, "low": { "caution": 50, "warning": 42, "critical": 35 }, "hysteresis": 3 },
-    "hrv":      { "unit": "ms",    "low":  { "caution": 30,  "warning": 20,  "critical": 10 },  "hysteresis": 3 },
-    "spo2":     { "unit": "%",     "low":  { "caution": 95,  "warning": 92,  "critical": 88 },  "hysteresis": 1 },
-    "bpSys":    { "unit": "mmHg",  "high": { "caution": 130, "warning": 150, "critical": 180 }, "low": { "caution": 100, "warning": 90, "critical": 80 }, "hysteresis": 3 },
-    "bpDia":    { "unit": "mmHg",  "high": { "caution": 85,  "warning": 95,  "critical": 110 }, "low": { "caution": 60, "warning": 50, "critical": 40 }, "hysteresis": 3 },
-    "respRate": { "unit": "/min",  "high": { "caution": 20,  "warning": 26,  "critical": 32 },  "low": { "caution": 11, "warning": 8, "critical": 6 }, "hysteresis": 1 },
-    "temp":     { "unit": "°C",    "high": { "caution": 37.5,"warning": 38.3,"critical": 39.5 }, "low": { "caution": 36.0, "warning": 35.0, "critical": 34.0 }, "hysteresis": 0.2 },
-    "stress":   { "unit": "idx",   "high": { "caution": 50,  "warning": 70,  "critical": 85 },  "hysteresis": 3 },
-    "co2":      { "unit": "mmHg",  "high": { "caution": 5,   "warning": 8,   "critical": 12 },  "hysteresis": 0.3 },
-    "o2":       { "unit": "%",     "low":  { "caution": 19.5,"warning": 18,  "critical": 16 },  "hysteresis": 0.3 },
-    "doseRate": { "unit": "µSv/h", "high": { "caution": 60,  "warning": 150, "critical": 400 }, "hysteresis": 5 },
-    "dose":     { "unit": "mSv",   "high": { "caution": 10,  "warning": 30,  "critical": 50 },  "hysteresis": 0.5 }
+    "hr":       { "unit": "bpm",   "tier": "provisional", "source": "No NASA numeric limit exists; adult resting range used as placeholder", "high": { "caution": 100, "warning": 120, "critical": 150 }, "low": { "caution": 50, "warning": 42, "critical": 35 }, "hysteresis": 3 },
+    "hrv":      { "unit": "ms",    "tier": "provisional", "source": "Internal index; no NASA limit", "low":  { "caution": 30,  "warning": 20,  "critical": 10 },  "hysteresis": 3 },
+    "spo2":     { "unit": "%",     "tier": "provisional", "source": "No NASA numeric limit; clinical hypoxaemia cut-offs vary by society", "low":  { "caution": 95,  "warning": 92,  "critical": 88 },  "hysteresis": 1 },
+    "bpSys":    { "unit": "mmHg",  "tier": "provisional", "source": "No NASA numeric limit; ACC/AHA style categories as placeholder", "high": { "caution": 130, "warning": 150, "critical": 180 }, "low": { "caution": 100, "warning": 90, "critical": 80 }, "hysteresis": 3 },
+    "bpDia":    { "unit": "mmHg",  "tier": "provisional", "source": "No NASA numeric limit; ACC/AHA style categories as placeholder", "high": { "caution": 85,  "warning": 95,  "critical": 110 }, "low": { "caution": 60, "warning": 50, "critical": 40 }, "hysteresis": 3 },
+    "respRate": { "unit": "/min",  "tier": "provisional", "source": "No NASA numeric limit; adult resting range as placeholder", "high": { "caution": 20,  "warning": 26,  "critical": 32 },  "low": { "caution": 11, "warning": 8, "critical": 6 }, "hysteresis": 1 },
+    "temp":     { "unit": "°C",    "tier": "provisional", "source": "No NASA numeric limit for body temperature", "high": { "caution": 37.5,"warning": 38.3,"critical": 39.5 }, "low": { "caution": 36.0, "warning": 35.0, "critical": 34.0 }, "hysteresis": 0.2 },
+    "stress":   { "unit": "idx",   "tier": "provisional", "source": "Internal index; no NASA limit", "high": { "caution": 50,  "warning": 70,  "critical": 85 },  "hysteresis": 3 },
+    "co2":      { "unit": "mmHg",  "tier": "nasa", "levelTier": { "critical": "engineering" }, "source": "NASA-STD-3001 Vol 2 [V2 6004]: 1-hour average at most 3 mmHg (OCHMO-TB-004 Rev D). Warning 4.5 mmHg = symptom onset in the brief; critical is our choice", "high": { "caution": 3, "warning": 4.5, "critical": 7.5 }, "hysteresis": 0.2 },
+    "o2":       { "unit": "%",     "tier": "derived", "source": "Derived from the 149 mmHg normoxia reference at 14.7 psia (OCHMO-TB-003 Rev A); NASA gives no alarm value", "low":  { "caution": 19.5,"warning": 18,  "critical": 16 },  "hysteresis": 0.3 },
+    "doseRate": { "unit": "µSv/h", "tier": "engineering", "source": "No NASA numeric trigger ([V2 6100]); about 3x, 7x and 19x the 0.5 mSv/day background", "high": { "caution": 60,  "warning": 150, "critical": 400 }, "hysteresis": 5 },
+    "dose":     { "unit": "mSv",   "tier": "derived", "levelTier": { "caution": "engineering", "warning": "engineering" }, "source": "Anchored to the 250 mSv design-reference SPE limit [V1 4031] (OCHMO-TB-020 Rev E); critical = 250 mSv, caution and warning are 10 % and 40 % of it (ours)", "high": { "caution": 25,  "warning": 100, "critical": 250 },  "hysteresis": 1 }
   }
 }

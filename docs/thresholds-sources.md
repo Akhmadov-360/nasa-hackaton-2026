@@ -20,6 +20,20 @@ and the program requirements are authoritative. Re-verify against the current re
 | Normoxia | Inspired O₂ partial pressure **149 mmHg** (about 21 % O₂ at 14.7 psia, typical ISS cabin) | OCHMO-TB-003 Rev A |
 | Hypoxia (arterial, not cabin) | Subtle decrements near PaO₂ 80 mmHg; loss of consciousness near 30 mmHg | OCHMO-TB-003 Rev A, citing Barrett et al., Principles of Spaceflight Medicine |
 
+| Cabin temperature / humidity, crew health | **18 to 27 °C** and **25 to 75 % RH** | [V2 6012], OCHMO ECLSS technical brief |
+| Cabin temperature / humidity, comfort zone | 20 to 25 °C and 30 to 60 % RH | [V2 6013], same brief |
+| Drinking water | Minimum **2.5 L/crewmember/day** (direct use and food rehydration), plus 0.24 L per EVA hour | [V2 6109], OCHMO water brief (Vol 2 Rev C Table 4) |
+| Suited hydration | LEA suit at least 2 L per 24 h; EVA suit at least 240 mL per hour | [V2 11029], [V2 11030] |
+| Continuous noise, work areas | **NC-50** curve (50 dB at 1.5 kHz) | [V2 6078], OCHMO acoustics brief |
+| Continuous noise, crew sleep (missions over 30 days) | **NC-40** curve | [V2 6079], same brief |
+| Hazardous noise | Below 85 dBA regardless of duration (off-nominal); impulse below 140 dB peak | [V2 6077], [V2 6083] |
+| Atmosphere alerting | Crew must be alerted on pressure, humidity, temperature, ppO₂, ppCO₂ outside safe limits; **no numbers** | [V2 6022] |
+
+Not confirmed in any document read: an airflow range of 0.05 to 0.2 m/s ([V2 6107] on ventilation is qualitative: it must
+prevent CO₂ and thermal pockets). NC-52 is not a NASA value (NC-50 is the current work-area curve). Daily hydration
+of 2.0 L (3.0 L EVA) does not match the briefs: the minimum is 2.5 L/day. The 1.8 L consumed value of a "Hydration" card
+would need a measured or modelled intake signal that we do not have, so that card is not built.
+
 Sources:
 - https://www.nasa.gov/wp-content/uploads/2023/12/ochmo-tb-004-carbon-dioxide.pdf
 - https://www.nasa.gov/wp-content/uploads/2023/12/ochmo-tb-003-habitable-atmosphere.pdf
@@ -46,11 +60,14 @@ or as internal indices.
 | Respiration rate | 12 to 20 per minute at rest; above 20 tachypnea, below 12 bradypnea | Secondary clinical pages |
 | Body temperature | Fever above about 38 °C; hypothermia below 35 °C | Fever cutoffs differ by source |
 
-## How this maps to `packages/data/thresholds.json`
+## How this maps to `packages/data/thresholds.json` (applied 2026-11-11)
 
-- CO₂: caution at the standard's limit (3 mmHg); warning at 4.5 mmHg (symptom onset in the brief). The critical level is an
-  engineering choice (the brief does not give one). The simulated cabin baseline must stay clearly below 3 mmHg.
-- Accumulated dose: anchored to 250 mSv (SPE limit) and 600 mSv (career). The fractions chosen for caution and warning are ours.
-- Dose rate: no NASA number exists; levels are multiples of the 0.5 mSv/day background and must be labelled as such.
-- Cabin O₂: no NASA alarm value found in these documents; derive from the 149 mmHg normoxia reference and label as derived.
-- Everything in Tier B/C keeps `provisional: true` until the team chooses and cites primary sources.
+Every metric carries `tier` (nasa / derived / engineering / provisional), optional `levelTier` and a `source` string; the vital-card tooltip shows them.
+
+- CO₂ (tier nasa): caution 3 mmHg [V2 6004]; warning 4.5 mmHg (symptom onset in the brief); critical 7.5 mmHg is our choice
+  (`levelTier.critical = engineering`). The cabin baseline moved from code into `modifiers.json` (`cabin.co2Baseline` 2.0 mmHg).
+- Accumulated dose (derived): critical = 250 mSv (SPE limit); caution 25 and warning 100 are 10 % and 40 % of it (ours).
+  The demo X8.7 flare adds roughly 45 mSv, so it reaches caution by dose; its dose rate still reaches critical.
+- Dose rate (engineering): no NASA trigger exists; about 3x, 7x and 19x the 0.5 mSv/day background.
+- Cabin O₂ (derived): kept at 19.5 / 18 / 16 %, referenced to the 149 mmHg normoxia value; NASA gives no alarm value.
+- Everything in Tier B/C is `provisional` until the team chooses and cites primary sources.

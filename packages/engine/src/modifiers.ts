@@ -12,7 +12,9 @@ export interface O2FaultCfg {
   hrDecompStartSec: number; hrDecompDrop: number; hrDecompSpanSec: number;
   respAdd: number; cabinO2Drop: number; stressAdd: number; eegDrop: number;
 }
-export interface ModifiersConfig { recoverSec: number; exertion: ExertionCfg; o2fault: O2FaultCfg }
+export interface CabinCfg { co2Baseline: number; co2Noise: number; o2Baseline: number; o2Noise: number }
+export const DEFAULT_CABIN: CabinCfg = { co2Baseline: 2, co2Noise: 0.2, o2Baseline: 21, o2Noise: 0.05 };
+export interface ModifiersConfig { recoverSec: number; exertion: ExertionCfg; o2fault: O2FaultCfg; cabin?: CabinCfg }
 export interface FlareClass {
   /** peak dose rate in uSv/h: [at magnitude 1, at the largest magnitude] */
   peakUSvH: [number, number];
