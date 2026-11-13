@@ -1,8 +1,7 @@
 'use client';
 import { useState } from 'react';
-import { ChevronDown, Dumbbell, RotateCcw, Sun, Trash2, Wind } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { Dumbbell, RotateCcw, Sun, Trash2, Wind } from 'lucide-react';
+import { Select } from '@/components/ui/select';
 import { crewName } from '@/lib/engineConfig';
 import { useFlares } from '@/lib/flares';
 import { useT } from '@/lib/i18n';
@@ -34,21 +33,14 @@ export function ControlDeck() {
             <p className="text-xs text-muted-foreground">{ready ? t('deck.hint') : wait}</p>
           </header>
           {flares.length > 1 && (
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="sm" className="h-8 justify-between gap-2 px-2.5 text-xs text-muted-foreground" aria-label={t('deck.pick')}>
-                  <span className="truncate">{t('deck.pick')}: {flare?.classType} · {flare?.peakTime.slice(0, 10)}</span>
-                  <ChevronDown className="size-3.5 opacity-60" aria-hidden />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="start" className="max-h-72 overflow-y-auto">
-                {flares.map((f) => (
-                  <DropdownMenuItem key={f.id} onSelect={() => setPickedId(f.id)} className={f.id === flare?.id ? 'text-primary' : undefined}>
-                    {f.classType} · {f.peakTime.slice(0, 10)}
-                  </DropdownMenuItem>
-                ))}
-              </DropdownMenuContent>
-            </DropdownMenu>
+            <div className="flex items-center justify-between gap-2 text-xs text-muted-foreground">
+              <span className="truncate">{t('deck.pick')}</span>
+              <Select
+                size="sm" ariaLabel={t('deck.pick')} value={flare?.id} menuWidth={190} align="right"
+                onChange={(v) => setPickedId(v)}
+                options={flares.map((f) => ({ value: f.id, label: `${f.classType} · ${f.peakTime.slice(0, 10)}` }))}
+              />
+            </div>
           )}
           <HoldButton
             disabled={!ready} tone="danger" icon={<Sun className="size-5" aria-hidden />} label={t('deck.flare')}
@@ -63,7 +55,7 @@ export function ControlDeck() {
             hint={crewName(crewId)} onConfirm={() => sendCommand('o2fault', crewId)}
           />
           {/* the two service buttons share a row: about 60 px more room for the flight log */}
-          <div className="grid grid-cols-2 gap-2">
+          <div className="grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)] gap-2">
             <HoldButton
               compact disabled={!ready} tone="calm" icon={<RotateCcw className="size-4" aria-hidden />} label={t('deck.normalize')}
               hint={t('deck.target.all')} onConfirm={() => sendCommand('normalize', 'ALL')}

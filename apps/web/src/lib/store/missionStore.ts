@@ -93,6 +93,14 @@ export interface MissionState {
   addEvent: (e: EngineEvent) => void;
   setEvents: (log: EngineEvent[]) => void;
   setTimeTravel: (t: number | null) => void;
+  /** replay from `timeTravelT` towards the present; the live pipeline (alerts, forecasts, log) keeps running underneath */
+  replayPlaying: boolean;
+  /** playback speed; above 1 the replay catches up with the present */
+  replaySpeed: number;
+  setReplayPlaying: (on: boolean) => void;
+  setReplaySpeed: (x: number) => void;
+  /** start or move a replay at mission time `t` */
+  enterReplay: (t: number, playing: boolean) => void;
   setLocale: (l: Locale) => void;
 }
 
@@ -195,7 +203,12 @@ export const useMissionStore = create<MissionState>()(
       setIsland: (a) => set({ island: a }),
       addEvent: (e) => set((s) => ({ events: cap([...s.events, e], 500) })),
       setEvents: (log) => set({ events: cap(log, 500) }),
-      setTimeTravel: (t) => set({ timeTravelT: t }),
+      setTimeTravel: (t) => set(t === null ? { timeTravelT: null, replayPlaying: false } : { timeTravelT: t }),
+      replayPlaying: false,
+      replaySpeed: 4,
+      setReplayPlaying: (on) => set({ replayPlaying: on }),
+      setReplaySpeed: (x) => set({ replaySpeed: x }),
+      enterReplay: (t, playing) => set({ timeTravelT: t, replayPlaying: playing }),
       setLocale: (l) => set({ locale: l }),
     }),
     {

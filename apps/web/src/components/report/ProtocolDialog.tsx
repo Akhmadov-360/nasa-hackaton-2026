@@ -1,7 +1,7 @@
 'use client';
 import { ListChecks, ShieldAlert } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Checkbox } from '@/components/ui/checkbox';
+import SpringCheck from '@/components/SpringCheck';
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from '@/components/ui/dialog';
 import { Separator } from '@/components/ui/separator';
 import { crewName } from '@/lib/engineConfig';
@@ -57,13 +57,12 @@ export function ProtocolDialog() {
                   return (
                     <li key={key}>
                       {i > 0 && <Separator />}
-                      <label className="flex cursor-pointer items-start gap-3 py-3.5">
-                        <Checkbox checked={on} onCheckedChange={() => toggle(key)} aria-label={step} />
-                        <span className="min-w-0 flex-1 text-[15px] leading-snug">
-                          <span className="num mr-2 text-muted-foreground">{i + 1}.</span>
-                          <span className={on ? 'text-muted-foreground line-through decoration-white/30' : ''}>{step}</span>
-                        </span>
-                      </label>
+                      <SpringCheck
+                        checked={on} onChange={() => toggle(key)} ariaLabel={step}
+                        label={<><span className="num mr-2 text-muted-foreground">{i + 1}.</span>{step}</>}
+                        color="#e8eefc" fillColor="#4FB6A8" checkColor="#0b1220" boxSize={22} boxRadius={7} fontSize={15} doneOpacity={0.55}
+                        className="w-full py-3.5"
+                      />
                     </li>
                   );
                 })}

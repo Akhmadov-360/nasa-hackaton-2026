@@ -16,9 +16,10 @@ import { TopBar } from '@/components/topbar/TopBar';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import { WidgetBoundary } from '@/components/WidgetBoundary';
 import { crew } from '@/lib/engineConfig';
+import { replay, SKIP_SEC } from '@/lib/replay';
 import { useMissionStore } from '@/lib/store/missionStore';
 
-/** 1-4 select a crew member, T returns to live, M mutes. Ignored while typing or with modifier keys. */
+/** 1-4 select a crew member, T returns to live, K pauses or resumes a replay, J / L skip 10 s back / forward, M mutes. Ignored while typing or with modifier keys. */
 function useShortcuts() {
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -28,7 +29,10 @@ function useShortcuts() {
       if (!s.entered) return;
       const n = Number(e.key);
       if (n >= 1 && n <= crew.length) s.selectCrew(crew[n - 1].id);
-      else if (e.key.toLowerCase() === 't') s.setTimeTravel(null);
+      else if (e.key.toLowerCase() === 't') replay.live();
+      else if (e.key.toLowerCase() === 'k') replay.toggle();
+      else if (e.key.toLowerCase() === 'j') replay.skip(-SKIP_SEC);
+      else if (e.key.toLowerCase() === 'l') replay.skip(SKIP_SEC);
       else if (e.key.toLowerCase() === 'm') s.setSound(!s.soundOn);
     };
     window.addEventListener('keydown', onKey);

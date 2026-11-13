@@ -2,6 +2,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { motion, useReducedMotion } from 'motion/react';
 import { AlertOctagon, AlertTriangle, CheckCircle2, ChevronDown, CircleDot, Timer } from 'lucide-react';
+import AnimatedList from '@/components/AnimatedList';
 import { Popover, PopoverAnchor, PopoverContent } from '@/components/ui/popover';
 import { useCrewForecasts } from '@/hooks/useEta';
 import { formatDuration } from '@/lib/duration';
@@ -47,6 +48,7 @@ export function IslandPill() {
     return () => clearTimeout(id);
   }, [island?.id]); // eslint-disable-line react-hooks/exhaustive-deps
 
+  const shown = forecasts.slice(0, 8);
   const next = forecasts[0];
   const showForecast = !!next && STATUS_RANK[status] < STATUS_RANK.WARNING;
   const nameOf = (m: string) => { const k = metricLabelKey(m); return k ? t(k) : m; };
@@ -139,22 +141,17 @@ export function IslandPill() {
             onOpenAutoFocus={(e) => e.preventDefault()}
             onPointerEnter={hoverOpen} onPointerLeave={hoverClose}
           >
-            {forecasts.slice(0, 8).map((f) => (
-              <button
-                key={`${f.crewId}:${f.metric}`}
-                type="button"
-                onClick={() => go(f.crewId, f.metric)}
-                className="flex w-full cursor-pointer items-center justify-between gap-3 rounded-xl px-2.5 py-2 text-left text-xs transition-colors duration-200 outline-none hover:bg-white/8 focus-visible:ring-2 focus-visible:ring-ring"
-                title={t(`view.${viewOfMetric(f.metric)}` as DictKey)}
-              >
-                <span className="min-w-0">
-                  {t('island.forecast', { name: crewName(f.crewId), metric: nameOf(f.metric), time: formatDuration(f.etaSec, locale) })}
-                </span>
-                <span className="num shrink-0 rounded-full px-1.5 py-0.5 text-[11px] font-medium" style={{ color: f.level === 'critical' ? STATUS_COLOR.WARNING : STATUS_COLOR.CAUTION, background: 'rgba(255,255,255,0.06)' }}>
-                  {mmss(f.etaSec)}
-                </span>
-              </button>
-            ))}
+            <AnimatedList
+              items={shown.map((f) => ({
+                id: `${f.crewId}:${f.metric}`,
+                title: nameOf(f.metric),
+                description: `${crewName(f.crewId)} · ${t('island.limitIn', { time: formatDuration(f.etaSec, locale) })} · ${t(`view.${viewOfMetric(f.metric)}` as DictKey)}`,
+                meta: <span className="num" style={{ color: f.level === 'critical' ? STATUS_COLOR.WARNING : STATUS_COLOR.CAUTION }}>{mmss(f.etaSec)}</span>,
+              }))}
+              onItemSelect={(_, i) => { const f = shown[i]; if (f) go(f.crewId, f.metric); }}
+              width="100%" maxHeight={300} frame={false} showGradients={false} animation="slide" animateOnce
+              accentColor="#4FB6A8" radius={12} gap={4}
+            />
             {forecasts.length > 8 && <p className="px-2.5 py-1 text-xs text-muted-foreground">+{forecasts.length - 8}</p>}
           </PopoverContent>
         </Popover>
