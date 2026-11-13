@@ -78,7 +78,7 @@ export function TimeTravelBar() {
         </Hint>
       </div>
 
-      <div className="relative min-w-40 flex-1" title={t('tt.scrub')}>
+      <div className="relative min-w-40 flex-1 pr-3" title={t('tt.scrub')}>
         <div className="pointer-events-none absolute inset-x-0 top-0 h-2" aria-hidden>
           {events.filter((e) => e.t >= minT && e.t <= now).map((e, i) => (
             <span key={`${e.t}-${i}`} className="absolute top-0 h-2 w-0.5 rounded-full" title={e.type}
@@ -91,7 +91,7 @@ export function TimeTravelBar() {
           onChange={(v) => replay.seek(minT + v, false)}
           onChangeEnd={(v) => replay.seek(minT + v, true)}
           leftIcon={null} rightIcon={null} valuePosition="bubble" formatValue={(v) => formatMet(minT + v)}
-          thickness={8} activeThickness={14} restOpacity={1}
+          thickness={8} activeThickness={14} restOpacity={1} maxStretch={12}
           trackColor="rgba(159,176,201,0.28)" rangeColor={inReplay ? '#D9A441' : '#4FB6A8'} contentColor="#9fb0c9"
           className="w-full"
         />
