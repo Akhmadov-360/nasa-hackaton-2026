@@ -114,7 +114,15 @@ function sheetXml(s: Sheet): string {
         ? `<c r="${ref}"${style}><v>${c}</v></c>`
         : `<c r="${ref}"${style} t="inlineStr"><is><t xml:space="preserve">${xml(String(c))}</t></is></c>`;
     }).join('');
-    return `<row r="${ri + 1}">${cells}</row>`;
+    // Excel does not always grow a row for wrapped text, so give long text rows an explicit height
+    let lines = 1;
+    r.forEach((c, ci) => {
+      if (typeof c !== 'string') return;
+      const w = Math.max(4, (s.widths?.[ci] ?? 10) - 1);
+      lines = Math.max(lines, c.split('\n').reduce((n, part) => n + Math.max(1, Math.ceil(part.length / w)), 0));
+    });
+    const ht = lines > 1 ? ` ht="${Math.min(409, lines * 15)}" customHeight="1"` : '';
+    return `<row r="${ri + 1}"${ht}>${cells}</row>`;
   }).join('');
   return '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
     + '<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">'

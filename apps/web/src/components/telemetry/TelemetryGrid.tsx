@@ -1,14 +1,13 @@
 'use client';
-import { useState } from 'react';
 import { Activity, Brain, Cloud, Droplet, Droplets, Fan, Gauge, HeartPulse, Info, Radiation, Thermometer, Volume2, Waves, Wind, Zap } from 'lucide-react';
 import { worstStatus } from '@astro/engine';
-import RubberSegment from '@/components/RubberSegment';
 import { Button } from '@/components/ui/button';
+import { Segmented } from '@/components/ui/segmented';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { WidgetBoundary } from '@/components/WidgetBoundary';
 import { useDisplayFrame } from '@/hooks/useDisplayFrame';
 import { statusWord, useT, type DictKey } from '@/lib/i18n';
-import { ORGANS, STATUS_COLOR } from '@/lib/metrics';
+import { ORGANS, STATUS_COLOR, TELEMETRY_VIEWS, VIEW_METRICS, type TelemetryView } from '@/lib/metrics';
 import { normText } from '@/lib/norms';
 import { useMissionStore } from '@/lib/store/missionStore';
 import { EcgChart } from './EcgChart';
@@ -17,19 +16,13 @@ import { SpaceWeatherCard } from './SpaceWeatherCard';
 import { VitalCard } from './VitalCard';
 
 const ic = 'size-4 shrink-0';
-type View = 'vitals' | 'cabin' | 'radiation';
-const VIEWS: View[] = ['vitals', 'cabin', 'radiation'];
 const VIEW_ICON = { vitals: HeartPulse, cabin: Waves, radiation: Radiation } as const;
-const VIEW_METRICS: Record<View, string[]> = {
-  vitals: ['hr', 'hrv', 'spo2', 'bpSys', 'bpDia', 'respRate', 'temp', 'stress', 'eeg'],
-  cabin: ['o2', 'co2', 'humidity', 'noise', 'airflow'],
-  radiation: ['doseRate', 'dose'],
-};
 
 export function TelemetryGrid({ crewId }: { crewId: string }) {
   const t = useT();
   const locale = useMissionStore((s) => s.locale);
-  const [view, setView] = useState<View>('vitals');
+  const view = useMissionStore((s) => s.telemetryView);
+  const setView = useMissionStore((s) => s.setTelemetryView);
   const { frame, replay } = useDisplayFrame(crewId);
   const focused = useMissionStore((s) => s.focusedOrgan);
   const degraded = useMissionStore((s) => s.degraded[crewId]);
@@ -54,12 +47,12 @@ export function TelemetryGrid({ crewId }: { crewId: string }) {
     </WidgetBoundary>
   );
 
-  /** one flat plateau: hairline dividers come from the 1px gap, cards keep their natural height */
+  /** one flat plateau: hairline dividers come from the 1px gap; every view has the same minimum height, so the tab bar never jumps */
   const plateau = (cols: string, children: React.ReactNode) => (
-    <div className={`grid grid-cols-2 gap-px overflow-hidden rounded-[20px] bg-white/10 ${cols}`}>{children}</div>
+    <div className={`grid min-h-[17rem] grid-cols-2 gap-px overflow-hidden rounded-[20px] bg-white/10 ${cols}`}>{children}</div>
   );
 
-  const items = VIEWS.map((k) => {
+  const items = TELEMETRY_VIEWS.map((k) => {
     const st = worstStatus(VIEW_METRICS[k].map(s));
     const Icon = VIEW_ICON[k];
     return {
@@ -77,11 +70,10 @@ export function TelemetryGrid({ crewId }: { crewId: string }) {
 
   return (
     <div className="flex h-full min-h-0 min-w-0 flex-col gap-3">
+      <WidgetBoundary name="ECG"><EcgChart crewId={crewId} /></WidgetBoundary>
+
       <div className="flex items-center gap-1.5">
-        <RubberSegment
-          items={items} value={view} onChange={(x) => setView(x as View)} equalSlots={false} size="md" radius={14}
-          trackColor="#0b1220" thumbColor="#1f2b46" textColor="#9fb0c9" activeTextColor="#eaf1ff" aria-label={t('view.label')}
-        />
+        <Segmented items={items} value={view} onChange={(x) => setView(x as TelemetryView)} size="md" label={t('view.label')} />
         <Tooltip>
           <TooltipTrigger asChild>
             <Button variant="ghost" size="icon" className="size-8 rounded-full" aria-label={t('view.info')}><Info className="size-4" /></Button>
@@ -89,8 +81,6 @@ export function TelemetryGrid({ crewId }: { crewId: string }) {
           <TooltipContent className="max-w-xs text-pretty">{info}</TooltipContent>
         </Tooltip>
       </div>
-
-      <WidgetBoundary name="ECG"><EcgChart crewId={crewId} /></WidgetBoundary>
 
       {view === 'vitals' && plateau('md:grid-cols-4', <>
         {card('hr', t('metric.hr'), <HeartPulse className={ic} aria-hidden />, 'bpm', v?.hr, (f) => f.vitals.hr)}

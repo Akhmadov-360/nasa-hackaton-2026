@@ -9,7 +9,7 @@ import { useEta } from '@/hooks/useEta';
 import { baseCfg } from '@/lib/engineConfig';
 import { useT, type DictKey } from '@/lib/i18n';
 import { SOURCE_OF, STATUS_COLOR, STATUS_RANK } from '@/lib/metrics';
-import { ForecastPill } from './ForecastPill';
+import { ForecastPill, StatusForecastBadge } from './ForecastPill';
 import { Sparkline } from './Sparkline';
 
 interface Props {
@@ -82,8 +82,14 @@ export function VitalCard({ crewId, sourceKey, metricKey, live, label, icon, uni
       <header className="flex items-center justify-between gap-1 text-[13px] text-muted-foreground">
         <span className="flex min-w-0 items-center gap-1.5 truncate">{icon}<span className="truncate">{label}</span></span>
         <span className="flex shrink-0 items-center gap-1">
-          {eta && <ForecastPill eta={eta} />}
-          {status !== 'NOMINAL' ? <StatusBadge status={status} /> : degraded ? <span className="text-xs text-amber">{t('est')}</span> : null}
+          {eta && status !== 'NOMINAL' ? (
+            <StatusForecastBadge status={status} eta={eta} />
+          ) : (
+            <>
+              {eta && <ForecastPill eta={eta} />}
+              {status !== 'NOMINAL' ? <StatusBadge status={status} /> : degraded ? <span className="text-xs text-amber">{t('est')}</span> : null}
+            </>
+          )}
           <ProvenanceMark sourceKey={sourceKey} limitKey={metricKey} />
         </span>
       </header>

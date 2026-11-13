@@ -4,7 +4,7 @@ import type { Alert, EngineEvent, Status, TelemetryFrame, TelemetryPackage } fro
 import type { SourceMode } from '../sources/types';
 import type { DictKey, Params } from '../i18n';
 import { crew } from '../engineConfig';
-import { STATUS_RANK } from '../metrics';
+import { STATUS_RANK, viewOfMetric, type TelemetryView } from '../metrics';
 
 export type Locale = 'en' | 'ru' | 'uz';
 
@@ -77,6 +77,14 @@ export interface MissionState {
 
   enter: () => void;
   selectCrew: (id: string) => void;
+  /** which telemetry tab is open (not persisted) */
+  telemetryView: TelemetryView;
+  setTelemetryView: (v: TelemetryView) => void;
+  /** select a crew member and open the tab that holds a reading: used by every "go to the problem" click */
+  jumpTo: (crewId: string | undefined, metric: string | undefined) => void;
+  /** counts operator commands; the status island reacts to each one */
+  pulse: number;
+  pulseIsland: () => void;
   focusOrgan: (id: string | null) => void;
   setMode: (mode: SourceMode, everLive: boolean) => void;
   applyFrames: (t: number, frames: TelemetryFrame[], degraded: Record<string, boolean>) => void;
@@ -156,6 +164,16 @@ export const useMissionStore = create<MissionState>()(
 
       enter: () => set({ entered: true }),
       selectCrew: (id) => set({ selectedCrewId: id, focusedOrgan: null }),
+      telemetryView: 'vitals',
+      setTelemetryView: (v) => set({ telemetryView: v }),
+      jumpTo: (crewId, metric) =>
+        set((s) => ({
+          selectedCrewId: crewId && crew.some((c) => c.id === crewId) ? crewId : s.selectedCrewId,
+          focusedOrgan: null,
+          telemetryView: viewOfMetric(metric),
+        })),
+      pulse: 0,
+      pulseIsland: () => set((s) => ({ pulse: s.pulse + 1 })),
       focusOrgan: (id) => set({ focusedOrgan: id }),
       setMode: (mode, everLive) => set({ mode, everLive }),
       applyFrames: (t, frames, degraded) =>

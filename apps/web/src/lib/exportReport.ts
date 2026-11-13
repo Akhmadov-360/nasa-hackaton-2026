@@ -91,7 +91,7 @@ export function buildReportSheets(report: MissionReport, locale: Locale): Sheet[
     ]),
   ];
   return [
-    { name: l.sheets.summary, rows: summary, widths: [38, 60] },
+    { name: l.sheets.summary, rows: summary, widths: [38, 58] },
     { name: l.sheets.crew, rows: crew, widths: [18, 16, 11, 14, 13, 13, 20, 20, 20] },
     { name: l.sheets.incidents, rows: inc, widths: [18, 14, 14, 14, 16, 22, 16, 40, 34] },
     { name: l.sheets.events, rows: events, widths: [14, 26, 16, 36] },

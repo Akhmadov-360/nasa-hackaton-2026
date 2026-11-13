@@ -56,6 +56,18 @@ export const SOURCE_OF: Record<string, { kind: Provenance; src: string }> = {
   goes: { kind: 'real', src: 'NOAA SWPC GOES' },
 };
 
+/** The three telemetry views and the readings each one shows. */
+export type TelemetryView = 'vitals' | 'cabin' | 'radiation';
+export const TELEMETRY_VIEWS: TelemetryView[] = ['vitals', 'cabin', 'radiation'];
+export const VIEW_METRICS: Record<TelemetryView, string[]> = {
+  vitals: ['hr', 'hrv', 'spo2', 'bpSys', 'bpDia', 'respRate', 'temp', 'stress', 'eeg'],
+  cabin: ['o2', 'co2', 'humidity', 'noise', 'airflow'],
+  radiation: ['doseRate', 'dose'],
+};
+/** Which view a reading lives in, so a click on an alert can open the right tab. */
+export const viewOfMetric = (metric: string | undefined): TelemetryView =>
+  TELEMETRY_VIEWS.find((v) => metric !== undefined && VIEW_METRICS[v].includes(metric)) ?? 'vitals';
+
 export const STATUS_RANK: Record<Status, number> = { NOMINAL: 0, CAUTION: 1, WARNING: 2, CRITICAL: 3 };
 export const STATUS_COLOR: Record<Status, string> = {
   NOMINAL: 'var(--color-teal)', CAUTION: 'var(--color-amber)', WARNING: 'var(--color-coral)', CRITICAL: 'var(--color-crimson)',

@@ -6,15 +6,16 @@ import { Button } from '@/components/ui/button';
 import { Drawer, DrawerClose, DrawerContent, DrawerDescription, DrawerHeader, DrawerTitle, DrawerTrigger } from '@/components/ui/drawer';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
-import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Segmented } from '@/components/ui/segmented';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { StatusBadge } from '@/components/StatusBadge';
 import { crewName } from '@/lib/engineConfig';
 import { LogExportMenu } from './LogExportMenu';
 import { useT, metricName } from '@/lib/i18n';
 import { formatValue, logText } from '@/lib/logText';
-import { formatMet } from '@/lib/metrics';
-import { useMissionStore } from '@/lib/store/missionStore';
+import { formatMet, STATUS_RANK } from '@/lib/metrics';
+import { useMissionStore, type LogEntry } from '@/lib/store/missionStore';
+import { AlertsLabel, isRoutine, PinnedIncidents, seriousClass, useActiveIncidents, useUnreadAlerts } from './logParts';
 
 type Filter = 'all' | 'alerts' | 'commands' | 'link';
 
@@ -24,14 +25,21 @@ export function LogDrawer() {
   const audit = useMissionStore((s) => s.audit);
   const locale = useMissionStore((s) => s.locale);
   const openProtocol = useMissionStore((s) => s.openProtocol);
+  const jumpTo = useMissionStore((s) => s.jumpTo);
   const [filter, setFilter] = useState<Filter>('all');
+  const [isOpen, setIsOpen] = useState(false);
+  const unread = useUnreadAlerts(filter, ['all', 'alerts']);
+  const active = useActiveIncidents();
+  const pinnedKeys = useMemo(() => new Set(active.map((e) => `${e.crewId}:${e.metric}`)), [active]);
   const rows = useMemo(() => {
     const f = audit.filter((e) => filter === 'all' || (filter === 'alerts' ? e.kind === 'alert' : filter === 'commands' ? e.kind === 'command' : e.kind === 'link'));
-    return [...f].reverse();
-  }, [audit, filter]);
+    return [...f].filter((e) => !(e.kind === 'alert' && pinnedKeys.has(`${e.crewId}:${e.metric}`) && STATUS_RANK[e.severity ?? 'NOMINAL'] >= STATUS_RANK.WARNING)).reverse();
+  }, [audit, filter, pinnedKeys]);
+  /** go to the reading: select the crew member, open the tab, and get the drawer out of the way */
+  const open = (e: LogEntry) => { jumpTo(e.crewId, e.metric); setIsOpen(false); };
 
   return (
-    <Drawer>
+    <Drawer open={isOpen} onOpenChange={setIsOpen}>
       <Tooltip>
         <TooltipTrigger asChild>
           <DrawerTrigger asChild>
@@ -56,14 +64,18 @@ export function LogDrawer() {
               </DrawerClose>
             </div>
           </div>
-          <Tabs value={filter} onValueChange={(v) => setFilter(v as Filter)} className="mt-3">
-            <TabsList aria-label={t('log.title')}>
-              <TabsTrigger value="all">{t('log.tab.all')}</TabsTrigger>
-              <TabsTrigger value="alerts">{t('log.tab.alerts')}</TabsTrigger>
-              <TabsTrigger value="commands">{t('log.tab.commands')}</TabsTrigger>
-              <TabsTrigger value="link">{t('log.tab.link')}</TabsTrigger>
-            </TabsList>
-          </Tabs>
+          <div className="mt-3">
+            <Segmented
+              label={t('log.title')} value={filter} onChange={(v) => setFilter(v as Filter)}
+              items={[
+                { value: 'all', label: t('log.tab.all') },
+                { value: 'alerts', label: <AlertsLabel text={t('log.tab.alerts')} unread={unread} /> },
+                { value: 'commands', label: t('log.tab.commands') },
+                { value: 'link', label: t('log.tab.link') },
+              ]}
+            />
+          </div>
+          {active.length > 0 && <div className="mt-3"><PinnedIncidents onOpen={open} limit={4} /></div>}
         </DrawerHeader>
         <Separator />
         <ScrollArea className="min-h-0 flex-1">
@@ -80,7 +92,11 @@ export function LogDrawer() {
             </thead>
             <tbody className="divide-y divide-white/[0.06]">
               {rows.map((e) => (
-                <tr key={e.id} className="align-top">
+                <tr
+                  key={e.id}
+                  className={`align-top transition-colors duration-200 ${seriousClass(e)} ${isRoutine(e) ? 'opacity-60' : ''} ${e.kind === 'alert' && e.crewId ? 'cursor-pointer hover:bg-white/5' : ''}`}
+                  onClick={e.kind === 'alert' && e.crewId ? () => open(e) : undefined}
+                >
                   <td className="num px-5 py-2.5 whitespace-nowrap text-muted-foreground">{formatMet(e.t)}</td>
                   <td className="px-2 py-2.5">{e.severity ? <StatusBadge status={e.severity} /> : <span className="text-muted-foreground">—</span>}</td>
                   <td className="px-2 py-2.5 whitespace-nowrap">{e.crewId ? crewName(e.crewId) : '—'}</td>
@@ -92,7 +108,7 @@ export function LogDrawer() {
                       {e.kind === 'alert' && e.metric && (
                         <Button
                           variant="ghost" size="icon" className="-my-1 size-8 shrink-0" aria-label={t('protocol.open')}
-                          onClick={() => openProtocol({ protocolId: PROTOCOL_OF_METRIC[e.metric as string] ?? 'general', key: e.id, crewId: e.crewId, t: e.t })}
+                          onClick={(ev) => { ev.stopPropagation(); openProtocol({ protocolId: PROTOCOL_OF_METRIC[e.metric as string] ?? 'general', key: e.id, crewId: e.crewId, t: e.t }); }}
                         >
                           <ListChecks />
                         </Button>

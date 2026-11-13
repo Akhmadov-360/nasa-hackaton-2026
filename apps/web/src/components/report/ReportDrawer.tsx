@@ -8,7 +8,7 @@ import { Drawer, DrawerClose, DrawerContent, DrawerDescription, DrawerHeader, Dr
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Separator } from '@/components/ui/separator';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Segmented } from '@/components/ui/segmented';
 import { useReport } from '@/hooks/useReport';
 import { crew, crewName } from '@/lib/engineConfig';
 import { useT, type DictKey } from '@/lib/i18n';
@@ -110,19 +110,14 @@ export function ReportDrawer() {
             </div>
 
             <div className="no-print flex flex-wrap items-center gap-x-4 gap-y-3">
-              <Tabs value={period} onValueChange={(v) => setPeriod(v as Period)}>
-                <TabsList aria-label={t('report.title')}>
-                  {(['300', '1800', '3600', 'all'] as Period[]).map((p) => (
-                    <TabsTrigger key={p} value={p} disabled={!!imported}>{t(`report.period.${p}` as DictKey)}</TabsTrigger>
-                  ))}
-                </TabsList>
-              </Tabs>
-              <Tabs value={crewFilter} onValueChange={setCrewFilter}>
-                <TabsList aria-label={t('report.col.crew')}>
-                  <TabsTrigger value="all">{t('report.crew.all')}</TabsTrigger>
-                  {crew.map((c) => <TabsTrigger key={c.id} value={c.id}>{c.name.split(' ')[0]}</TabsTrigger>)}
-                </TabsList>
-              </Tabs>
+              <Segmented
+                label={t('report.title')} value={period} onChange={(v) => setPeriod(v as Period)} disabled={!!imported}
+                items={(['300', '1800', '3600', 'all'] as Period[]).map((p) => ({ value: p, label: t(`report.period.${p}` as DictKey) }))}
+              />
+              <Segmented
+                label={t('report.col.crew')} value={crewFilter} onChange={setCrewFilter}
+                items={[{ value: 'all', label: t('report.crew.all') }, ...crew.map((c) => ({ value: c.id, label: c.name.split(' ')[0] }))]}
+              />
               <div className="ml-auto flex flex-wrap items-center gap-2">
                 <Button variant="secondary" size="sm" onClick={copySummary} disabled={!report}><Copy /> {t('report.copy')}</Button>
                 <Button variant="secondary" size="sm" onClick={() => window.print()} disabled={!report}><Printer /> {t('report.print')}</Button>

@@ -28,7 +28,7 @@ export function ControlDeck() {
   return (
     <aside className="flex min-h-0 flex-col bg-rail" aria-label={t('deck.title')}>
       <WidgetBoundary name={t('deck.title')}>
-        <section className="flex flex-col gap-2 p-4">
+        <section className="flex flex-col gap-1.5 p-4">
           <header className="flex items-baseline justify-between gap-2">
             <h2 className="text-sm font-medium text-muted-foreground">{t('deck.title')}</h2>
             <p className="text-xs text-muted-foreground">{ready ? t('deck.hint') : wait}</p>
@@ -62,14 +62,17 @@ export function ControlDeck() {
             disabled={!ready} tone="danger" icon={<Wind className="size-5" aria-hidden />} label={t('deck.o2')}
             hint={crewName(crewId)} onConfirm={() => sendCommand('o2fault', crewId)}
           />
-          <HoldButton
-            disabled={!ready} tone="calm" icon={<RotateCcw className="size-5" aria-hidden />} label={t('deck.normalize')}
-            hint={t('deck.target.all')} onConfirm={() => sendCommand('normalize', 'ALL')}
-          />
-          <HoldButton
-            disabled={!ready} tone="calm" icon={<Trash2 className="size-5" aria-hidden />} label={t('deck.reset')}
-            hint={t('deck.resetHint')} onConfirm={resetScenario}
-          />
+          {/* the two service buttons share a row: about 60 px more room for the flight log */}
+          <div className="grid grid-cols-2 gap-2">
+            <HoldButton
+              compact disabled={!ready} tone="calm" icon={<RotateCcw className="size-4" aria-hidden />} label={t('deck.normalize')}
+              hint={t('deck.target.all')} onConfirm={() => sendCommand('normalize', 'ALL')}
+            />
+            <HoldButton
+              compact disabled={!ready} tone="calm" icon={<Trash2 className="size-4" aria-hidden />} label={t('deck.reset')}
+              hint={t('deck.resetHint')} onConfirm={resetScenario}
+            />
+          </div>
         </section>
       </WidgetBoundary>
       <div className="px-4"><Separator /></div>
