@@ -21,6 +21,13 @@ describe('timeToThreshold', () => {
     expect(timeToThreshold(series((t) => 0.12 - 0.02 * Math.sin((2 * Math.PI * t) / 600)),
       { unit: 'm/s', low: { caution: 0.07, warning: 0.05, critical: 0.03 }, hysteresis: 0.01 }, 'warning')).toBeNull();
   });
+  it('is not fooled by a step, such as a recorded loop wrapping round', () => {
+    const hr: MetricThreshold = { unit: 'bpm', high: { caution: 100, warning: 120, critical: 150 }, hysteresis: 3 };
+    // 70 bpm for half a minute, then 100 bpm: a straight line fits it, but nothing is heading for 120
+    expect(timeToThreshold(series((t) => (t < 30 ? 70 : 100)), hr, 'warning')).toBeNull();
+    // the same net change as a smooth ramp is a real trend
+    expect(timeToThreshold(series((t) => 70 + t * 0.5), hr, 'warning')).not.toBeNull();
+  });
   it('says nothing for a flat series, a recovering one, or a noisy one', () => {
     expect(timeToThreshold(series(() => 97), spo2, 'critical')).toBeNull();
     expect(timeToThreshold(series((t) => 90 + t / 30), spo2, 'critical')).toBeNull();

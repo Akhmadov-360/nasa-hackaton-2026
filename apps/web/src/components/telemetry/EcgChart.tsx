@@ -122,7 +122,7 @@ export function EcgChart({ crewId }: { crewId: string }) {
   }, [crewId]);
 
   return (
-    <section className="card relative overflow-hidden p-3.5" aria-label={t('ecg.title')}>
+    <section className="card relative flex min-h-36 flex-1 flex-col overflow-hidden p-3.5" aria-label={t('ecg.title')}>
       <header className="mb-2 flex items-center justify-between gap-2">
         <h3 className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
           <HeartPulse className="size-4 text-teal" aria-hidden /> {t('ecg.title')}
@@ -136,7 +136,7 @@ export function EcgChart({ crewId }: { crewId: string }) {
         </h3>
         <span className="flex items-center"><StatusBadge status={status} /><ProvenanceMark sourceKey="hr" limitKey="hr" /></span>
       </header>
-      <canvas ref={canvasRef} className="h-24 w-full [@media(max-height:820px)]:h-20" role="img" aria-label={t('ecg.title')} />
+      <canvas ref={canvasRef} className="min-h-20 w-full flex-1 basis-0" role="img" aria-label={t('ecg.title')} />
     </section>
   );
 }

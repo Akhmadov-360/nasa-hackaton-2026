@@ -12,7 +12,9 @@ export interface Eta {
 }
 
 const MIN_POINTS = 20;
-const MIN_R2 = 0.7;
+const MIN_R2 = 0.8;
+/** The largest single change between neighbouring samples, as a share of the movement across the window. */
+const MAX_STEP_SHARE = 0.35;
 /** Further out than this a straight line through a short window is a guess, and slow environmental drift looks like a trend. */
 const MAX_ETA_SEC = 180;
 /** The reading must have moved at least this many hysteresis widths across the fitted window to count as a trend. */
@@ -57,6 +59,12 @@ export function timeToThreshold(points: TrendPoint[], th: MetricThreshold, targe
   if (Math.abs(perMin) < Math.max(th.hysteresis * 0.3, 1e-6)) return null;
   const span = points[points.length - 1].t - points[0].t;
   if (Math.abs(fit.slope) * span < th.hysteresis * MIN_MOVE_IN_HYSTERESES) return null;
+  // a step (a recorded loop wrapping round, a sensor jump) fits a straight line quite well but is not a trend:
+  // no single sample-to-sample change may carry a large share of the whole movement
+  let maxStep = 0;
+  for (let i = 1; i < points.length; i++) maxStep = Math.max(maxStep, Math.abs(points[i].v - points[i - 1].v));
+  const net = Math.abs(points[points.length - 1].v - points[0].v);
+  if (maxStep > MAX_STEP_SHARE * Math.max(net, Math.abs(fit.slope) * span)) return null;
 
   const candidates: number[] = [];
   const low = th.low?.[target];

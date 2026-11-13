@@ -6,12 +6,10 @@ import { StatusBadge } from '@/components/StatusBadge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { useEta } from '@/hooks/useEta';
-import { formatDuration } from '@/lib/duration';
 import { baseCfg } from '@/lib/engineConfig';
-import { statusWord, useT, type DictKey } from '@/lib/i18n';
-import { useMissionStore } from '@/lib/store/missionStore';
+import { useT, type DictKey } from '@/lib/i18n';
 import { SOURCE_OF, STATUS_COLOR, STATUS_RANK } from '@/lib/metrics';
-import { Timer } from 'lucide-react';
+import { ForecastPill } from './ForecastPill';
 import { Sparkline } from './Sparkline';
 
 interface Props {
@@ -32,6 +30,9 @@ interface Props {
   status: Status;
   read: (f: TelemetryFrame) => number;
   tick: number;
+  /** normal range shown right of the number, see `normText` */
+  norm?: string;
+  className?: string;
   highlighted?: boolean;
   degraded?: boolean;
 }
@@ -62,10 +63,9 @@ export function ProvenanceMark({ sourceKey, limitKey }: { sourceKey: string; lim
   );
 }
 
-export function VitalCard({ crewId, sourceKey, metricKey, live, label, icon, unit, value, value2, decimals = 0, status, read, tick, highlighted, degraded }: Props) {
+export function VitalCard({ crewId, sourceKey, metricKey, live, label, icon, unit, value, value2, decimals = 0, status, read, tick, norm, className, highlighted, degraded }: Props) {
   const t = useT();
-  const locale = useMissionStore((s) => s.locale);
-  const eta = useEta(crewId, metricKey, read, status, tick, live);
+  const eta = useEta(crewId, metricKey, tick, live);
   const fmt = { minimumFractionDigits: decimals, maximumFractionDigits: decimals };
   const color = STATUS_COLOR[status];
   const alert = STATUS_RANK[status] >= STATUS_RANK.WARNING;
@@ -73,7 +73,7 @@ export function VitalCard({ crewId, sourceKey, metricKey, live, label, icon, uni
   return (
     <article
       aria-current={highlighted ? 'true' : undefined}
-      className="relative flex min-w-0 flex-col gap-0.5 bg-cell p-3.5 transition-[box-shadow,background-color] duration-500"
+      className={`@container relative flex min-w-0 flex-col gap-0.5 bg-cell p-3.5 transition-[box-shadow,background-color] duration-500 ${className ?? ''}`}
       style={{
         background: alert ? `color-mix(in srgb, ${color} 9%, var(--color-cell))` : highlighted ? 'color-mix(in srgb, var(--color-teal) 9%, var(--color-cell))' : undefined,
         boxShadow: alert ? `inset 3px 0 0 ${color}` : highlighted ? 'inset 3px 0 0 var(--color-teal)' : undefined,
@@ -81,7 +81,8 @@ export function VitalCard({ crewId, sourceKey, metricKey, live, label, icon, uni
     >
       <header className="flex items-center justify-between gap-1 text-[13px] text-muted-foreground">
         <span className="flex min-w-0 items-center gap-1.5 truncate">{icon}<span className="truncate">{label}</span></span>
-        <span className="flex shrink-0 items-center">
+        <span className="flex shrink-0 items-center gap-1">
+          {eta && <ForecastPill eta={eta} />}
           {status !== 'NOMINAL' ? <StatusBadge status={status} /> : degraded ? <span className="text-xs text-amber">{t('est')}</span> : null}
           <ProvenanceMark sourceKey={sourceKey} limitKey={metricKey} />
         </span>
@@ -99,14 +100,17 @@ export function VitalCard({ crewId, sourceKey, metricKey, live, label, icon, uni
           </span>
         )}
         <span className="text-xs text-muted-foreground">{unit}</span>
+        {norm && (
+          <span
+            className={`num ml-auto hidden text-[11px] whitespace-nowrap text-muted-foreground/80 ${value2 !== undefined ? '@[13rem]:inline' : '@[8.5rem]:inline'}`}
+            title={`${t('norm.label')}: ${norm}. ${t('norm.hint')}`}
+            aria-label={`${t('norm.label')} ${norm}`}
+          >
+            {norm}
+          </span>
+        )}
       </div>
-      {eta && (
-        <p className="flex items-center gap-1.5 text-xs font-medium" style={{ color: eta.level === 'critical' ? STATUS_COLOR.CRITICAL : STATUS_COLOR.WARNING }}>
-          <Timer className="size-3.5 shrink-0" aria-hidden />
-          {t('trend.eta', { level: statusWord(eta.level === 'critical' ? 'CRITICAL' : 'WARNING', locale).toLowerCase(), time: formatDuration(eta.etaSec, locale) })}
-        </p>
-      )}
-      <div className="mt-auto pt-2 [@media(max-height:820px)]:hidden"><Sparkline crewId={crewId} read={read} color={color} tick={tick} /></div>
+      <div className="mt-auto pt-2"><Sparkline crewId={crewId} read={read} color={color} tick={tick} /></div>
     </article>
   );
 }

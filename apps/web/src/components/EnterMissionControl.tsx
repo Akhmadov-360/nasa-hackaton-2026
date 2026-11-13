@@ -23,7 +23,7 @@ export function EnterMissionControl() {
         <button
           autoFocus
           onClick={startRuntime}
-          className="mt-8 rounded-2xl bg-teal/20 px-7 py-3.5 text-base font-medium text-teal ring-1 ring-teal/40 transition hover:bg-teal/30"
+          className="mt-8 rounded-2xl bg-teal/15 px-7 py-3.5 text-base font-medium text-teal shadow-[inset_0_1px_0_0_rgba(255,255,255,0.06)] transition-colors duration-200 hover:bg-teal/25 focus-visible:ring-2 focus-visible:ring-ring"
         >
           {t('enter.cta')}
         </button>
