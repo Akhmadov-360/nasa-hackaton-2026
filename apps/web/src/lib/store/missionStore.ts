@@ -82,9 +82,6 @@ export interface MissionState {
   setTelemetryView: (v: TelemetryView) => void;
   /** select a crew member and open the tab that holds a reading: used by every "go to the problem" click */
   jumpTo: (crewId: string | undefined, metric: string | undefined) => void;
-  /** counts operator commands; the status island reacts to each one */
-  pulse: number;
-  pulseIsland: () => void;
   focusOrgan: (id: string | null) => void;
   setMode: (mode: SourceMode, everLive: boolean) => void;
   applyFrames: (t: number, frames: TelemetryFrame[], degraded: Record<string, boolean>) => void;
@@ -172,8 +169,6 @@ export const useMissionStore = create<MissionState>()(
           focusedOrgan: null,
           telemetryView: viewOfMetric(metric),
         })),
-      pulse: 0,
-      pulseIsland: () => set((s) => ({ pulse: s.pulse + 1 })),
       focusOrgan: (id) => set({ focusedOrgan: id }),
       setMode: (mode, everLive) => set({ mode, everLive }),
       applyFrames: (t, frames, degraded) =>

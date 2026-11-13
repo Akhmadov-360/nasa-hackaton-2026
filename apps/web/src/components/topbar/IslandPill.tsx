@@ -23,7 +23,7 @@ function metricLabelKey(metric: string): DictKey | null {
  * The mission status "island". It shows the overall status; while nothing is in alarm yet it shows the nearest
  * forecast instead ("Pulse · 1:27", "+2" for the others). Hover or click it to open the full list; a row jumps to
  * that crew member and the tab with the reading. Details of an alert arrive as a Sileo toast that drops out of this
- * pill. On a new alert, or when the operator sends a command, the pill swells.
+ * pill. On a new alert the pill swells.
  */
 export function IslandPill() {
   const t = useT();
@@ -31,7 +31,6 @@ export function IslandPill() {
   const island = useMissionStore((s) => s.island);
   const latest = useMissionStore((s) => s.latest);
   const tick = useMissionStore((s) => s.t);
-  const pulse = useMissionStore((s) => s.pulse);
   const jumpTo = useMissionStore((s) => s.jumpTo);
   const status = globalStatus(latest);
   const forecasts = useCrewForecasts(tick);
@@ -47,14 +46,6 @@ export function IslandPill() {
     const id = setTimeout(() => setSwell(false), 1800);
     return () => clearTimeout(id);
   }, [island?.id]); // eslint-disable-line react-hooks/exhaustive-deps
-
-  // an operator command "arrives" in the island: a short swell
-  useEffect(() => {
-    if (!pulse) return;
-    setSwell(true);
-    const id = setTimeout(() => setSwell(false), 1100);
-    return () => clearTimeout(id);
-  }, [pulse]);
 
   const next = forecasts[0];
   const showForecast = !!next && STATUS_RANK[status] < STATUS_RANK.WARNING;
@@ -117,7 +108,7 @@ export function IslandPill() {
 
   return (
     <div className="relative z-40 flex h-11 w-full justify-center" role="status" aria-live="polite">
-      <motion.div data-island className="absolute top-0" animate={{ width: swell ? base + 40 : base, height: 44 }} transition={spring}>
+      <motion.div className="absolute top-0" animate={{ width: swell ? base + 40 : base, height: 44 }} transition={spring}>
         {/* liquid body: the only element with the goo filter */}
         <div className="absolute inset-0" style={{ filter: 'url(#goo)' }} aria-hidden>
           <motion.div className="absolute inset-0 rounded-[22px] bg-panel-2" />

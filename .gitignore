@@ -10,3 +10,4 @@ docs/superpowers/
 .claude/
 .playwright-mcp/
 shot-*.png
+*.tsbuildinfo

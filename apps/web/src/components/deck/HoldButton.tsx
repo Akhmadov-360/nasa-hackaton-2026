@@ -1,10 +1,8 @@
 'use client';
 import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
-import { createPortal } from 'react-dom';
-import { animate, useReducedMotion } from 'motion/react';
+import { useReducedMotion } from 'motion/react';
 import { Check } from 'lucide-react';
 import { HoldController } from '@/lib/hold';
-import { useMissionStore } from '@/lib/store/missionStore';
 
 interface Props {
   label: string;
@@ -24,54 +22,17 @@ const TONE = {
 };
 
 /**
- * A droplet that leaves the button and flies into the status island, then makes the island swell:
- * the command "flows" from the deck into the control centre. A spring gives the snap on arrival.
- */
-function FlyingDrop({ from, color, onDone }: { from: { x: number; y: number }; color: string; onDone: () => void }) {
-  const ref = useRef<HTMLSpanElement>(null);
-  useEffect(() => {
-    const el = ref.current;
-    const island = document.querySelector('[data-island]')?.getBoundingClientRect();
-    if (!el || !island) { onDone(); return; }
-    const to = { x: island.left + island.width / 2, y: island.top + island.height / 2 };
-    try {
-      // a spring takes exactly two keyframes: it carries the position (with its overshoot, the "snap");
-      // the stretch into a teardrop is a separate three-keyframe tween
-      const fly = animate(el, { x: [from.x, to.x], y: [from.y, to.y] }, { type: 'spring', stiffness: 130, damping: 15, mass: 0.8 });
-      const stretch = animate(el, { scaleX: [1, 0.7, 0.45], scaleY: [1, 1.5, 0.45] }, { duration: 0.7, ease: 'easeInOut' });
-      fly.then(onDone);
-      return () => { fly.stop(); stretch.stop(); };
-    } catch {
-      // a decorative animation must never take the control deck down
-      onDone();
-      return undefined;
-    }
-  }, [from.x, from.y, onDone]);
-  return createPortal(
-    <span
-      ref={ref} aria-hidden
-      className="pointer-events-none fixed top-0 left-0 z-[60] -ml-2 -mt-2 size-4 rounded-full"
-      style={{ background: color, boxShadow: `0 0 14px ${color}` }}
-    />,
-    document.body,
-  );
-}
-
-/**
  * Press and hold for 0.8 s. Releasing early, pointer-cancel, sliding off the button, switching tabs
  * or any non-primary mouse button does nothing. While held, the fill swells like a viscous liquid from the icon
- * to the far edge; on confirmation a drop tears off and flows into the status island.
+ * to the far edge.
  */
 export function HoldButton({ label, hint, icon, tone, onConfirm, disabled, compact = false }: Props) {
   const [progress, setProgress] = useState(0);
   const [done, setDone] = useState(false);
-  const [drop, setDrop] = useState<{ x: number; y: number; id: number } | null>(null);
   const reduce = useReducedMotion();
-  const btn = useRef<HTMLButtonElement>(null);
   const confirmRef = useRef(onConfirm);
   confirmRef.current = onConfirm;
   const doneTimer = useRef<ReturnType<typeof setTimeout>>(undefined);
-  const pulseIsland = useMissionStore((s) => s.pulseIsland);
 
   const hold = useMemo(
     () =>
@@ -80,9 +41,6 @@ export function HoldButton({ label, hint, icon, tone, onConfirm, disabled, compa
           confirmRef.current();
           setDone(true);
           doneTimer.current = setTimeout(() => setDone(false), 900);
-          const r = btn.current?.getBoundingClientRect();
-          if (r && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) setDrop({ x: r.left + r.width / 2, y: r.top + r.height / 2, id: Date.now() });
-          else useMissionStore.getState().pulseIsland();
         },
         setProgress,
       ),
@@ -110,7 +68,6 @@ export function HoldButton({ label, hint, icon, tone, onConfirm, disabled, compa
   return (
     <>
       <button
-        ref={btn}
         type="button"
         disabled={disabled}
         onPointerDown={(e) => { if (e.button === 0 && e.isPrimary) hold.start(); }}
@@ -138,7 +95,6 @@ export function HoldButton({ label, hint, icon, tone, onConfirm, disabled, compa
           {!compact && <span className="block truncate text-xs text-mist">{done ? '✓' : hint}</span>}
         </span>
       </button>
-      {drop && <FlyingDrop key={drop.id} from={drop} color={c.solid} onDone={() => { setDrop(null); pulseIsland(); }} />}
     </>
   );
 }
