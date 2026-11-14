@@ -80,9 +80,7 @@ export function SelfCheckDrawer() {
             <DrawerTitle>{t('selfcheck.title')}</DrawerTitle>
             <DrawerDescription>{t('selfcheck.for', { name: crewName(crewId) })}</DrawerDescription>
           </div>
-          <DrawerClose asChild>
-            <Tip label={t('about.close')}><Button variant="ghost" size="icon" className="size-8 shrink-0 rounded-full" aria-label={t('about.close')}><X className="size-4" /></Button></Tip>
-          </DrawerClose>
+          <Tip label={t('about.close')}><DrawerClose asChild><Button variant="ghost" size="icon" className="size-8 shrink-0 rounded-full" aria-label={t('about.close')}><X className="size-4" /></Button></DrawerClose></Tip>
         </DrawerHeader>
 
         {/* data-vaul-no-drag: dragging a slider or a field must never drag the window itself */}

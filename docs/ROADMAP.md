@@ -14,10 +14,11 @@ login). Their deadlines and format rules must be checked by the team before the 
 | D1 Smoke test and rehearsal | Done (`pnpm smoke`, `scripts/smoke.md`) |
 | Submission pack | Done (`docs/SUBMISSION.md`, README NASA data and AI-use sections) |
 | G2 "Do now" guidance | Done (pinned alarms, organ popover; Island list not changed) |
-| G3 "About this indicator" + organ function | Done (side window from card titles, organ popover rows and the Crew dose title; `about.json`, en/ru). G7 is partly covered: every entry carries its HRP hazards and risks, shown in the window; a legend and tags on the cards are still open |
+| G3 "About this indicator" + organ function | Done (side window from card titles, organ popover rows and the Crew dose title; `about.json`, en/ru). Hazards and risks per indicator are shown in the window |
 | G1 Self-Check (glucose, sleep, mood, water) | Done: `measurement` events, `frame.manual`, limits and sources, API validation, Self-check tab and side window, smoke step (14 steps). Edit and remove with undo, optional earlier time, wall-clock date in the Excel *Self-check* sheet, mood as five faces. Not done: reminders to enter values (G4) |
 | G6+G8 Mission context and escalation | Done: five contexts (station, Gateway, Moon base, Mars transit, Mars base), delay in the header on wide screens and in the tooltip, the *Ground* line under *Do now* for a warning or a critical reading. The station delay (0.25 to 0.5 s) is our estimate; NASA says under a second via the relay satellites |
-| G7 (rest), G4, G5, G9, G10 | Not started |
+| G7 Hazard tags | Done: icon chips in the *About* window and a legend of the five hazards (shield button beside the tabs) that lists the indicators of each hazard and opens their *About* windows. No tags on the cards, to keep them small |
+| G4, G5, G9, G10 | Not started |
 
 ## 1. What the challenge asks, and where we are
 

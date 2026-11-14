@@ -165,6 +165,15 @@ await step('mission context: Mars base changes the ground-contact advice, the bo
   await page.locator('ul[aria-label="Active alarms"] li', { hasText: /3–22 min each way/ }).first().waitFor({ timeout: 8000 });
 });
 
+await step('hazard legend opens an indicator, and the window closes with its close button', async () => {
+  await page.getByRole('radio', { name: /Vitals/ }).click();
+  await page.getByRole('button', { name: 'The five hazards of spaceflight' }).click();
+  await page.getByRole('button', { name: 'Dose rate' }).click();
+  await page.locator('[role=dialog] h2', { hasText: 'Dose rate' }).waitFor({ timeout: 5000 });
+  await page.getByRole('button', { name: 'Close', exact: true }).click();
+  await page.waitForFunction(() => !document.querySelector('[role=dialog]'), null, { timeout: 5000 });
+});
+
 await step('report lists incidents and the limits table, exports Excel', async () => {
   await page.locator('header button', { hasText: /Report/ }).first().click();
   await page.locator('.report-scroll').waitFor({ timeout: 10000 });

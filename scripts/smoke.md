@@ -9,7 +9,7 @@ Do it once the evening before and once an hour before the presentation.
 pnpm install && pnpm build:libs
 pnpm --filter @astro/api start                    # terminal 1  (:3001)
 pnpm --filter @astro/web build && pnpm --filter @astro/web start   # terminal 2  (:3000); stop `dev` first
-pnpm smoke                                        # terminal 3, expect 15/15
+pnpm smoke                                        # terminal 3, expect 16/16
 ```
 
 Never present from `pnpm dev`: the first view of each screen compiles on demand and the dev overlay badge covers the corner.

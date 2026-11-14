@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Segmented } from '@/components/ui/segmented';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { SelfCheckView } from '@/components/selfcheck/SelfCheckView';
+import { HazardLegend } from '@/components/guidance/hazards';
 import { WidgetBoundary } from '@/components/WidgetBoundary';
 import { useDisplayFrame } from '@/hooks/useDisplayFrame';
 import { statusWord, useT, type DictKey } from '@/lib/i18n';
@@ -81,6 +82,7 @@ export function TelemetryGrid({ crewId }: { crewId: string }) {
           </TooltipTrigger>
           <TooltipContent className="max-w-xs text-pretty">{info}</TooltipContent>
         </Tooltip>
+        <HazardLegend />
       </div>
 
       {view === 'vitals' && plateau('md:grid-cols-4', <>

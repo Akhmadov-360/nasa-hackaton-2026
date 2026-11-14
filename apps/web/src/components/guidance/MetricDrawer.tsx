@@ -6,7 +6,8 @@ import { Button } from '@/components/ui/button';
 import { Tip } from '@/components/ui/tip';
 import { Drawer, DrawerClose, DrawerContent, DrawerDescription, DrawerHeader, DrawerTitle } from '@/components/ui/drawer';
 import { isManualMetric } from '@astro/engine';
-import { aboutFor, aboutKeyOf, pickText, RISK_URL } from '@/lib/about';
+import { HazardChip } from './hazards';
+import { aboutFor, aboutKeyOf, aboutTitleKey, pickText, RISK_URL } from '@/lib/about';
 import { baseCfg } from '@/lib/engineConfig';
 import { useT, type DictKey } from '@/lib/i18n';
 import { formatValue } from '@/lib/logText';
@@ -14,9 +15,6 @@ import { STATUS_RANK } from '@/lib/metrics';
 import { normText } from '@/lib/norms';
 import { useMissionStore } from '@/lib/store/missionStore';
 
-/** Title key of an indicator (the radiation readings have their own labels). */
-const TITLE: Record<string, DictKey> = { doseRate: 'rad.rate', dose: 'rad.crewDose' };
-export const aboutTitleKey = (key: string): DictKey => TITLE[key] ?? (`metric.${key}` as DictKey);
 
 /** Metrics behind one about-entry: blood pressure is two readings. */
 const READINGS: Record<string, string[]> = { bp: ['bpSys', 'bpDia'] };
@@ -81,9 +79,7 @@ export function MetricDrawer() {
                 <DrawerTitle className="mt-0.5 truncate">{name}</DrawerTitle>
                 <DrawerDescription className="sr-only">{t('about.note')}</DrawerDescription>
               </div>
-              <DrawerClose asChild>
-                <Tip label={t('about.close')}><Button variant="ghost" size="icon" className="size-8 shrink-0 rounded-full" aria-label={t('about.close')}><X className="size-4" /></Button></Tip>
-              </DrawerClose>
+              <Tip label={t('about.close')}><DrawerClose asChild><Button variant="ghost" size="icon" className="size-8 shrink-0 rounded-full" aria-label={t('about.close')}><X className="size-4" /></Button></DrawerClose></Tip>
             </DrawerHeader>
 
             <div className="thin-scroll flex min-h-0 flex-1 flex-col gap-5 overflow-y-auto px-5 pb-5">
@@ -117,9 +113,7 @@ export function MetricDrawer() {
 
               <Section title={t('about.hazards')}>
                 <ul className="flex flex-wrap gap-1.5">
-                  {about.hazards.map((h) => (
-                    <li key={h} className="rounded-full bg-white/8 px-2.5 py-0.5 text-xs">{t(`hazard.${h}` as DictKey)}</li>
-                  ))}
+                  {about.hazards.map((h) => <li key={h}><HazardChip hazard={h} /></li>)}
                 </ul>
               </Section>
               <Section title={t('about.risks')}>

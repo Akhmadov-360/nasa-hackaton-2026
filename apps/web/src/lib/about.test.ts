@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import thresholds from '../../../../packages/data/thresholds.json';
-import { aboutFor, aboutKeyOf, organAbout, pickText, RISK_URL } from './about';
+import { aboutFor, aboutKeyOf, aboutTitleKey, hazardIndex, organAbout, pickText, RISK_URL } from './about';
+import { translate } from './i18n';
 import { ORGANS } from './metrics';
 
 const HAZARDS = ['radiation', 'isolation', 'distance', 'gravity', 'closed'];
@@ -43,5 +44,20 @@ describe('about this indicator', () => {
 
   it('points to the NASA Human Research Program', () => {
     expect(RISK_URL).toMatch(/^https:\/\/www\.nasa\.gov\/hrp\//);
+  });
+
+  it('lists every hazard with at least one indicator, and every indicator has a title', () => {
+    const index = hazardIndex();
+    expect(Object.keys(index).sort()).toEqual(['closed', 'distance', 'gravity', 'isolation', 'radiation']);
+    for (const [h, keys] of Object.entries(index)) {
+      expect(keys.length, `indicators for ${h}`).toBeGreaterThan(0);
+      for (const k of keys) {
+        expect(translate('en', aboutTitleKey(k)), `title of ${k}`).not.toBe(aboutTitleKey(k));
+        expect(translate('ru', aboutTitleKey(k)), `ru title of ${k}`).not.toBe(aboutTitleKey(k));
+      }
+      for (const loc of ['en', 'ru'] as const) {
+        expect(translate(loc, `hazard.desc.${h}` as never).length).toBeGreaterThan(20);
+      }
+    }
   });
 });

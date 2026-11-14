@@ -105,9 +105,7 @@ export function ReportDrawer() {
                   </DrawerDescription>
                 </div>
               </div>
-              <DrawerClose asChild>
-                <Tip label={t('protocol.close')}><Button variant="ghost" size="icon" className="no-print" aria-label={t('protocol.close')}><X /></Button></Tip>
-              </DrawerClose>
+              <Tip label={t('protocol.close')}><DrawerClose asChild><Button variant="ghost" size="icon" className="no-print" aria-label={t('protocol.close')}><X /></Button></DrawerClose></Tip>
             </div>
 
             <div className="no-print flex flex-wrap items-center gap-x-4 gap-y-3">

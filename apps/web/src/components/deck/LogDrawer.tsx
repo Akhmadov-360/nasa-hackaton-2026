@@ -60,9 +60,7 @@ export function LogDrawer() {
             </div>
             <div className="flex items-center gap-1">
               <LogExportMenu />
-              <DrawerClose asChild>
-                <Tip label={t('log.close')}><Button variant="ghost" size="icon" aria-label={t('log.close')}><X /></Button></Tip>
-              </DrawerClose>
+              <Tip label={t('log.close')}><DrawerClose asChild><Button variant="ghost" size="icon" aria-label={t('log.close')}><X /></Button></DrawerClose></Tip>
             </div>
           </div>
           <div className="mt-3">
