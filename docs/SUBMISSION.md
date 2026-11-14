@@ -30,7 +30,7 @@ Astronaut Health Monitor is a Mission Control style dashboard that lets a four-p
 https://github.com/Akhmadov-360/nasa-hackaton-2026
 
 **Hosted demo** (web only, runs in the browser simulation; the live server and NOAA feed need the local API)
-`<Vercel URL, see section 6 of the README>`
+https://astronaut-health-monitor-one.vercel.app
 
 **Detailed Project Description**
 Adapt sections 1 to 5 of the README. In short:
