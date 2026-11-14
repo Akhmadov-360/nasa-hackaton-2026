@@ -20,6 +20,9 @@ login). Re-check each one on the portal before submitting.
 **Project Name**
 Astronaut Health Monitor
 
+**Team Name**
+Ultra Sun
+
 **High-Level Project Summary**
 Astronaut Health Monitor is a Mission Control style dashboard that lets a four-person crew see, forecast and act on the state of their health when the ground is far away. It combines real physiological recordings (PhysioNet), real solar flares (NASA DONKI), live space weather (NOAA GOES) and cabin and radiation limits taken from NASA-STD-3001 and related NASA documents, and every number says whether it is recorded, modelled or an engineering choice. A Time-to-Threshold forecast warns before a limit is crossed, and the app keeps working with a browser-side simulation when the connection is lost.
 
@@ -62,7 +65,7 @@ Most of the code, tests, translations and documentation were written by an AI co
 
 | # | Slide | Content |
 |---|---|---|
-| 1 | Title | Name, one-line promise ("see it, forecast it, act on it, even when the ground is far away"), team name, links. No NASA logo |
+| 1 | Title | Name, one-line promise ("see it, forecast it, act on it, even when the ground is far away"), team name **Ultra Sun**, links. No NASA logo |
 | 2 | Why | Long missions: the crew must self-assess; delay to Moon about 1.3 s, to Mars 3 to 22 min; the five HRP hazards as small icons |
 | 3 | What you see | Full-dashboard screenshot: body scan, ECG, vitals, cabin tab, island, control deck, the Self-check tab and the header chips |
 | 4 | Before it happens and what to do | Island forecast and card capsule screenshots; pinned alarm with the "do now" and *Ground* lines, once at the station and once at Mars; the *About* window with the trend chart and limit bands |

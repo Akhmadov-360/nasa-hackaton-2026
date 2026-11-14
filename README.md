@@ -364,5 +364,5 @@ metadata: AI-assisted commits carry a `Co-Authored-By: Claude` trailer in `git l
 
 ## Team
 
-NASA Space Apps Challenge Tashkent 2026 team - Ultra Sun. Data attribution and licences are listed in
+**Team name: Ultra Sun**, NASA Space Apps Challenge Tashkent 2026. Data attribution and licences are listed in
 `packages/data/packs/demo.pack.json` (`meta.sources`, `meta.licenses`); check each dataset page for its exact licence.
