@@ -58,10 +58,14 @@ export interface Track {
   resp: number[];
 }
 
+export type Sex = 'F' | 'M';
+
 export interface CrewMember {
   id: string;
   name: string;
   role: string;
+  /** recorded for the report and the body figure; limits do not depend on it */
+  sex?: Sex;
 }
 
 export interface ScenarioPack {

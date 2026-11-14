@@ -1,7 +1,7 @@
 'use client';
 import { useLayoutEffect, useRef, useState } from 'react';
 import { motion, useReducedMotion } from 'motion/react';
-import { crew } from '@/lib/engineConfig';
+import { crew, crewSex } from '@/lib/engineConfig';
 import { statusWord, useT } from '@/lib/i18n';
 import { STATUS_COLOR } from '@/lib/metrics';
 import { useMissionStore } from '@/lib/store/missionStore';
@@ -22,6 +22,8 @@ function PulseDot({ hr, color }: { hr: number | undefined; color: string }) {
 }
 
 function CrewButton({ id, name, role }: { id: string; name: string; role: string }) {
+  const t = useT();
+  const sex = crewSex(id);
   const selected = useMissionStore((s) => s.selectedCrewId === id);
   const select = useMissionStore((s) => s.selectCrew);
   const degraded = useMissionStore((s) => s.degraded[id]);
@@ -32,7 +34,7 @@ function CrewButton({ id, name, role }: { id: string; name: string; role: string
     <button
       onClick={() => select(id)}
       aria-pressed={selected}
-      aria-label={`${name}, ${role}, ${statusWord(status)}`}
+      aria-label={`${name}, ${role}${sex ? `, ${t(`sex.${sex}`)}` : ''}, ${statusWord(status)}`}
       className="group relative flex h-[84px] w-full flex-col items-center justify-center gap-1 rounded-2xl"
     >
       <span

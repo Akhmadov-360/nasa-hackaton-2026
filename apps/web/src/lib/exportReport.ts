@@ -1,7 +1,7 @@
 import { evaluateMetric, manualEntries, MANUAL, type MissionReport } from '@astro/engine';
 import { formatClock } from '@/components/selfcheck/time';
-import { crewName } from './engineConfig';
-import { metricName, statusWord } from './i18n';
+import { crewName, crewSex } from './engineConfig';
+import { metricName, statusWord, translate, type DictKey } from './i18n';
 import { formatMet } from './metrics';
 import { allIncidents, causeText, incidentTitle, peakText } from './reportText';
 import type { Locale } from './store/missionStore';
@@ -16,7 +16,7 @@ const T = {
       radTotal: 'Radiation accumulated in total, mSv', earlier: 'Incidents earlier in the session', demo: 'Note',
       demoText: 'Demo report. Limits come from NASA documents, clinical references or our own choice (sheet "Limits and sources"). Protocols are illustrative.',
     },
-    crew: ['Crew member', 'Worst status', 'Incidents', 'Lowest SpO2, %', 'Heart rate min', 'Heart rate max', 'Radiation in period, mSv', 'Accumulated total, mSv', 'Peak dose rate, µSv/h'],
+    crew: ['Crew member', 'Sex', 'Worst status', 'Incidents', 'Lowest SpO2, %', 'Heart rate min', 'Heart rate max', 'Radiation in period, mSv', 'Accumulated total, mSv', 'Peak dose rate, µSv/h'],
     incidents: ['Crew member', 'Start (MET)', 'End (MET)', 'Duration, s', 'Worst status', 'Reading', 'Peak', 'Likely cause', 'Protocol'],
     events: ['MET', 'Event', 'Crew', 'Parameters'],
     selfcheck: ['Crew member', 'Reading', 'Value', 'Unit', 'Status', 'Date and time (local)', 'MET', 'Entered by'],
@@ -35,7 +35,7 @@ const T = {
       radTotal: 'Накоплено радиации всего, mSv', earlier: 'Инцидентов раньше в сессии', demo: 'Примечание',
       demoText: 'Демо-отчёт. Пороги взяты из документов NASA, клинической нормы или выбраны нами (лист «Пороги и источники»). Протоколы иллюстративные.',
     },
-    crew: ['Астронавт', 'Худшее состояние', 'Инциденты', 'Мин. SpO2, %', 'Пульс мин', 'Пульс макс', 'Радиация за период, mSv', 'Накоплено всего, mSv', 'Пик мощности дозы, µSv/h'],
+    crew: ['Астронавт', 'Пол', 'Худшее состояние', 'Инциденты', 'Мин. SpO2, %', 'Пульс мин', 'Пульс макс', 'Радиация за период, mSv', 'Накоплено всего, mSv', 'Пик мощности дозы, µSv/h'],
     incidents: ['Астронавт', 'Начало (MET)', 'Конец (MET)', 'Длительность, с', 'Худшее состояние', 'Показатель', 'Пик', 'Вероятная причина', 'Протокол'],
     events: ['MET', 'Событие', 'Экипаж', 'Параметры'],
     selfcheck: ['Астронавт', 'Показатель', 'Значение', 'Ед.', 'Состояние', 'Дата и время (местные)', 'MET', 'Кем введено'],
@@ -70,7 +70,7 @@ export function buildReportSheets(report: MissionReport, locale: Locale): Sheet[
   const crew: Cell[][] = [
     [...l.crew],
     ...report.crew.map((c): Cell[] => [
-      crewName(c.crewId), c.worst, c.incidents.length,
+      crewName(c.crewId), crewSex(c.crewId) ? translate(locale, `sex.${crewSex(c.crewId)}` as DictKey) : '', c.worst, c.incidents.length,
       c.stats.spo2 ? Math.round(c.stats.spo2.min * 10) / 10 : '', c.stats.hr ? Math.round(c.stats.hr.min) : '', c.stats.hr ? Math.round(c.stats.hr.max) : '',
       r3(c.radiation.deltaMSv), r3(c.radiation.endMSv), Math.round(c.radiation.peakRateUSvH),
     ]),

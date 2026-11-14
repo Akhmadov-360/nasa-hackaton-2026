@@ -5,7 +5,8 @@ import { StatusBadge } from '@/components/StatusBadge';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
-import { crewName } from '@/lib/engineConfig';
+import { SexBadge } from '@/components/bodyscan/BodyScan';
+import { crewName, crewSex } from '@/lib/engineConfig';
 import { formatDuration } from '@/lib/duration';
 import { metricName, useT, type DictKey } from '@/lib/i18n';
 import { formatMet } from '@/lib/metrics';
@@ -107,6 +108,7 @@ export function CrewOverview({ report, crewIds }: { report: MissionReport; crewI
                     <span className="flex items-center gap-3">
                       <span className="grid size-8 place-items-center rounded-full bg-white/[0.07] text-xs font-semibold">{initials(c.crewId)}</span>
                       <span className="font-medium">{crewName(c.crewId)}</span>
+                      <SexBadge sex={crewSex(c.crewId)} />
                     </span>
                   </td>
                   <td className="px-4 py-3"><StatusBadge status={c.worst} /></td>

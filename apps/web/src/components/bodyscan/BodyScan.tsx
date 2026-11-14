@@ -12,72 +12,40 @@ import { useT, metricName, statusWord, type DictKey } from '@/lib/i18n';
 import { formatValue } from '@/lib/logText';
 import { ORGANS, STATUS_COLOR, STATUS_RANK } from '@/lib/metrics';
 import { useMissionStore } from '@/lib/store/missionStore';
+import { Mars, Venus } from 'lucide-react';
+import { crewSex } from '@/lib/engineConfig';
+import { ALL_PARTS, bodyParts, MUSCLE_PARTS, widthFactor } from './bodyModel';
 
 type OrganId = (typeof ORGANS)[number]['id'];
 
 /* ------------------------------------------------------------------------------------------------
- * Front-view body on a 240 x 520 canvas, drawn by hand as separate anatomical segments (head, neck, torso,
- * arms, thighs, calves, feet) with muscle-group lines and the organs drawn inside like an x-ray.
- * Left-side segments are drawn once and mirrored. Replace the paths here to swap in another model;
- * the organ ids (brain, heart, lungs, muscle) and the marker positions below are what the rest of the app uses.
+ * Front-view anatomy figure (`bodyModel.ts`, 100 x 200 polygons per muscle group) placed on a 240 x 520 canvas
+ * with MODEL_TRANSFORM, and the organs drawn inside it like an x-ray. The organ shapes below are in the figure's own
+ * units. The organ ids (brain, heart, lungs, muscle) and the marker positions are what the rest of the app uses.
  * ---------------------------------------------------------------------------------------------- */
 
-const SEGMENTS = {
-  torso: 'M78 102 C88 92 102 86 112 84 L128 84 C138 86 152 92 162 102 C168 134 162 176 152 208 C149 226 151 242 153 254 L87 254 C89 242 91 226 88 208 C78 176 72 134 78 102 Z',
-};
-/** Drawn for the viewer's left side and mirrored for the right. */
-const HALF = {
-  upperArm: 'M78 102 C64 108 54 128 50 160 L47 180 C53 184 63 185 69 182 L76 152 C80 136 84 120 84 106 Z',
-  forearm: 'M47 180 C43 204 37 230 31 254 L46 260 C53 234 63 208 69 182 Z',
-  hand: 'M31 254 C27 268 29 282 37 290 C45 294 52 282 53 268 L46 260 Z',
-  thigh: 'M88 254 C82 294 80 338 86 376 L110 376 C114 338 118 296 120 262 L120 254 Z',
-  calf: 'M86 376 C84 406 86 438 91 466 L104 466 C108 438 111 406 110 376 Z',
-  foot: 'M91 466 L89 496 C86 506 87 512 97 512 L112 512 C114 506 107 500 104 496 L104 466 Z',
-};
-/** Muscle-group and joint detail lines (viewer's left side). */
-const DETAIL_HALF = [
-  'M120 96 C108 100 96 108 90 124 C96 134 110 136 120 130', // pectoral
-  'M92 160 C96 190 98 214 96 236', // oblique
-  'M99 270 C97 310 98 340 100 366', // quadriceps
-  'M97 382 C96 410 98 440 99 462', // calf
-  'M52 150 C56 160 60 170 62 180', // biceps
-  'M92 372 C98 378 106 378 110 372', // knee
-];
-const DETAIL_CENTER = [
-  'M120 90 L120 236', // linea alba
-  'M108 152 L132 152', 'M107 172 L133 172', 'M108 192 L132 192', 'M109 212 L131 212', // abdominals
-  'M110 64 L110 86', 'M130 64 L130 86', // neck
-];
-const BRAIN = 'M104 40 C101 28 111 20 120 25 C129 20 139 28 136 40 C138 49 129 55 120 52 C111 55 102 49 104 40 Z';
-const LUNG = 'M98 104 C88 112 86 142 90 166 C95 176 112 172 117 162 L117 112 C113 104 104 100 98 104 Z';
-const HEART = 'M134 164 C122 154 114 146 116 136 C118 128 128 126 134 134 C140 126 150 128 152 136 C154 146 146 154 134 164 Z';
-
-const MIRROR = 'translate(240 0) scale(-1 1)';
+const MODEL_TRANSFORM = 'translate(0 25) scale(2.4)';
+const BRAIN = 'M42 11 C41 4 46 1.5 49.5 3.5 C53 1.5 58 4 57 11 C57.5 15 53 17 49.5 15.5 C46 17 41.5 15 42 11 Z';
+/** The viewer's left lung; mirrored about the figure's centre line for the other one. */
+const LUNG = 'M47 43 C41 42 34 46 33 53 C33 57 37 58.5 41 57.5 C45 57 47 55 47.5 51 Z';
+const HEART = 'M57 59 C52 55 50 51.5 51 49 C52 46.5 55.5 46 57 48.5 C58.5 46 62 46.5 63 49 C64 51.5 62 55 57 59 Z';
+const MIRROR = 'translate(99 0) scale(-1 1)';
 
 /** Marker (dot) positions in canvas units, with the popover side for each organ. */
 const MARKERS: Record<OrganId, Array<{ x: number; y: number }>> = {
-  brain: [{ x: 120, y: 38 }],
-  heart: [{ x: 134, y: 147 }],
-  lungs: [{ x: 102, y: 128 }, { x: 138, y: 118 }],
-  muscle: [{ x: 61, y: 150 }, { x: 179, y: 150 }, { x: 99, y: 312 }, { x: 141, y: 312 }],
+  brain: [{ x: 119, y: 49 }],
+  heart: [{ x: 137, y: 152 }],
+  lungs: [{ x: 96, y: 146 }, { x: 146, y: 134 }],
+  muscle: [{ x: 46, y: 170 }, { x: 192, y: 170 }, { x: 91, y: 314 }, { x: 147, y: 314 }],
 };
 const POPOVER: Record<OrganId, { x: number; y: number; side: 'left' | 'right' }> = {
-  brain: { x: 120, y: 38, side: 'right' },
-  heart: { x: 134, y: 147, side: 'right' },
-  lungs: { x: 102, y: 128, side: 'left' },
-  muscle: { x: 99, y: 312, side: 'right' },
+  brain: { x: 119, y: 49, side: 'right' },
+  heart: { x: 137, y: 152, side: 'right' },
+  lungs: { x: 96, y: 146, side: 'left' },
+  muscle: { x: 91, y: 314, side: 'right' },
 };
 const W = 240;
 const H = 520;
-
-function Half() {
-  return (
-    <>
-      {Object.entries(HALF).map(([k, d]) => <path key={k} className="body-line" d={d} />)}
-      {DETAIL_HALF.map((d) => <path key={d} className="body-line" d={d} fill="none" strokeOpacity={0.5} />)}
-    </>
-  );
-}
 
 export function BodyScan({ crewId }: { crewId: string }) {
   const t = useT();
@@ -89,6 +57,11 @@ export function BodyScan({ crewId }: { crewId: string }) {
   const [hover, setHover] = useState<OrganId | null>(null);
   const root = useRef<SVGSVGElement>(null);
   const active = hover ?? pinned;
+  const sex = crewSex(crewId);
+  const female = sex === 'F';
+  const model = bodyParts(sex);
+  /** a canvas point follows the figure's width at its height (the organs and markers sit inside the body) */
+  const fit = (p: { x: number; y: number }) => ({ x: 120 + (p.x - 120) * widthFactor(female, (p.y - 25) / 2.4), y: p.y });
 
   useEffect(() => focusOrgan(active), [active, focusOrgan]);
   useEffect(() => { setPinned(null); }, [crewId]);
@@ -117,7 +90,10 @@ export function BodyScan({ crewId }: { crewId: string }) {
 
   return (
     <section className="card flex h-full min-h-0 flex-col items-center gap-2 p-3.5" aria-label={t('scan.title')}>
-      <h3 className="self-start text-[13px] font-medium text-muted-foreground">{t('scan.title')}</h3>
+      <div className="flex w-full items-center justify-between gap-2">
+        <h3 className="text-[13px] font-medium text-muted-foreground">{t('scan.title')}</h3>
+        <SexBadge sex={sex} />
+      </div>
       <div className="relative mx-auto min-h-0 w-full max-w-[250px] flex-1">
         <svg ref={root} viewBox={`0 0 ${W} ${H}`} className="mx-auto h-full max-h-[560px] w-full" role="group" aria-label={t('scan.title')}>
           <defs>
@@ -130,35 +106,27 @@ export function BodyScan({ crewId }: { crewId: string }) {
               <stop offset="1" stopColor="#4FB6A8" stopOpacity="0.45" />
             </linearGradient>
             <clipPath id="body-clip">
-              <ellipse cx="120" cy="40" rx="22" ry="28" />
-              <path d={SEGMENTS.torso} />
-              {Object.values(HALF).map((d, i) => <path key={i} d={d} />)}
-              <g transform={MIRROR}>{Object.values(HALF).map((d, i) => <path key={i} d={d} />)}</g>
+              <g transform={MODEL_TRANSFORM}>{ALL_PARTS.flatMap((k) => model[k].map((pts) => <polygon key={`${k}${pts}`} points={pts} />))}</g>
             </clipPath>
           </defs>
 
-          {/* silhouette */}
-          <g fill="url(#body-fill)" stroke="rgba(159,176,201,0.6)" strokeWidth="1.2" strokeLinejoin="round" strokeLinecap="round">
-            <ellipse className="body-line" cx="120" cy="40" rx="22" ry="28" />
-            <path className="body-line" d={SEGMENTS.torso} />
-            <Half />
-            <g transform={MIRROR}><Half /></g>
-            {DETAIL_CENTER.map((d) => <path key={d} className="body-line" d={d} fill="none" strokeOpacity={0.4} />)}
+          {/* silhouette: the anatomy figure, muscle groups as faint plates */}
+          <g transform={MODEL_TRANSFORM} fill="url(#body-fill)" stroke="rgba(159,176,201,0.6)" strokeWidth="0.4" strokeLinejoin="round">
+            {ALL_PARTS.flatMap((k) => model[k].map((pts) => <polygon key={`${k}${pts}`} className="body-line" points={pts} />))}
           </g>
 
           {/* muscle groups light up as a whole when selected */}
-          <g fill={muscleColor} fillOpacity={muscleOn ? 0.28 : 0} style={{ transition: 'fill-opacity .25s' }} stroke="none" aria-hidden>
-            {[HALF.upperArm, HALF.thigh, HALF.calf].map((d) => <path key={d} d={d} />)}
-            <g transform={MIRROR}>{[HALF.upperArm, HALF.thigh, HALF.calf].map((d) => <path key={d} d={d} />)}</g>
+          <g transform={MODEL_TRANSFORM} fill={muscleColor} fillOpacity={muscleOn ? 0.3 : 0} style={{ transition: 'fill-opacity .25s' }} stroke="none" aria-hidden>
+            {MUSCLE_PARTS.flatMap((k) => model[k].map((pts) => <polygon key={`${k}${pts}`} points={pts} />))}
           </g>
 
           {/* organs, drawn like an x-ray inside the body */}
-          <g aria-hidden>
-            <path d={BRAIN} {...organFill('brain')} style={{ transition: 'fill-opacity .25s, stroke-opacity .25s' }} />
-            <path d="M120 25 L120 52" stroke="rgba(255,255,255,0.25)" strokeWidth="0.8" fill="none" />
-            <path d={LUNG} {...organFill('lungs')} style={{ transition: 'fill-opacity .25s, stroke-opacity .25s' }} />
-            <g transform={MIRROR}><path d={LUNG} {...organFill('lungs')} style={{ transition: 'fill-opacity .25s, stroke-opacity .25s' }} /></g>
-            <path d={HEART} {...organFill('heart')} style={{ transition: 'fill-opacity .25s, stroke-opacity .25s' }} />
+          <g aria-hidden transform={female ? `${MODEL_TRANSFORM} translate(49.5 0) scale(0.9 1) translate(-49.5 0)` : MODEL_TRANSFORM}>
+            <path d={BRAIN} {...organFill('brain')} strokeWidth={organFill('brain').strokeWidth / 2.4} style={{ transition: 'fill-opacity .25s, stroke-opacity .25s' }} />
+            <path d="M49.5 3.5 L49.5 15.5" stroke="rgba(255,255,255,0.25)" strokeWidth="0.3" fill="none" />
+            <path d={LUNG} {...organFill('lungs')} strokeWidth={organFill('lungs').strokeWidth / 2.4} style={{ transition: 'fill-opacity .25s, stroke-opacity .25s' }} />
+            <g transform={MIRROR}><path d={LUNG} {...organFill('lungs')} strokeWidth={organFill('lungs').strokeWidth / 2.4} style={{ transition: 'fill-opacity .25s, stroke-opacity .25s' }} /></g>
+            <path d={HEART} {...organFill('heart')} strokeWidth={organFill('heart').strokeWidth / 2.4} style={{ transition: 'fill-opacity .25s, stroke-opacity .25s' }} />
           </g>
 
           {/* scan line, clipped to the silhouette */}
@@ -186,7 +154,7 @@ export function BodyScan({ crewId }: { crewId: string }) {
                 onFocus={() => setHover(o.id)}
                 onBlur={() => setHover(null)}
               >
-                {MARKERS[o.id].map((m, i) => (
+                {MARKERS[o.id].map((m0, i) => { const m = fit(m0); return (
                   <g key={i}>
                     <circle cx={m.x} cy={m.y} r="14" fill="transparent" />
                     {st !== 'NOMINAL' && <circle className="halo" cx={m.x} cy={m.y} r="6" fill="none" stroke={c} strokeWidth="1.5" />}
@@ -195,7 +163,7 @@ export function BodyScan({ crewId }: { crewId: string }) {
                       style={{ transition: 'r .2s', filter: on ? `drop-shadow(0 0 6px ${c})` : 'drop-shadow(0 1px 2px rgba(0,0,0,.5))' }}
                     />
                   </g>
-                ))}
+                ); })}
               </g>
             );
           })}
@@ -203,7 +171,7 @@ export function BodyScan({ crewId }: { crewId: string }) {
 
         {/* readings of the organ under the pointer / pinned: a popover right next to the marker */}
         {ORGANS.map((o) => {
-          const a = POPOVER[o.id];
+          const a = { ...POPOVER[o.id], ...fit(POPOVER[o.id]) };
           const st = organStatus(o.id);
           return (
             <Popover key={o.id} open={active === o.id}>
@@ -259,5 +227,21 @@ export function BodyScan({ crewId }: { crewId: string }) {
       </div>
       <p className="text-center text-xs text-muted-foreground">{t('scan.hint')}</p>
     </section>
+  );
+}
+
+
+/** Small badge with the crew member's sex (icon and word), as in a medical record. Nothing when it is not recorded. */
+export function SexBadge({ sex, className = '' }: { sex: 'F' | 'M' | undefined; className?: string }) {
+  const t = useT();
+  if (!sex) return null;
+  const Icon = sex === 'F' ? Venus : Mars;
+  return (
+    <Tip label={t('sex.tip')}>
+      <span className={`inline-flex items-center gap-1 rounded-full bg-white/[0.07] px-2 py-0.5 text-[11px] text-muted-foreground ${className}`}>
+        <Icon className="size-3" aria-hidden />
+        {t(`sex.${sex}` as DictKey)}
+      </span>
+    </Tip>
   );
 }

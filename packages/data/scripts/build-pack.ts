@@ -16,10 +16,10 @@ const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const raw = (p: string) => join(root, 'data-raw', p);
 
 const CREW = [
-  { id: 'A1', name: 'Lina Voss', role: 'Commander', mit: '100' },
-  { id: 'A2', name: 'Arman Tashev', role: 'Flight Engineer', mit: '101' },
-  { id: 'A3', name: 'Mei Okafor', role: 'Mission Specialist', mit: '103' },
-  { id: 'A4', name: 'Dario Lindqvist', role: 'Medical Officer', mit: '105' },
+  { id: 'A1', sex: 'F' as const, name: 'Lina Voss', role: 'Commander', mit: '100' },
+  { id: 'A2', sex: 'M' as const, name: 'Arman Tashev', role: 'Flight Engineer', mit: '101' },
+  { id: 'A3', sex: 'F' as const, name: 'Mei Okafor', role: 'Mission Specialist', mit: '103' },
+  { id: 'A4', sex: 'M' as const, name: 'Dario Lindqvist', role: 'Medical Officer', mit: '105' },
 ];
 const LOOP_SEC = 60;
 const round = (n: number, d: number) => Math.round(n * 10 ** d) / 10 ** d;
@@ -116,7 +116,7 @@ const pack: ScenarioPack = {
     licenses: ['PhysioNet datasets: Open Data Commons Attribution License v1.0 (verify on each dataset page)', ...(donkiLoaded ? ['NASA DONKI: public domain, NASA Open APIs'] : [])],
     provisional: true,
   },
-  crew: CREW.map(({ id, name, role }) => ({ id, name, role })),
+  crew: CREW.map(({ id, name, role, sex }) => ({ id, sex, name, role })),
   baselines,
   events: [],
 };
