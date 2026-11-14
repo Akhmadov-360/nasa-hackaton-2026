@@ -5,6 +5,7 @@ import type { ReactNode } from 'react';
 import type { Status, TelemetryFrame } from '@astro/engine';
 import { StatusBadge } from '@/components/StatusBadge';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Tip } from '@/components/ui/tip';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { useEta } from '@/hooks/useEta';
 import { baseCfg } from '@/lib/engineConfig';
@@ -86,16 +87,17 @@ export function VitalCard({ crewId, sourceKey, metricKey, live, label, icon, uni
       }}
     >
       <header className="flex items-center justify-between gap-1 text-[13px] text-muted-foreground">
+        <Tip label={t('about.open', { name: label })}>
         <button
           type="button"
           onClick={(e) => { e.stopPropagation(); openMetric(metricKey); }}
-          title={t('about.open', { name: label })}
           aria-label={t('about.open', { name: label })}
           className="-mx-1 flex min-w-0 cursor-pointer items-center gap-1.5 truncate rounded-md px-1 text-left transition-colors group-hover:text-bone focus-visible:text-bone"
         >
           {icon}<span className="truncate">{label}</span>
           <ChevronRight className="size-3 shrink-0 text-muted-foreground/60 transition-all group-hover:translate-x-0.5 group-hover:text-bone" aria-hidden />
         </button>
+        </Tip>
         <span className="flex shrink-0 items-center gap-1">
           {eta && status !== 'NOMINAL' ? (
             <StatusForecastBadge status={status} eta={eta} />
@@ -122,13 +124,14 @@ export function VitalCard({ crewId, sourceKey, metricKey, live, label, icon, uni
         )}
         <span className="text-xs text-muted-foreground">{unit}</span>
         {norm && (
-          <span
-            className={`num ml-auto hidden text-[11px] whitespace-nowrap text-muted-foreground/80 ${value2 !== undefined ? '@[13rem]:inline' : '@[8.5rem]:inline'}`}
-            title={`${t('norm.label')}: ${norm}. ${t('norm.hint')}`}
-            aria-label={`${t('norm.label')} ${norm}`}
-          >
-            {norm}
-          </span>
+          <Tip label={`${t('norm.label')}: ${norm}. ${t('norm.hint')}`}>
+            <span
+              className={`num ml-auto hidden text-[11px] whitespace-nowrap text-muted-foreground/80 ${value2 !== undefined ? '@[13rem]:inline' : '@[8.5rem]:inline'}`}
+              aria-label={`${t('norm.label')} ${norm}`}
+            >
+              {norm}
+            </span>
+          </Tip>
         )}
       </div>
       <div className="mt-auto pt-2"><Sparkline crewId={crewId} read={read} color={color} tick={tick} /></div>

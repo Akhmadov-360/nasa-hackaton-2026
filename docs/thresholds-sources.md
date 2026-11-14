@@ -124,3 +124,10 @@ All four are entered by hand (provenance "entered by you"), judged only while th
 - Validity of an entry: glucose 8 h, mood 12 h, sleep and water 24 h (`MANUAL` in `packages/engine/src/manual.ts`); after that the card says *Due*.
 
 Self-check entries carry an id and the wall-clock time (`at`, ms since 1970) next to the mission time. The time is metadata for the report; the engine only uses the mission time. A removed entry is a `measurement` event with `params.retract` set to the entry id; it removes that entry from the whole history, because it is a correction.
+
+## Mission contexts (G6, G8; `packages/data/missions.json`, applied 2026-11-14)
+
+- **Moon**: 384,400 km mean distance at the speed of light is 1.28 s one way. Gravity 1.62 m/s2 is 0.165 g. Gateway in lunar orbit is weightless.
+- **Mars**: 54.6 million km (closest) to 401 million km (farthest) is about 3 to 22 minutes one way (secondary sources agree on 3 and 22; one gives about 24 for the far side; exact values depend on orbital geometry, check JPL ephemeris data for a real mission). Round trip about 6 to 45 minutes. Surface gravity 3.7 m/s2 is about 0.38 g (the brief said 0.376 g). A transit is weightless.
+- **Station in low orbit**: NASA states that data via the TDRS relay satellites arrives with under one second of delay. The one-way range 0.25 to 0.5 s is our estimate from the relay path (about 85,000 km is about 0.28 s) and is not a NASA figure. Do not show 1.3 s for the station: that is the Moon.
+- The context changes labels and the ground-contact advice only. It never changes a limit or a body reading.

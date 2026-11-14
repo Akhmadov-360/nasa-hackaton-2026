@@ -5,6 +5,7 @@ import type { SourceMode } from '../sources/types';
 import type { DictKey, Params } from '../i18n';
 import { crew } from '../engineConfig';
 import { STATUS_RANK, viewOfMetric, type TelemetryView } from '../metrics';
+import { DEFAULT_MISSION, isMissionId } from '../missionData';
 
 export type Locale = 'en' | 'ru' | 'uz';
 
@@ -110,6 +111,9 @@ export interface MissionState {
   /** start or move a replay at mission time `t` */
   enterReplay: (t: number, playing: boolean) => void;
   setLocale: (l: Locale) => void;
+  /** where the crew is (a key of missions.json): changes the ground-contact advice, never the physiology */
+  missionId: string;
+  setMission: (id: string) => void;
 }
 
 /** localStorage that never throws (private mode, quota, corrupt data) and falls back to memory. */
@@ -219,24 +223,27 @@ export const useMissionStore = create<MissionState>()(
       setEvents: (log) => set({ events: cap(log, 500) }),
       setTimeTravel: (t) => set(t === null ? { timeTravelT: null, replayPlaying: false } : { timeTravelT: t }),
       replayPlaying: false,
-      replaySpeed: 4,
+      replaySpeed: 1,
       setReplayPlaying: (on) => set({ replayPlaying: on }),
       setReplaySpeed: (x) => set({ replaySpeed: x }),
       enterReplay: (t, playing) => set({ timeTravelT: t, replayPlaying: playing }),
       setLocale: (l) => set({ locale: l }),
+      missionId: DEFAULT_MISSION,
+      setMission: (id) => set({ missionId: isMissionId(id) ? id : DEFAULT_MISSION }),
     }),
     {
       name: 'astro-monitor',
       version: 1,
       storage: createJSONStorage(() => safeStorage),
       // only preferences survive a reload; events and the flight log belong to one server run
-      partialize: (s) => ({ locale: s.locale, selectedCrewId: s.selectedCrewId }),
+      partialize: (s) => ({ locale: s.locale, selectedCrewId: s.selectedCrewId, missionId: s.missionId }),
       // corrupt or foreign persisted data must never break startup
       merge: (persisted, current) => {
         const p = (persisted ?? {}) as Partial<MissionState>;
         return {
           ...current,
           locale: p.locale === 'ru' || p.locale === 'uz' ? p.locale : 'en',
+          missionId: isMissionId(p.missionId) ? p.missionId : DEFAULT_MISSION,
           selectedCrewId: crew.some((c) => c.id === p.selectedCrewId) ? (p.selectedCrewId as string) : current.selectedCrewId,
         };
       },

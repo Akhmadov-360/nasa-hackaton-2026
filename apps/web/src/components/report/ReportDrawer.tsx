@@ -4,6 +4,7 @@ import { ChevronDown, Copy, Download, FileText, FileUp, Printer, X } from 'lucid
 import { sileo } from 'sileo';
 import { buildPackage, PROTOCOL_OF_METRIC, type Incident } from '@astro/engine';
 import { Button } from '@/components/ui/button';
+import { Tip } from '@/components/ui/tip';
 import { Drawer, DrawerClose, DrawerContent, DrawerDescription, DrawerHeader, DrawerTitle } from '@/components/ui/drawer';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Separator } from '@/components/ui/separator';
@@ -105,7 +106,7 @@ export function ReportDrawer() {
                 </div>
               </div>
               <DrawerClose asChild>
-                <Button variant="ghost" size="icon" className="no-print" aria-label={t('protocol.close')}><X /></Button>
+                <Tip label={t('protocol.close')}><Button variant="ghost" size="icon" className="no-print" aria-label={t('protocol.close')}><X /></Button></Tip>
               </DrawerClose>
             </div>
 

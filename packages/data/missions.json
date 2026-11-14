@@ -1,0 +1,91 @@
+{
+  "provisional": true,
+  "note": "Where the crew is, and what that means for asking the ground for help. Nothing here changes the physiology engine. delaySec is the one-way signal delay [min, max]. Moon: 384,400 km mean distance at the speed of light is 1.28 s. Mars: 54.6 million km (closest) to 401 million km (farthest) gives about 3 to 22 minutes (NASA and secondary sources; the exact value depends on orbital geometry). Station: NASA states data via the TDRS relay satellites arrives in under a second; 0.25 to 0.5 s is our estimate of the one-way delay and is not a NASA figure. gravityG: Moon surface 1.62 m/s2 = 0.165 g; Mars surface 3.7 m/s2 = about 0.38 g; orbits and transits are weightless (about 0 g). 'live' means a ground reply arrives in seconds, 'delayed' means the crew must act first.",
+  "contexts": [
+    {
+      "id": "leo",
+      "gravityG": 0,
+      "delaySec": [
+        0.25,
+        0.5
+      ],
+      "reply": "live",
+      "label": {
+        "en": "Station",
+        "ru": "Станция"
+      },
+      "place": {
+        "en": "Space station in low Earth orbit",
+        "ru": "Космическая станция на низкой околоземной орбите"
+      }
+    },
+    {
+      "id": "gateway",
+      "gravityG": 0,
+      "delaySec": [
+        1.28,
+        1.28
+      ],
+      "reply": "live",
+      "label": {
+        "en": "Gateway",
+        "ru": "Gateway"
+      },
+      "place": {
+        "en": "Gateway station in lunar orbit",
+        "ru": "Станция Gateway на лунной орбите"
+      }
+    },
+    {
+      "id": "moonSurface",
+      "gravityG": 0.165,
+      "delaySec": [
+        1.28,
+        1.28
+      ],
+      "reply": "live",
+      "label": {
+        "en": "Moon base",
+        "ru": "База на Луне"
+      },
+      "place": {
+        "en": "Base on the lunar surface",
+        "ru": "База на поверхности Луны"
+      }
+    },
+    {
+      "id": "marsTransit",
+      "gravityG": 0,
+      "delaySec": [
+        180,
+        1340
+      ],
+      "reply": "delayed",
+      "label": {
+        "en": "Mars transit",
+        "ru": "Перелёт на Марс"
+      },
+      "place": {
+        "en": "Spacecraft on the way to Mars",
+        "ru": "Корабль на пути к Марсу"
+      }
+    },
+    {
+      "id": "marsSurface",
+      "gravityG": 0.38,
+      "delaySec": [
+        180,
+        1340
+      ],
+      "reply": "delayed",
+      "label": {
+        "en": "Mars base",
+        "ru": "База на Марсе"
+      },
+      "place": {
+        "en": "Habitat on the surface of Mars",
+        "ru": "Жилой модуль на поверхности Марса"
+      }
+    }
+  ]
+}

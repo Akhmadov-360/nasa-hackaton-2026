@@ -3,6 +3,7 @@ import { BookOpen, ClipboardPen, ExternalLink, X } from 'lucide-react';
 import type { Status, TelemetryFrame } from '@astro/engine';
 import { StatusBadge } from '@/components/StatusBadge';
 import { Button } from '@/components/ui/button';
+import { Tip } from '@/components/ui/tip';
 import { Drawer, DrawerClose, DrawerContent, DrawerDescription, DrawerHeader, DrawerTitle } from '@/components/ui/drawer';
 import { isManualMetric } from '@astro/engine';
 import { aboutFor, aboutKeyOf, pickText, RISK_URL } from '@/lib/about';
@@ -81,7 +82,7 @@ export function MetricDrawer() {
                 <DrawerDescription className="sr-only">{t('about.note')}</DrawerDescription>
               </div>
               <DrawerClose asChild>
-                <Button variant="ghost" size="icon" className="size-8 shrink-0 rounded-full" aria-label={t('about.close')}><X className="size-4" /></Button>
+                <Tip label={t('about.close')}><Button variant="ghost" size="icon" className="size-8 shrink-0 rounded-full" aria-label={t('about.close')}><X className="size-4" /></Button></Tip>
               </DrawerClose>
             </DrawerHeader>
 

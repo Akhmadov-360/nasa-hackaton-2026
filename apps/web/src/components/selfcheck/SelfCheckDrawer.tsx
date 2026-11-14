@@ -4,6 +4,7 @@ import { X } from 'lucide-react';
 import { sileo } from 'sileo';
 import { MANUAL, validManualValue, type ManualEntry, type ManualMetric } from '@astro/engine';
 import { Button } from '@/components/ui/button';
+import { Tip } from '@/components/ui/tip';
 import { Drawer, DrawerClose, DrawerContent, DrawerDescription, DrawerHeader, DrawerTitle } from '@/components/ui/drawer';
 import { Segmented } from '@/components/ui/segmented';
 import { crewName } from '@/lib/engineConfig';
@@ -80,7 +81,7 @@ export function SelfCheckDrawer() {
             <DrawerDescription>{t('selfcheck.for', { name: crewName(crewId) })}</DrawerDescription>
           </div>
           <DrawerClose asChild>
-            <Button variant="ghost" size="icon" className="size-8 shrink-0 rounded-full" aria-label={t('about.close')}><X className="size-4" /></Button>
+            <Tip label={t('about.close')}><Button variant="ghost" size="icon" className="size-8 shrink-0 rounded-full" aria-label={t('about.close')}><X className="size-4" /></Button></Tip>
           </DrawerClose>
         </DrawerHeader>
 

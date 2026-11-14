@@ -2,6 +2,7 @@
 import { useEffect } from 'react';
 import { FastForward, History, Pause, Play, Radio, Rewind } from 'lucide-react';
 import ElasticSlider from '@/components/ElasticSlider';
+import { Tip } from '@/components/ui/tip';
 import { StatusBadge } from '@/components/StatusBadge';
 import { Button } from '@/components/ui/button';
 import { Kbd } from '@/components/ui/kbd';
@@ -78,10 +79,11 @@ export function TimeTravelBar() {
         </Hint>
       </div>
 
-      <div className="relative min-w-40 flex-1 pr-3" title={t('tt.scrub')}>
+      <Tip label={t('tt.scrub')} side="top">
+      <div className="relative min-w-40 flex-1 pr-3">
         <div className="pointer-events-none absolute inset-x-0 top-0 h-2" aria-hidden>
           {events.filter((e) => e.t >= minT && e.t <= now).map((e, i) => (
-            <span key={`${e.t}-${i}`} className="absolute top-0 h-2 w-0.5 rounded-full" title={e.type}
+            <span key={`${e.t}-${i}`} className="absolute top-0 h-2 w-0.5 rounded-full"
               style={{ left: `${((e.t - minT) / span) * 100}%`, background: EVENT_COLOR[e.type] }} />
           ))}
         </div>
@@ -96,6 +98,7 @@ export function TimeTravelBar() {
           className="w-full"
         />
       </div>
+      </Tip>
 
       <div className="flex shrink-0 items-center gap-1.5 text-xs text-muted-foreground">
         <span className="hidden lg:inline">{t('tt.speed')}</span>

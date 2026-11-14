@@ -4,18 +4,22 @@ import { FileText, Orbit, Radio, WifiOff } from 'lucide-react';
 import BellToggle from '@/components/BellToggle';
 import { Button } from '@/components/ui/button';
 import { Select } from '@/components/ui/select';
+import { Tip } from '@/components/ui/tip';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { Kbd } from '@/components/ui/kbd';
 import { isProvisional } from '@/lib/engineConfig';
 import { useT, type DictKey } from '@/lib/i18n';
 import { formatMet, STATUS_COLOR } from '@/lib/metrics';
 import { globalStatus, useMissionStore, type Locale } from '@/lib/store/missionStore';
+import { delayText, gravityText, missionLabel, missionOf, missionPlace, missions, roundTripText } from '@/lib/mission';
 import { IslandPill } from './IslandPill';
 
 function LinkReadout() {
   const t = useT();
   const mode = useMissionStore((s) => s.mode);
   const last = useMissionStore((s) => s.lastFrameAt);
+  const locale = useMissionStore((s) => s.locale);
+  const m = missionOf(useMissionStore((s) => s.missionId));
   const [, force] = useState(0);
   useEffect(() => {
     const id = setInterval(() => force((n) => n + 1), 500);
@@ -33,8 +37,30 @@ function LinkReadout() {
           <span className="font-medium">{t(`mode.${mode}` as DictKey)}</span>
         </div>
       </TooltipTrigger>
-      <TooltipContent>{age === null ? '—' : t('top.frame', { s: (Math.min(age, 99000) / 1000).toFixed(1) })}</TooltipContent>
+      <TooltipContent>{t('mission.delay')}: {delayText(m.delaySec, locale)}. {age === null ? '' : t('top.frame', { s: (Math.min(age, 99000) / 1000).toFixed(1) })}</TooltipContent>
     </Tooltip>
+  );
+}
+
+/** Where the crew is. It changes the signal delay shown next to the link and the ground-contact advice, never the body readings. */
+function MissionSelect() {
+  const t = useT();
+  const locale = useMissionStore((s) => s.locale);
+  const id = useMissionStore((s) => s.missionId);
+  const setMission = useMissionStore((s) => s.setMission);
+  const m = missionOf(id);
+  const tip = t('mission.tip', { place: missionPlace(m, locale), oneWay: delayText(m.delaySec, locale), round: roundTripText(m, locale), gravity: gravityText(m) });
+  return (
+    <Tip label={tip} side="bottom">
+      <span className="hidden shrink-0 items-center gap-2 xl:inline-flex">
+        <Select
+          size="sm" ariaLabel={t('mission.label')} value={id} align="left" menuWidth={170}
+          onChange={setMission}
+          options={missions.map((x) => ({ value: x.id, label: missionLabel(x, locale) }))}
+        />
+        <span className="num hidden whitespace-nowrap text-xs text-muted-foreground 2xl:inline" aria-label={t('mission.delay')}>{delayText(m.delaySec, locale)}</span>
+      </span>
+    </Tip>
   );
 }
 
@@ -53,7 +79,7 @@ export function TopBar() {
 
   return (
     <header className="hairline-b relative z-30 bg-bar">
-      <div className="grid grid-cols-[1fr_auto] items-center gap-3 px-4 py-2 md:grid-cols-[1fr_minmax(0,460px)_1fr]">
+      <div className="grid grid-cols-[1fr_auto] items-center gap-3 px-4 py-2 md:grid-cols-[minmax(0,1fr)_minmax(0,460px)_minmax(0,1fr)]">
         <div className="flex min-w-0 items-center gap-3">
           <Orbit className="size-6 shrink-0 text-teal" aria-hidden />
           <div className="min-w-0 leading-tight">
@@ -70,6 +96,7 @@ export function TopBar() {
               )}
             </p>
           </div>
+          <MissionSelect />
         </div>
         <div className="hidden md:block"><IslandPill /></div>
         <div className="flex items-center justify-end gap-3">

@@ -3,6 +3,7 @@ import { useMemo, useState } from 'react';
 import { Download, ListChecks, Maximize2, X } from 'lucide-react';
 import { PROTOCOL_OF_METRIC } from '@astro/engine';
 import { Button } from '@/components/ui/button';
+import { Tip } from '@/components/ui/tip';
 import { Drawer, DrawerClose, DrawerContent, DrawerDescription, DrawerHeader, DrawerTitle, DrawerTrigger } from '@/components/ui/drawer';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
@@ -60,7 +61,7 @@ export function LogDrawer() {
             <div className="flex items-center gap-1">
               <LogExportMenu />
               <DrawerClose asChild>
-                <Button variant="ghost" size="icon" aria-label={t('log.close')}><X /></Button>
+                <Tip label={t('log.close')}><Button variant="ghost" size="icon" aria-label={t('log.close')}><X /></Button></Tip>
               </DrawerClose>
             </div>
           </div>

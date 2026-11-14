@@ -3,6 +3,7 @@ import { useMemo } from 'react';
 import { Pencil, Trash2 } from 'lucide-react';
 import { manualEntries, type ManualEntry } from '@astro/engine';
 import { Button } from '@/components/ui/button';
+import { Tip } from '@/components/ui/tip';
 import { useT, type DictKey } from '@/lib/i18n';
 import { formatValue } from '@/lib/logText';
 import { useMissionStore } from '@/lib/store/missionStore';
@@ -31,8 +32,8 @@ function Row({ entry, live }: { entry: ManualEntry; live: number }) {
       </div>
       {entry.id && (
         <div className="flex shrink-0 gap-0.5">
-          <Button type="button" variant="ghost" size="icon" className="size-9 rounded-full" onClick={() => startEdit(entry)} aria-label={`${t('selfcheck.edit')}: ${label}`} title={t('selfcheck.edit')}><Pencil /></Button>
-          <Button type="button" variant="ghost" size="icon" className="size-9 rounded-full hover:text-coral" onClick={() => remove(entry)} aria-label={`${t('selfcheck.delete')}: ${label}`} title={t('selfcheck.delete')}><Trash2 /></Button>
+          <Tip label={t('selfcheck.edit')}><Button type="button" variant="ghost" size="icon" className="size-9 rounded-full" onClick={() => startEdit(entry)} aria-label={`${t('selfcheck.edit')}: ${label}`}><Pencil /></Button></Tip>
+          <Tip label={t('selfcheck.delete')}><Button type="button" variant="ghost" size="icon" className="size-9 rounded-full hover:text-coral" onClick={() => remove(entry)} aria-label={`${t('selfcheck.delete')}: ${label}`}><Trash2 /></Button></Tip>
         </div>
       )}
     </li>

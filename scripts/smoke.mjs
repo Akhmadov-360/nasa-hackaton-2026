@@ -78,6 +78,15 @@ page.on('pageerror', (e) => consoleErrors.push(`uncaught: ${String(e.message).sp
 console.log(`Smoke test: ${URL_} at ${W}x${H}`);
 await api('/reset', { method: 'POST' }).catch(() => {});
 
+/** Close whatever window is open: Escape can be swallowed by a closing menu, so press until none is left. */
+const closeDialogs = async () => {
+  for (let i = 0; i < 4; i++) {
+    if (!(await page.locator('[role=dialog]').count())) return;
+    await page.keyboard.press('Escape');
+    await page.waitForTimeout(500);
+  }
+};
+
 await step('page loads and Enter opens Mission Control', async () => {
   await page.goto(URL_, { waitUntil: 'domcontentloaded' });
   await page.getByRole('button', { name: /Enter Mission Control/i }).click({ timeout: 20000 });
@@ -147,8 +156,13 @@ await step('self-check: glucose 52 raises a warning with a do-now line', async (
   await page.getByLabel('Other amount, L').fill('0.25');
   await page.getByRole('button', { name: 'Update' }).click();
   await page.waitForFunction(() => { const t = document.querySelector('#sc-entries')?.parentElement?.innerText ?? ''; return /0\.25 L/.test(t) && !/0\.50 L/.test(t); }, null, { timeout: 5000 });
-  await page.keyboard.press('Escape');
-  await page.waitForTimeout(600);
+  await closeDialogs();
+});
+
+await step('mission context: Mars base changes the ground-contact advice, the body readings stay', async () => {
+  await page.getByLabel('Where is the crew?').first().click();
+  await page.getByText('Mars base', { exact: true }).last().click();
+  await page.locator('ul[aria-label="Active alarms"] li', { hasText: /3–22 min each way/ }).first().waitFor({ timeout: 8000 });
 });
 
 await step('report lists incidents and the limits table, exports Excel', async () => {
@@ -164,8 +178,7 @@ await step('report lists incidents and the limits table, exports Excel', async (
   const bytes = readFileSync(path);
   if (!download.suggestedFilename().endsWith('.xlsx')) throw new Error(`file name ${download.suggestedFilename()}`);
   if (bytes.length < 2500 || bytes[0] !== 0x50 || bytes[1] !== 0x4b) throw new Error(`not a zip/xlsx (${bytes.length} bytes)`);
-  await page.keyboard.press('Escape');
-  await page.waitForTimeout(500);
+  await closeDialogs();
 });
 
 await step('time travel: a click replays towards the present, T returns to live', async () => {

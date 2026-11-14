@@ -6,6 +6,7 @@ import { MANUAL, MANUAL_KEYS, manualEntries } from '@astro/engine';
 import { StatusBadge } from '@/components/StatusBadge';
 import { ProvenanceMark } from '@/components/telemetry/VitalCard';
 import { Button } from '@/components/ui/button';
+import { Tip } from '@/components/ui/tip';
 import { baseCfg } from '@/lib/engineConfig';
 import { useT, type DictKey } from '@/lib/i18n';
 import { formatValue } from '@/lib/logText';
@@ -50,16 +51,17 @@ function Card({ metric, frame, crewId }: { metric: ManualMetric; frame: Telemetr
       }}
     >
       <header className="flex items-center justify-between gap-1 text-[13px] text-muted-foreground">
+        <Tip label={t('about.open', { name: label })}>
         <button
           type="button"
           onClick={(e) => { e.stopPropagation(); openMetric(metric); }}
-          title={t('about.open', { name: label })}
           aria-label={t('about.open', { name: label })}
           className="-mx-1 flex min-w-0 cursor-pointer items-center gap-1.5 truncate rounded-md px-1 text-left transition-colors group-hover:text-bone focus-visible:text-bone"
         >
           <span className="truncate">{label}</span>
           <ChevronRight className="size-3 shrink-0 text-muted-foreground/60 transition-all group-hover:translate-x-0.5 group-hover:text-bone" aria-hidden />
         </button>
+        </Tip>
         <span className="flex shrink-0 items-center gap-1">
           {status !== 'NOMINAL' && <StatusBadge status={status} />}
           <ProvenanceMark sourceKey={metric} limitKey={limits ? metric : undefined} />
@@ -76,7 +78,7 @@ function Card({ metric, frame, crewId }: { metric: ManualMetric; frame: Telemetr
           <span className="num text-[1.55rem] leading-[1.3] font-medium text-muted-foreground/60">—</span>
         )}
         <span className="text-xs text-muted-foreground">{MANUAL[metric].unit}</span>
-        {norm && <span className="num ml-auto hidden text-[11px] whitespace-nowrap text-muted-foreground/80 @[8.5rem]:inline" title={`${t('norm.label')}: ${norm}`}>{norm}</span>}
+        {norm && <Tip label={`${t('norm.label')}: ${norm}`}><span className="num ml-auto hidden text-[11px] whitespace-nowrap text-muted-foreground/80 @[8.5rem]:inline">{norm}</span></Tip>}
       </div>
 
       {metric === 'hydration' && (

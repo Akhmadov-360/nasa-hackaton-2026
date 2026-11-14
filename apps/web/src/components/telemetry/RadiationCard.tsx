@@ -5,6 +5,7 @@ import type { TelemetryFrame } from '@astro/engine';
 import { StatusBadge } from '@/components/StatusBadge';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Tip } from '@/components/ui/tip';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { baseCfg } from '@/lib/engineConfig';
 import { useT } from '@/lib/i18n';
@@ -61,15 +62,16 @@ export function RadiationCard({ frame, crewId, tick }: { frame: TelemetryFrame |
     >
       <header className="col-span-full flex items-center justify-between gap-2">
         <h3 className="flex items-center gap-2 text-[13px] font-medium text-muted-foreground">
+          <Tip label={t('about.open', { name: t('rad.crewDose') })}>
           <button
             type="button"
             onClick={() => openMetric('dose')}
-            title={t('about.open', { name: t('rad.crewDose') })}
             aria-label={t('about.open', { name: t('rad.crewDose') })}
             className="-mx-1 flex cursor-pointer items-center gap-2 rounded-md px-1 transition-colors hover:text-bone focus-visible:text-bone"
           >
             <Radiation className="size-4" style={{ color }} aria-hidden /> {t('rad.crewDose')}
           </button>
+          </Tip>
           <Tooltip>
             <TooltipTrigger asChild><Badge variant="modeled" tabIndex={0} className="cursor-help">{t('badge.modeled')}</Badge></TooltipTrigger>
             <TooltipContent>{t('src.modeled')}</TooltipContent>
