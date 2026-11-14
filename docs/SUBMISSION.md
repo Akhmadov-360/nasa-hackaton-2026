@@ -23,6 +23,9 @@ Astronaut Health Monitor
 **Team Name**
 Ultra Sun
 
+**Team Members**
+Axmadov Asadbek (team owner), Bobokulov Azizbek, Sultonmurotov Behzod
+
 **High-Level Project Summary**
 Astronaut Health Monitor is a Mission Control style dashboard that lets a four-person crew see, forecast and act on the state of their health when the ground is far away. It combines real physiological recordings (PhysioNet), real solar flares (NASA DONKI), live space weather (NOAA GOES) and cabin and radiation limits taken from NASA-STD-3001 and related NASA documents, and every number says whether it is recorded, modelled or an engineering choice. A Time-to-Threshold forecast warns before a limit is crossed, and the app keeps working with a browser-side simulation when the connection is lost.
 
@@ -44,7 +47,7 @@ Adapt sections 1 to 5 of the README. In short:
 - *Honesty*: each limit carries a tier (`nasa`, `derived`, `clinical`, `engineering`, `provisional`) and a source; the scenario responses are assumptions and are labelled as such.
 - *Guidance*: a short "do now" first action for any out-of-range reading, in the pinned alarms and the body-scan organ popover, plus a *Ground* line that depends on the mission context (illustrative, not validated by flight surgeons).
 - *Self-check*: the crew member enters glucose, sleep, mood and water drunk; the values become events in the same log as the scenarios, are judged against limits with a stated basis, and appear in the flight log, the report, the exports and Time Travel.
-- *Update this paragraph as features land.* Only describe what runs. Not built: bone and muscle models, camera input, a streak counter, a reviewed Uzbek translation.
+- *Update this paragraph as features land.* Only describe what runs. Not built: bone and muscle models, camera input, a reviewed Uzbek translation.
 
 **Use of Super Intelligence (SI)**
 Most of the code, tests, translations and documentation were written by an AI coding assistant (Anthropic Claude, through Claude Code) following requirements, design decisions and reviews given by the team. The team chose the problem framing, the data sources and the rule that every limit must cite its origin, directed each feature, ran and reviewed the application, and decided what to ship. Where a scientific source could not be read in full, the limit is labelled with a weaker tier instead of being presented as a NASA value. AI assistance is also recorded in the README, in `package.json` and in the commit trailers.

@@ -1,6 +1,6 @@
 'use client';
 import { useMemo } from 'react';
-import { checkinsDue, type Checkin, type CheckinSchedule } from '@astro/engine';
+import { checkinsDue, checkinStreak, type Checkin, type CheckinSchedule, type CheckinStreak } from '@astro/engine';
 import schedule from '@astro/data/checkins.json';
 import { useMissionStore } from '@/lib/store/missionStore';
 
@@ -15,4 +15,14 @@ export function useCheckins(): Checkin[] {
   const bucket = Math.floor(t / 30);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   return useMemo(() => checkinsDue(events, crewId, bucket * 30 + 29.9, schedule as unknown as CheckinSchedule), [events, crewId, bucket]);
+}
+
+/** The check-in streak and today's progress of the selected crew member (same time base as `useCheckins`). */
+export function useCheckinStreak(): CheckinStreak {
+  const crewId = useMissionStore((s) => s.selectedCrewId);
+  const events = useMissionStore((s) => s.events);
+  const t = useMissionStore((s) => s.t);
+  const bucket = Math.floor(t / 30);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  return useMemo(() => checkinStreak(events, crewId, bucket * 30 + 29.9, schedule as unknown as CheckinSchedule), [events, crewId, bucket]);
 }

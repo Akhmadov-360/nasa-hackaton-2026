@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { checkinsDue, latestSlot, type CheckinSchedule } from './checkins';
+import { checkinsDue, checkinStreak, latestSlot, type CheckinSchedule } from './checkins';
 import type { EngineEvent } from './schemas';
 
 const H = 3600;
@@ -51,5 +51,26 @@ describe('routine check-ins', () => {
 
   it('is empty before any telemetry', () => {
     expect(checkinsDue([], 'A1', 0, schedule)).toEqual([]);
+  });
+
+  it('counts a streak of days with every check-in done, and progress of today', () => {
+    const full = (d: number) => [
+      entry(at(d, 6.5), 'glucose', 100), entry(at(d, 14.5), 'glucose', 100), entry(at(d, 22.5), 'glucose', 100),
+      entry(at(d, 7.5), 'sleep', 7), entry(at(d, 10.5), 'hydration', 1), entry(at(d, 14.5), 'hydration', 1),
+    ];
+    expect(checkinStreak([], 'A1', 0, schedule)).toEqual({ days: 0, done: 0, total: 0 });
+    // noon on day 3: slots passed are glucose 6, sleep 7, hydration 10
+    const part = [entry(at(3, 6.5), 'glucose', 100), entry(at(3, 7.5), 'sleep', 7)];
+    expect(checkinStreak(part, 'A1', at(3, 12), schedule)).toEqual({ days: 0, done: 2, total: 3 });
+    const todayDone = [...part, entry(at(3, 10.5), 'hydration', 1)];
+    expect(checkinStreak(todayDone, 'A1', at(3, 12), schedule).days).toBe(1);
+    // two full days before keep the streak even while today is still open
+    expect(checkinStreak([...full(1), ...full(2), ...part], 'A1', at(3, 12), schedule).days).toBe(2);
+    expect(checkinStreak([...full(1), ...full(2), ...todayDone], 'A1', at(3, 12), schedule).days).toBe(3);
+    // a gap on day 2 breaks it
+    expect(checkinStreak([...full(1), ...todayDone], 'A1', at(3, 12), schedule).days).toBe(1);
+    // removing an entry (retract) drops it again
+    const retracted: EngineEvent = { t: at(3, 12), type: 'measurement', crewId: 'A1', params: { retract: `hydration${at(3, 10.5)}` } };
+    expect(checkinStreak([...todayDone, retracted], 'A1', at(3, 12), schedule).days).toBe(0);
   });
 });

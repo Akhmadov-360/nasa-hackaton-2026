@@ -26,6 +26,10 @@
       "redFlags": {
         "en": "Chest pain, fainting, severe shortness of breath or a very irregular pulse.",
         "ru": "Боль в груди, обморок, сильная одышка или очень неровный пульс."
+      },
+      "keepWell": {
+        "en": "Keep up the scheduled exercise, sleep enough and drink regularly. Check your resting pulse at the same time each day to notice a change early.",
+        "ru": "Выполняйте плановые тренировки, высыпайтесь и пейте регулярно. Измеряйте пульс покоя в одно и то же время, чтобы заметить сдвиг заранее."
       }
     },
     "hrv": {
@@ -52,6 +56,10 @@
       "redFlags": {
         "en": "Lasting exhaustion, confusion, or a racing pulse together with low variability.",
         "ru": "Стойкое истощение, спутанность сознания или учащённый пульс при низкой вариабельности."
+      },
+      "keepWell": {
+        "en": "Regular sleep, exercise and short breathing or relaxation breaks tend to raise it. A steady rhythm of rest and work helps more than one long rest.",
+        "ru": "Регулярный сон, нагрузка и короткие паузы на дыхание и расслабление обычно повышают его. Ровный ритм отдыха и работы лучше одного долгого отдыха."
       }
     },
     "spo2": {
@@ -77,6 +85,10 @@
       "redFlags": {
         "en": "Blue lips, confusion, severe breathlessness, or a reading that stays low after you re-measure.",
         "ru": "Синие губы, спутанность сознания, сильная одышка или значение, которое остаётся низким после повторного измерения."
+      },
+      "keepWell": {
+        "en": "Keep the cabin air fresh (watch CO₂ and O₂), breathe deeply during exercise and report a lasting drop early.",
+        "ru": "Следите за свежестью воздуха в кабине (CO₂ и O₂), дышите глубоко при нагрузке и сообщайте о стойком снижении заранее."
       }
     },
     "bp": {
@@ -101,6 +113,10 @@
       "redFlags": {
         "en": "Chest pain, severe headache, vision changes, weakness on one side of the body or fainting.",
         "ru": "Боль в груди, сильная головная боль, нарушение зрения, слабость с одной стороны тела или обморок."
+      },
+      "keepWell": {
+        "en": "Take it seated and rested, at the same time each day. Regular exercise, enough water and limited salt help keep it steady.",
+        "ru": "Измеряйте сидя и в покое, в одно и то же время. Регулярная нагрузка, достаточно воды и мало соли помогают держать его ровным."
       }
     },
     "respRate": {
@@ -126,6 +142,10 @@
       "redFlags": {
         "en": "Gasping, being unable to speak in full sentences, or blue lips.",
         "ru": "Судорожное дыхание, невозможность говорить целыми фразами или синие губы."
+      },
+      "keepWell": {
+        "en": "Slow, relaxed breathing lowers it. Good ventilation and avoiding stuffy air keep it from rising without a reason.",
+        "ru": "Медленное расслабленное дыхание снижает его. Хорошая вентиляция и отсутствие духоты не дают ему расти без причины."
       }
     },
     "temp": {
@@ -151,6 +171,10 @@
       "redFlags": {
         "en": "Fever with chills, a rash, a severe headache or confusion.",
         "ru": "Жар с ознобом, сыпь, сильная головная боль или спутанность сознания."
+      },
+      "keepWell": {
+        "en": "Dress for the cabin, drink enough and rest after exercise. A reading that stays high for hours is worth reporting.",
+        "ru": "Одевайтесь по температуре кабины, пейте достаточно и отдыхайте после нагрузки. Если высокая температура держится часами, сообщите об этом."
       }
     },
     "stress": {
@@ -177,6 +201,10 @@
       "redFlags": {
         "en": "Lasting low mood, panic, thoughts of harming yourself or others, or being unable to work.",
         "ru": "Стойкое подавленное настроение, паника, мысли причинить вред себе или другим или невозможность работать."
+      },
+      "keepWell": {
+        "en": "Keep a daily routine, sleep, short breaks and contact with family or ground. Talk early rather than late.",
+        "ru": "Держите распорядок дня, высыпайтесь, делайте короткие паузы и общайтесь с семьёй и Землёй. Говорите об этом раньше, а не позже."
       }
     },
     "eeg": {
@@ -202,6 +230,10 @@
       "redFlags": {
         "en": "A sudden severe headache, vision changes, seizures or loss of consciousness.",
         "ru": "Внезапная сильная головная боль, нарушение зрения, судороги или потеря сознания."
+      },
+      "keepWell": {
+        "en": "Regular sleep, light and breaks from screens help a rested brain. Report lasting fatigue, headache or slow thinking.",
+        "ru": "Регулярный сон, свет и перерывы от экранов помогают отдохнувшему мозгу. Сообщайте о стойкой усталости, головной боли или замедленном мышлении."
       }
     },
     "co2": {
@@ -226,6 +258,10 @@
       "redFlags": {
         "en": "Headache, drowsiness, breathlessness or nausea shared by several crew members.",
         "ru": "Головная боль, сонливость, одышка или тошнота сразу у нескольких членов экипажа."
+      },
+      "keepWell": {
+        "en": "Keep the air moving and the scrubber working. Short, hard efforts and crowded rooms raise it, so open the airflow and rest if you feel a headache.",
+        "ru": "Поддерживайте движение воздуха и работу поглотителя. Резкие нагрузки и скученность повышают его: откройте поток воздуха и отдохните, если болит голова."
       }
     },
     "o2": {
@@ -250,6 +286,10 @@
       "redFlags": {
         "en": "Drowsiness, headache, confusion or blue lips in more than one person: suspect the cabin air.",
         "ru": "Сонливость, головная боль, спутанность сознания или синие губы у нескольких человек: подозревайте воздух в отсеке."
+      },
+      "keepWell": {
+        "en": "Keep it in the usual range and check the supply on schedule. Fire safety and leak checks are part of the routine.",
+        "ru": "Держите в обычных пределах и проверяйте запас по графику. Пожарная безопасность и проверка утечек входят в рутину."
       }
     },
     "humidity": {
@@ -274,6 +314,10 @@
       "redFlags": {
         "en": "Condensation or a leak near electronics, or a lasting dry cough and sore throat.",
         "ru": "Конденсат или протечка рядом с электроникой либо стойкий сухой кашель и боль в горле."
+      },
+      "keepWell": {
+        "en": "Moderate humidity is comfortable. Too dry irritates the airways, too wet encourages mould, so report a long drift.",
+        "ru": "Умеренная влажность комфортна. Слишком сухо раздражает дыхательные пути, слишком влажно способствует плесени: сообщайте о долгом сдвиге."
       }
     },
     "noise": {
@@ -298,6 +342,10 @@
       "redFlags": {
         "en": "Ringing in the ears, pain or muffled hearing after loud noise.",
         "ru": "Звон в ушах, боль или приглушённый слух после сильного шума."
+      },
+      "keepWell": {
+        "en": "Quiet hours for rest, ear protection near loud equipment and a quiet place to sleep protect hearing and mood.",
+        "ru": "Тихие часы для отдыха, защита слуха возле шумной техники и тихое место для сна берегут слух и настроение."
       }
     },
     "airflow": {
@@ -322,6 +370,10 @@
       "redFlags": {
         "en": "Headache or drowsiness in a corner or sleeping area where the air feels still.",
         "ru": "Головная боль или сонливость в углу или месте сна, где воздух стоит неподвижно."
+      },
+      "keepWell": {
+        "en": "Keep vents clear of loose items so air keeps moving around your sleeping and working places.",
+        "ru": "Не закрывайте вентиляцию предметами, чтобы воздух двигался возле мест сна и работы."
       }
     },
     "doseRate": {
@@ -346,6 +398,10 @@
       "redFlags": {
         "en": "A solar particle event alert from the ground: move to the best-shielded area.",
         "ru": "Предупреждение с Земли о событии солнечных частиц: перейдите в лучше всего защищённую зону."
+      },
+      "keepWell": {
+        "en": "Spend the quiet hours in the best-shielded area during a solar event, and follow the ground's advice on the timing of outside work.",
+        "ru": "Во время солнечного события проводите время в лучше всего защищённой зоне и следуйте советам с Земли по срокам внешних работ."
       }
     },
     "dose": {
@@ -370,6 +426,10 @@
       "redFlags": {
         "en": "Nausea, vomiting or unusual fatigue after a known intense exposure.",
         "ru": "Тошнота, рвота или необычная усталость после известного сильного облучения."
+      },
+      "keepWell": {
+        "en": "It only grows, so plan: keep to the shielded areas in storms and log the days of high flux so the team can balance exposure across the mission.",
+        "ru": "Он только растёт, поэтому планируйте: в бури оставайтесь в защищённых зонах и отмечайте дни высокого потока, чтобы команда распределяла облучение по миссии."
       }
     },
     "glucose": {
@@ -394,6 +454,10 @@
       "redFlags": {
         "en": "Confusion, sweating, shaking, fainting, or extreme thirst with nausea.",
         "ru": "Спутанность сознания, потливость, дрожь, обморок или сильная жажда с тошнотой."
+      },
+      "keepWell": {
+        "en": "Eat at regular times and do not skip meals. Check it on the schedule and record it, so the trend is visible.",
+        "ru": "Питайтесь в одно и то же время и не пропускайте приёмы пищи. Измеряйте по графику и записывайте, чтобы был виден тренд."
       }
     },
     "sleep": {
@@ -418,6 +482,10 @@
       "redFlags": {
         "en": "Falling asleep during tasks, microsleeps, or confusion after several short nights.",
         "ru": "Засыпание во время работы, микросны или спутанность сознания после нескольких коротких ночей."
+      },
+      "keepWell": {
+        "en": "Keep a fixed sleep time, a dark and quiet place and no heavy exercise just before bed. Light in the morning and less in the evening helps.",
+        "ru": "Ложитесь в одно время, спите в тёмном и тихом месте и не нагружайтесь прямо перед сном. Помогает свет утром и меньше света вечером."
       }
     },
     "mood": {
@@ -443,6 +511,10 @@
       "redFlags": {
         "en": "Lasting low mood, withdrawal, panic, or thoughts of harming yourself or others.",
         "ru": "Стойкое подавленное настроение, замкнутость, паника или мысли причинить вред себе или другим."
+      },
+      "keepWell": {
+        "en": "Plan something you like every day, keep in touch with people and move regularly. Note a low mood and talk about it early.",
+        "ru": "Планируйте на каждый день что-то приятное, общайтесь с людьми и регулярно двигайтесь. Замечайте плохое настроение и говорите о нём заранее."
       }
     },
     "hydration": {
@@ -467,6 +539,10 @@
       "redFlags": {
         "en": "Dark urine, dizziness when you stand, headache, or very little urine.",
         "ru": "Тёмная моча, головокружение при вставании, головная боль или очень мало мочи."
+      },
+      "keepWell": {
+        "en": "Drink in small amounts through the day instead of all at once, and a little more after exercise.",
+        "ru": "Пейте понемногу в течение дня, а не сразу, и чуть больше после нагрузки."
       }
     }
   },

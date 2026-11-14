@@ -18,7 +18,7 @@ login). Their deadlines and format rules must be checked by the team before the 
 | G1 Self-Check (glucose, sleep, mood, water) | Done: `measurement` events, `frame.manual`, limits and sources, API validation, Self-check tab and side window, smoke step (14 steps). Edit and remove with undo, optional earlier time, wall-clock date in the Excel *Self-check* sheet, mood as five faces. Not done: reminders to enter values (G4) |
 | G6+G8 Mission context and escalation | Done: five contexts (station, Gateway, Moon base, Mars transit, Mars base), delay in the header on wide screens and in the tooltip, the *Ground* line under *Do now* for a warning or a critical reading. The station delay (0.25 to 0.5 s) is our estimate; NASA says under a second via the relay satellites |
 | G7 Hazard tags | Done: icon chips in the *About* window and a legend of the five hazards (shield button beside the tabs) that lists the indicators of each hazard and opens their *About* windows. No tags on the cards, to keep them small |
-| G4 Routine check-ins | Done: schedule in `checkins.json`, due and overdue derived from the event log, header chip, tab ring, due state on the cards. Not done: a streak counter (optional), reminders by voice or sound |
+| G4 Routine check-ins | Done: schedule in `checkins.json`, due and overdue derived from the event log, header chip, tab ring, due state on the cards. Also done: a small flame chip with the day streak (`checkinStreak`, derived from the event log) and today's progress. Not done: reminders by voice or sound |
 | G5 Metric detail chart | Done as the first section of the *About* window (periods 5 min, 30 min, session; limit bands; hover value; entries as points for the self-check values). No separate window and no tabs: *About* already holds the explanation and the *Do now* text lives at the alarm |
 | G9 Sparklines follow the replay | Done: while replaying, each card's sparkline shows the same window ending at the cursor, rebuilt from the engine on a 0.2 s grid with a cache (`lib/replaySeries.ts`) |
 | G10 Translations and voice | Done: `pnpm i18n:report` lists missing and untranslated keys per language; Uzbek went from 96 to about 258 of 389 keys (a draft for a native speaker, medical terms especially); Uzbek now falls back to Russian, then English (it used to fall back to English); the sound tooltip says the voice speaks Russian when Uzbek is selected. Not done: the report, protocols, space weather, tier names and the long explanations of hazards stay Russian in Uzbek, and a native speaker has not read the Uzbek |
@@ -42,7 +42,9 @@ crew or flight surgeons, and what to do**, (d) the **interface** shows status cl
 | Clickable human figure with function and status | Mostly | Organ popovers show readings; no "what this organ does / which hazards affect it" |
 | Different environments (station, rover, base, other planet) | **Missing** | One implicit context |
 | Five HRP hazards | Partial | Radiation (modelled), closed environment (cabin metrics), distance (offline mode). **Isolation/confinement** and **gravity (bone, muscle)** have no indicator |
-| Gamification (optional) | Missing | Optional |
+| Gamification (optional) | Done, light | Day streak of completed check-ins in the header (flame chip). No points or badges, on purpose |
+| Prevention advice | Done | *Keep it healthy* section in the *About* window for every indicator (`keepWell` in `about.json`, general habits, illustrative) |
+| Camera input (optional) | Not built | Skipped on purpose: it would need a vision model and a reviewed medical basis |
 
 Strong points already in place (do not rebuild): body scan, colour coding, time-to-threshold forecasts, offline mode, limit
 provenance tiers, report and Excel export, replay.

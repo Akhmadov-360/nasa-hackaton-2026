@@ -112,6 +112,7 @@ export function MetricDrawer() {
               <Section title={t('about.why')}>{pickText(about.why, locale)}</Section>
               <Section title={t('about.inSpace')}>{pickText(about.inSpace, locale)}</Section>
               <Section title={t('about.how')}>{pickText(about.how, locale)}</Section>
+              <Section title={t('about.keepWell')}>{pickText(about.keepWell, locale)}</Section>
               <Section title={t('about.redFlags')}>{pickText(about.redFlags, locale)}</Section>
 
               <Section title={t('about.hazards')}>

@@ -5,7 +5,7 @@ import { translate } from './i18n';
 import { ORGANS } from './metrics';
 
 const HAZARDS = ['radiation', 'isolation', 'distance', 'gravity', 'closed'];
-const FIELDS = ['why', 'inSpace', 'how', 'redFlags'] as const;
+const FIELDS = ['why', 'inSpace', 'how', 'redFlags', 'keepWell'] as const;
 
 describe('about this indicator', () => {
   it('covers every metric that has limits, plus the two radiation readings', () => {

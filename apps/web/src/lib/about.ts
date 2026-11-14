@@ -11,6 +11,8 @@ export interface AboutEntry {
   inSpace: Text;
   how: Text;
   redFlags: Text;
+  /** everyday habits that keep the reading healthy (prevention, general advice) */
+  keepWell: Text;
 }
 interface OrganAbout extends Text { hazards: Hazard[] }
 

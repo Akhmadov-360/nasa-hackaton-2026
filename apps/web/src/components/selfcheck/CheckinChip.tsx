@@ -1,8 +1,8 @@
 'use client';
-import { ClipboardCheck } from 'lucide-react';
+import { ClipboardCheck, Flame } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Tip } from '@/components/ui/tip';
-import { useCheckins } from '@/hooks/useCheckins';
+import { useCheckins, useCheckinStreak } from '@/hooks/useCheckins';
 import { crewName } from '@/lib/engineConfig';
 import { useT, type DictKey } from '@/lib/i18n';
 import { useMissionStore } from '@/lib/store/missionStore';
@@ -13,6 +13,26 @@ import { useMissionStore } from '@/lib/store/missionStore';
  * one that is due.
  */
 export function CheckinChip() {
+  return <><DueChip /><StreakChip /></>;
+}
+
+/** A small flame with the number of days in a row that every check-in was done; shown once there is something to show. */
+function StreakChip() {
+  const t = useT();
+  const { days, done, total } = useCheckinStreak();
+  if (days === 0 && done === 0) return null;
+  const label = t('streak.tip', { days, done, total });
+  return (
+    <Tip label={label} side="bottom">
+      <span role="img" aria-label={label} className="inline-flex h-8 items-center gap-1 rounded-full bg-secondary px-2.5 text-sm text-muted-foreground">
+        <Flame className={`size-4 ${days > 0 ? 'text-amber' : 'text-muted-foreground'}`} aria-hidden />
+        <span className="num">{days}</span>
+      </span>
+    </Tip>
+  );
+}
+
+function DueChip() {
   const t = useT();
   const due = useCheckins();
   const crewId = useMissionStore((s) => s.selectedCrewId);
