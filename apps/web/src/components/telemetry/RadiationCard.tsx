@@ -9,6 +9,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip
 import { baseCfg } from '@/lib/engineConfig';
 import { useT } from '@/lib/i18n';
 import { STATUS_COLOR, STATUS_RANK } from '@/lib/metrics';
+import { useMissionStore } from '@/lib/store/missionStore';
 import { Sparkline } from './Sparkline';
 
 const ok = (v?: number): v is number => typeof v === 'number' && Number.isFinite(v);
@@ -41,6 +42,7 @@ function DoseBar({ total, color }: { total: number | undefined; color: string })
 /** The crew's modelled dose: rate, accumulated dose and its distance from the NASA limit. */
 export function RadiationCard({ frame, crewId, tick }: { frame: TelemetryFrame | undefined; crewId: string; tick: number }) {
   const t = useT();
+  const openMetric = useMissionStore((s) => s.openMetric);
   const rate = frame?.radiation.doseRateUSvH;
   const total = frame?.radiation.cumulativeMSv;
   const sRate = frame?.status.byMetric.doseRate ?? 'NOMINAL';
@@ -59,7 +61,15 @@ export function RadiationCard({ frame, crewId, tick }: { frame: TelemetryFrame |
     >
       <header className="col-span-full flex items-center justify-between gap-2">
         <h3 className="flex items-center gap-2 text-[13px] font-medium text-muted-foreground">
-          <Radiation className="size-4" style={{ color }} aria-hidden /> {t('rad.crewDose')}
+          <button
+            type="button"
+            onClick={() => openMetric('dose')}
+            title={t('about.open', { name: t('rad.crewDose') })}
+            aria-label={t('about.open', { name: t('rad.crewDose') })}
+            className="-mx-1 flex cursor-pointer items-center gap-2 rounded-md px-1 transition-colors hover:text-bone focus-visible:text-bone"
+          >
+            <Radiation className="size-4" style={{ color }} aria-hidden /> {t('rad.crewDose')}
+          </button>
           <Tooltip>
             <TooltipTrigger asChild><Badge variant="modeled" tabIndex={0} className="cursor-help">{t('badge.modeled')}</Badge></TooltipTrigger>
             <TooltipContent>{t('src.modeled')}</TooltipContent>

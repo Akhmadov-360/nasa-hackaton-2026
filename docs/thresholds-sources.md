@@ -107,3 +107,8 @@ Every metric carries `tier` (nasa / derived / engineering / provisional), option
   Real NC needs an octave-band spectrum; the app shows one simulated NC rating (baseline 36, exercise adds 6 per the ergometer remark in the brief).
 - Cabin O₂ (derived): kept at 19.5 / 18 / 16 %, referenced to the 149 mmHg normoxia value; NASA gives no alarm value.
 - Everything in Tier B/C is `provisional` until the team chooses and cites primary sources.
+
+## Guidance and "About this indicator" texts (G2, G3)
+
+- `packages/data/guidance.json` (first action) is illustrative and not validated by flight surgeons.
+- `packages/data/about.json` (why, in space, how measured, seek help, hazards, risks) is background in plain language. Statements about spaceflight come from the NASA HRP hazards and risks pages (nasa.gov/hrp/hazards, nasa.gov/hrp/risks) and from the rows of this file (CO₂ symptoms, 600 mSv career and 250 mSv SPE limits, humidity [V2 6012] and [V2 6013], noise NC-50 and NC-40, ISS airflow range, hypoxia table). Everything else is general knowledge and marked as such by the "not medical advice" note in the window.

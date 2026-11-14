@@ -6,6 +6,7 @@ import { DoNow } from '@/components/guidance/DoNow';
 import { StatusBadge } from '@/components/StatusBadge';
 import { Popover, PopoverAnchor, PopoverContent } from '@/components/ui/popover';
 import { useDisplayFrame } from '@/hooks/useDisplayFrame';
+import { organAbout } from '@/lib/about';
 import { useT, metricName, statusWord, type DictKey } from '@/lib/i18n';
 import { formatValue } from '@/lib/logText';
 import { ORGANS, STATUS_COLOR, STATUS_RANK } from '@/lib/metrics';
@@ -81,6 +82,8 @@ export function BodyScan({ crewId }: { crewId: string }) {
   const t = useT();
   const { frame } = useDisplayFrame(crewId);
   const focusOrgan = useMissionStore((s) => s.focusOrgan);
+  const openMetric = useMissionStore((s) => s.openMetric);
+  const locale = useMissionStore((s) => s.locale);
   const [pinned, setPinned] = useState<OrganId | null>(null);
   const [hover, setHover] = useState<OrganId | null>(null);
   const root = useRef<SVGSVGElement>(null);
@@ -219,10 +222,23 @@ export function BodyScan({ crewId }: { crewId: string }) {
                   <p className="text-sm font-medium">{t(`organ.${o.id}` as DictKey)}</p>
                   <StatusBadge status={st} />
                 </div>
+                {(() => {
+                  const info = organAbout(o.id, locale);
+                  return info ? <p className="mb-2 text-[11px] leading-snug text-muted-foreground" title={t('about.organ')}>{info.text}</p> : null;
+                })()}
                 <dl className="grid grid-cols-[1fr_auto] gap-x-3 gap-y-1 text-[13px]">
                   {o.metrics.map((m) => (
                     <div key={m} className="contents">
-                      <dt className="text-muted-foreground first-letter:uppercase">{metricName(m)}</dt>
+                      <dt className="text-muted-foreground first-letter:uppercase">
+                        <button
+                          type="button"
+                          onClick={() => openMetric(m)}
+                          title={t('about.open', { name: metricName(m) })}
+                          className="cursor-pointer rounded-sm text-left first-letter:uppercase hover:text-bone hover:underline focus-visible:text-bone focus-visible:underline"
+                        >
+                          {metricName(m)}
+                        </button>
+                      </dt>
                       <dd className="num text-right">{formatValue(m, vals[m]) || '—'}</dd>
                     </div>
                   ))}

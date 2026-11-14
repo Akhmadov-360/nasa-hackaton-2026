@@ -1,0 +1,134 @@
+{
+  "provisional": true,
+  "note": "Plain-language explanations for the 'About this indicator' window. Statements about spaceflight come from the NASA HRP hazards and risks pages (nasa.gov/hrp) and from the NASA documents listed in docs/thresholds-sources.md; everything else is general background. Not medical advice, not validated by flight surgeons. 'hazards' are the five HRP hazards: radiation, isolation, distance, gravity, closed. 'risks' are HRP risk names (nasa.gov/hrp/risks).",
+  "riskUrl": "https://www.nasa.gov/hrp/risks/",
+  "hazardUrl": "https://www.nasa.gov/hrp/hazards/",
+  "metrics": {
+    "hr": {
+      "hazards": ["gravity"],
+      "risks": ["Risk of Cardiovascular Adaptations"],
+      "why": { "en": "Heart rate shows how hard the heart is working. It rises with effort, heat, stress, pain and illness, and falls with rest and fitness.", "ru": "Пульс показывает, насколько тяжело работает сердце. Он растёт при нагрузке, жаре, стрессе, боли и болезни и снижается при отдыхе и хорошей форме." },
+      "inSpace": { "en": "Weightlessness alters blood circulation and how the heart and blood vessels function (NASA HRP: cardiovascular adaptations). Exercise is used to keep heart and blood-vessel performance up.", "ru": "Невесомость меняет кровообращение и работу сердца и сосудов (NASA HRP: сердечно-сосудистая адаптация). Упражнения помогают сохранить работу сердца и сосудов." },
+      "how": { "en": "From an ECG or a pulse sensor: the number of beats in a minute. Here it comes from a recorded ECG trace.", "ru": "По ЭКГ или датчику пульса: число ударов в минуту. Здесь значение берётся из записанной ЭКГ." },
+      "redFlags": { "en": "Chest pain, fainting, severe shortness of breath or a very irregular pulse.", "ru": "Боль в груди, обморок, сильная одышка или очень неровный пульс." }
+    },
+    "hrv": {
+      "hazards": ["isolation", "gravity"],
+      "risks": ["Risk of Inadequate Sleep and Irregular Schedules", "Risk of Behavioral Changes and Psychiatric Disorders"],
+      "why": { "en": "Heart-rate variability is the small variation between heartbeats. Low variability can signal stress, fatigue or illness.", "ru": "Вариабельность сердечного ритма это небольшие различия между ударами сердца. Низкая вариабельность может говорить о стрессе, усталости или болезни." },
+      "inSpace": { "en": "Chronic sleep loss, constant work demands and irregular body clocks are listed as stressors (NASA HRP: inadequate sleep and irregular schedules). In this demo the value is modelled.", "ru": "Хронический недосып, постоянная нагрузка и сбой биологических часов названы стрессорами (NASA HRP: недостаточный сон и нерегулярный график). В этой демонстрации значение смоделировано." },
+      "how": { "en": "Calculated from the time between heartbeats in the ECG.", "ru": "Считается по времени между ударами сердца на ЭКГ." },
+      "redFlags": { "en": "Lasting exhaustion, confusion, or a racing pulse together with low variability.", "ru": "Стойкое истощение, спутанность сознания или учащённый пульс при низкой вариабельности." }
+    },
+    "spo2": {
+      "hazards": ["closed"],
+      "risks": ["Risk of Hypoxia", "Risk of Injury and Compromised Performance from Spacewalks"],
+      "why": { "en": "Blood oxygen saturation tells how much oxygen the blood carries. A fall means the body is not getting enough.", "ru": "Насыщение крови кислородом показывает, сколько кислорода несёт кровь. Падение значит, что организму его не хватает." },
+      "inSpace": { "en": "Cabin oxygen and CO₂ are set by the life-support system. NASA HRP lists the risk of mild hypoxia on deep-space missions, including after the steps taken to avoid decompression sickness.", "ru": "Кислород и CO₂ в отсеке задаёт система жизнеобеспечения. NASA HRP называет риск лёгкой гипоксии в дальних миссиях, в том числе после мер против декомпрессионной болезни." },
+      "how": { "en": "A pulse oximeter on a fingertip or ear shines light through the skin. Here it comes from a recorded BIDMC signal.", "ru": "Пульсоксиметр на пальце или ухе просвечивает кожу светом. Здесь значение из записи BIDMC." },
+      "redFlags": { "en": "Blue lips, confusion, severe breathlessness, or a reading that stays low after you re-measure.", "ru": "Синие губы, спутанность сознания, сильная одышка или значение, которое остаётся низким после повторного измерения." }
+    },
+    "bp": {
+      "hazards": ["gravity"],
+      "risks": ["Risk of Cardiovascular Adaptations"],
+      "why": { "en": "Blood pressure is the force of blood on the vessel walls: the top number when the heart beats, the bottom number between beats.", "ru": "Давление это сила, с которой кровь давит на стенки сосудов: верхнее число при ударе сердца, нижнее между ударами." },
+      "inSpace": { "en": "Weightlessness alters blood circulation and how the heart and vessels function, potentially increasing the risk of cardiovascular events (NASA HRP). In this demo the value is modelled.", "ru": "Невесомость меняет кровообращение и работу сердца и сосудов и может повышать риск сердечно-сосудистых событий (NASA HRP). В этой демонстрации значение смоделировано." },
+      "how": { "en": "An automatic cuff on the upper arm, read at rest.", "ru": "Автоматическая манжета на плече, измерение в покое." },
+      "redFlags": { "en": "Chest pain, severe headache, vision changes, weakness on one side of the body or fainting.", "ru": "Боль в груди, сильная головная боль, нарушение зрения, слабость с одной стороны тела или обморок." }
+    },
+    "respRate": {
+      "hazards": ["closed"],
+      "risks": ["Risk of Hypoxia", "Risk of Injury and Compromised Performance from Spacewalks"],
+      "why": { "en": "Breaths per minute. The rate rises with effort, high CO₂, low oxygen and illness.", "ru": "Число вдохов в минуту. Оно растёт при нагрузке, высоком CO₂, нехватке кислорода и болезни." },
+      "inSpace": { "en": "The crew shares one closed cabin, so exhaled CO₂ builds up unless it is removed; NASA HRP also lists low oxygen and high CO₂ among spacewalk risks.", "ru": "Экипаж делит один замкнутый отсек, и выдыхаемый CO₂ накапливается, если его не удалять; NASA HRP также называет низкий кислород и высокий CO₂ среди рисков выхода в открытый космос." },
+      "how": { "en": "Counted from the chest movement or derived from the ECG or pulse signal. Here it comes from a recorded BIDMC signal.", "ru": "Считается по движению грудной клетки или выводится из ЭКГ или пульса. Здесь значение из записи BIDMC." },
+      "redFlags": { "en": "Gasping, being unable to speak in full sentences, or blue lips.", "ru": "Судорожное дыхание, невозможность говорить целыми фразами или синие губы." }
+    },
+    "temp": {
+      "hazards": ["closed"],
+      "risks": ["Risk of Altered Immune System Responses", "Risk of Host-Microorganism Interactions"],
+      "why": { "en": "Body temperature. A rise can be an early sign of infection, and heat or cold is a hazard in a sealed cabin or suit.", "ru": "Температура тела. Рост может быть ранним признаком инфекции, а жара или холод опасны в герметичном отсеке или скафандре." },
+      "inSpace": { "en": "A closed habitat needs controlled temperatures (NASA HRP, hostile and closed environments). HRP also studies altered immune responses and changes in the skin and gut microbiome.", "ru": "Замкнутой среде нужен контроль температуры (NASA HRP, враждебные и замкнутые среды). HRP также изучает изменения иммунных реакций и микробиома кожи и кишечника." },
+      "how": { "en": "A forehead or ear thermometer, or a skin sensor. In this demo the value is modelled.", "ru": "Термометр для лба или уха либо датчик на коже. В этой демонстрации значение смоделировано." },
+      "redFlags": { "en": "Fever with chills, a rash, a severe headache or confusion.", "ru": "Жар с ознобом, сыпь, сильная головная боль или спутанность сознания." }
+    },
+    "stress": {
+      "hazards": ["isolation", "distance"],
+      "risks": ["Risk of Behavioral Changes and Psychiatric Disorders", "Risk of Inadequate Teamwork"],
+      "why": { "en": "A 0 to 100 index of strain built from heart-rate variation, breathing and activity. It is a demo index, not a clinical test.", "ru": "Индекс напряжения от 0 до 100 по вариабельности пульса, дыханию и активности. Это демонстрационный индекс, а не клинический тест." },
+      "inSpace": { "en": "Isolation, radiation, distance from Earth and other space stressors may all take a toll on the mental health of the crew (NASA HRP: behavioral changes and psychiatric disorders).", "ru": "Изоляция, радиация, удалённость от Земли и другие космические стрессоры могут сказываться на психическом здоровье экипажа (NASA HRP: поведенческие изменения и психические расстройства)." },
+      "how": { "en": "Calculated by our model from the other readings; it is not measured directly.", "ru": "Считается нашей моделью по другим показателям; напрямую не измеряется." },
+      "redFlags": { "en": "Lasting low mood, panic, thoughts of harming yourself or others, or being unable to work.", "ru": "Стойкое подавленное настроение, паника, мысли причинить вред себе или другим или невозможность работать." }
+    },
+    "eeg": {
+      "hazards": ["isolation"],
+      "risks": ["Risk of Spaceflight Associated Neuro-ocular Syndrome (SANS)", "Risk of Behavioral Changes and Psychiatric Disorders"],
+      "why": { "en": "Brain electrical activity, used as a rough sign of alertness and fatigue. Shown for illustration only: it has no limits here.", "ru": "Электрическая активность мозга, грубый признак бодрости и усталости. Показана для иллюстрации: пороговых значений здесь нет." },
+      "inSpace": { "en": "Poor sleep and stress change how the brain performs. NASA HRP also studies how spaceflight changes the structure of the eyes and brain (SANS).", "ru": "Плохой сон и стресс меняют работу мозга. NASA HRP также изучает, как космический полёт меняет строение глаз и мозга (SANS)." },
+      "how": { "en": "Electrodes on the scalp. In this demo the value is modelled.", "ru": "Электроды на коже головы. В этой демонстрации значение смоделировано." },
+      "redFlags": { "en": "A sudden severe headache, vision changes, seizures or loss of consciousness.", "ru": "Внезапная сильная головная боль, нарушение зрения, судороги или потеря сознания." }
+    },
+    "co2": {
+      "hazards": ["closed"],
+      "risks": ["Risk of Injury and Compromised Performance from Spacewalks"],
+      "why": { "en": "Carbon dioxide in cabin air. It builds up as the crew breathes out and has to be removed by the life-support system.", "ru": "Углекислый газ в воздухе отсека. Он накапливается, когда экипаж выдыхает, и его должна удалять система жизнеобеспечения." },
+      "inSpace": { "en": "NASA-STD-3001 limits the 1-hour average to 3 mmHg. Headaches were reported from about 2.8 to 4.5 mmHg and fatigue or nausea above 4.5 mmHg (OCHMO technical brief, anecdotal reports).", "ru": "NASA-STD-3001 ограничивает среднее за час до 3 мм рт. ст. Головные боли отмечали примерно при 2,8-4,5 мм рт. ст., усталость и тошноту выше 4,5 (техническая справка OCHMO, неформальные наблюдения)." },
+      "how": { "en": "A gas analyser sampling the cabin air. In this demo the value is modelled.", "ru": "Газоанализатор, берущий пробы воздуха отсека. В этой демонстрации значение смоделировано." },
+      "redFlags": { "en": "Headache, drowsiness, breathlessness or nausea shared by several crew members.", "ru": "Головная боль, сонливость, одышка или тошнота сразу у нескольких членов экипажа." }
+    },
+    "o2": {
+      "hazards": ["closed"],
+      "risks": ["Risk of Hypoxia"],
+      "why": { "en": "The share of oxygen in cabin air. Too little causes hypoxia; too much is also harmful.", "ru": "Доля кислорода в воздухе отсека. Слишком мало вызывает гипоксию, слишком много тоже вредно." },
+      "inSpace": { "en": "The Human Integration Design Handbook lists effects by oxygen pressure: about 137 mmHg is the accepted limit of alertness and about 114 mmHg seriously impairs performance.", "ru": "Справочник Human Integration Design Handbook описывает эффекты по давлению кислорода: около 137 мм рт. ст. это допустимый предел бдительности, около 114 мм рт. ст. серьёзно ухудшает работоспособность." },
+      "how": { "en": "An oxygen sensor in the cabin. In this demo the value is modelled.", "ru": "Датчик кислорода в отсеке. В этой демонстрации значение смоделировано." },
+      "redFlags": { "en": "Drowsiness, headache, confusion or blue lips in more than one person: suspect the cabin air.", "ru": "Сонливость, головная боль, спутанность сознания или синие губы у нескольких человек: подозревайте воздух в отсеке." }
+    },
+    "humidity": {
+      "hazards": ["closed"],
+      "risks": ["Risk of Host-Microorganism Interactions"],
+      "why": { "en": "Water vapour in the air. Too dry irritates eyes and throat; too wet causes condensation and equipment trouble.", "ru": "Водяной пар в воздухе. Слишком сухо раздражает глаза и горло, слишком влажно вызывает конденсат и проблемы с оборудованием." },
+      "inSpace": { "en": "NASA-STD-3001 [V2 6012] sets a crew-health range of 25 to 75 % relative humidity, with a comfort zone of 30 to 60 % [V2 6013]. NASA HRP lists monitoring microbial communities among the closed-environment tasks.", "ru": "NASA-STD-3001 [V2 6012] задаёт диапазон для здоровья экипажа 25-75 % относительной влажности и зону комфорта 30-60 % [V2 6013]. NASA HRP относит контроль микробных сообществ к задачам замкнутой среды." },
+      "how": { "en": "A humidity sensor in the cabin. In this demo the value is modelled.", "ru": "Датчик влажности в отсеке. В этой демонстрации значение смоделировано." },
+      "redFlags": { "en": "Condensation or a leak near electronics, or a lasting dry cough and sore throat.", "ru": "Конденсат или протечка рядом с электроникой либо стойкий сухой кашель и боль в горле." }
+    },
+    "noise": {
+      "hazards": ["closed"],
+      "risks": ["Risk of Inadequate Sleep and Irregular Schedules"],
+      "why": { "en": "Sound level in the cabin. Constant noise disturbs speech, rest and concentration.", "ru": "Уровень шума в отсеке. Постоянный шум мешает разговору, отдыху и концентрации." },
+      "inSpace": { "en": "Past spacecraft noise caused communication interference, annoyance, headaches and sleep interference (Allen, NTRS 20170008857). NASA-STD-3001 sets NC-50 for work areas and NC-40 for crew sleep areas.", "ru": "Шум прошлых аппаратов вызывал помехи связи, раздражение, головную боль и нарушение сна (Allen, NTRS 20170008857). NASA-STD-3001 задаёт NC-50 для рабочих зон и NC-40 для мест сна." },
+      "how": { "en": "A sound level meter. This app shows one simulated NC rating; a real one needs a frequency spectrum.", "ru": "Шумомер. В приложении один смоделированный рейтинг NC; настоящий требует частотного спектра." },
+      "redFlags": { "en": "Ringing in the ears, pain or muffled hearing after loud noise.", "ru": "Звон в ушах, боль или приглушённый слух после сильного шума." }
+    },
+    "airflow": {
+      "hazards": ["closed"],
+      "risks": ["Risk of Injury and Compromised Performance from Spacewalks"],
+      "why": { "en": "Air movement in the cabin. Without gravity, warm air and exhaled CO₂ do not rise away, so fans must move the air.", "ru": "Движение воздуха в отсеке. Без гравитации тёплый воздух и выдыхаемый CO₂ не поднимаются вверх, поэтому воздух нужно двигать вентиляторами." },
+      "inSpace": { "en": "The ISS design range is 0.05 to 0.2 m/s (Perry et al., NTRS 20120015343); this is a design parameter, not a NASA-STD-3001 requirement.", "ru": "Проектный диапазон МКС 0,05-0,2 м/с (Perry и др., NTRS 20120015343); это расчётный параметр, а не требование NASA-STD-3001." },
+      "how": { "en": "An air-velocity sensor. In this demo the value is modelled.", "ru": "Датчик скорости воздуха. В этой демонстрации значение смоделировано." },
+      "redFlags": { "en": "Headache or drowsiness in a corner or sleeping area where the air feels still.", "ru": "Головная боль или сонливость в углу или месте сна, где воздух стоит неподвижно." }
+    },
+    "doseRate": {
+      "hazards": ["radiation"],
+      "risks": ["Risk of Radiation-Induced Cancers"],
+      "why": { "en": "How much radiation the crew receives per hour.", "ru": "Сколько радиации экипаж получает в час." },
+      "inSpace": { "en": "Space radiation is invisible and considered one of the most hazardous aspects of spaceflight (NASA HRP). The background here is about 0.5 mSv per day; a solar flare raises it for a while.", "ru": "Космическая радиация невидима и считается одним из самых опасных факторов полёта (NASA HRP). Фон здесь около 0,5 мЗв в сутки; солнечная вспышка на время повышает его." },
+      "how": { "en": "Dosimeters worn by the crew or fixed in the cabin. Here it is modelled from the real flare class.", "ru": "Дозиметры на экипаже или в отсеке. Здесь значение смоделировано по реальному классу вспышки." },
+      "redFlags": { "en": "A solar particle event alert from the ground: move to the best-shielded area.", "ru": "Предупреждение с Земли о событии солнечных частиц: перейдите в лучше всего защищённую зону." }
+    },
+    "dose": {
+      "hazards": ["radiation"],
+      "risks": ["Risk of Radiation-Induced Cancers"],
+      "why": { "en": "The radiation dose added up over the mission. It is what the exposure limits are set against.", "ru": "Доза радиации, накопленная за миссию. Именно по ней задаются пределы облучения." },
+      "inSpace": { "en": "NASA-STD-3001 Vol 1 sets a career limit of 600 mSv and protects the crew to under 250 mSv from the design-reference solar particle event.", "ru": "NASA-STD-3001 том 1 задаёт предел за карьеру 600 мЗв и требует защиты экипажа менее 250 мЗв от расчётного события солнечных частиц." },
+      "how": { "en": "The sum of the dosimeter readings over time. Here it is modelled.", "ru": "Сумма показаний дозиметров за время миссии. Здесь значение смоделировано." },
+      "redFlags": { "en": "Nausea, vomiting or unusual fatigue after a known intense exposure.", "ru": "Тошнота, рвота или необычная усталость после известного сильного облучения." }
+    }
+  },
+  "organs": {
+    "brain": { "hazards": ["isolation", "radiation"], "en": "Thinking, mood and sleep. Isolation, stress and poor sleep affect how it performs, and NASA HRP studies how spaceflight changes the eyes and brain (SANS).", "ru": "Мышление, настроение и сон. Изоляция, стресс и плохой сон влияют на его работу, а NASA HRP изучает, как полёт меняет глаза и мозг (SANS)." },
+    "heart": { "hazards": ["gravity"], "en": "Pumps the blood. Weightlessness changes circulation, which NASA HRP links to cardiovascular risk; exercise counteracts the loss in heart and blood-vessel performance.", "ru": "Качает кровь. Невесомость меняет кровообращение, что NASA HRP связывает с сердечно-сосудистым риском; упражнения компенсируют потерю работы сердца и сосудов." },
+    "lungs": { "hazards": ["closed"], "en": "Bring in oxygen and remove CO₂, so they depend on the cabin air: low O₂ or high CO₂ shows up here first. NASA HRP lists hypoxia and spacewalk CO₂ risks.", "ru": "Забирают кислород и выводят CO₂, поэтому зависят от воздуха в отсеке: нехватка O₂ или избыток CO₂ проявляются здесь первыми. NASA HRP называет риски гипоксии и CO₂ при выходах." },
+    "muscle": { "hazards": ["gravity"], "en": "Muscles and bones lose strength without gravity, so every astronaut exercises during the mission to counteract it (NASA HRP: reduced fitness, bone changes).", "ru": "Без гравитации мышцы и кости теряют силу, поэтому каждый астронавт тренируется в полёте (NASA HRP: снижение физической формы, изменения костей)." }
+  }
+}

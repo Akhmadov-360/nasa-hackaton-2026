@@ -9,6 +9,7 @@ import { useEta } from '@/hooks/useEta';
 import { baseCfg } from '@/lib/engineConfig';
 import { useT, type DictKey } from '@/lib/i18n';
 import { SOURCE_OF, STATUS_COLOR, STATUS_RANK } from '@/lib/metrics';
+import { useMissionStore } from '@/lib/store/missionStore';
 import { ForecastPill, StatusForecastBadge } from './ForecastPill';
 import { Sparkline } from './Sparkline';
 
@@ -65,6 +66,7 @@ export function ProvenanceMark({ sourceKey, limitKey }: { sourceKey: string; lim
 
 export function VitalCard({ crewId, sourceKey, metricKey, live, label, icon, unit, value, value2, decimals = 0, status, read, tick, norm, className, highlighted, degraded }: Props) {
   const t = useT();
+  const openMetric = useMissionStore((s) => s.openMetric);
   const eta = useEta(crewId, metricKey, tick, live);
   const fmt = { minimumFractionDigits: decimals, maximumFractionDigits: decimals };
   const color = STATUS_COLOR[status];
@@ -80,7 +82,15 @@ export function VitalCard({ crewId, sourceKey, metricKey, live, label, icon, uni
       }}
     >
       <header className="flex items-center justify-between gap-1 text-[13px] text-muted-foreground">
-        <span className="flex min-w-0 items-center gap-1.5 truncate">{icon}<span className="truncate">{label}</span></span>
+        <button
+          type="button"
+          onClick={() => openMetric(metricKey)}
+          title={t('about.open', { name: label })}
+          aria-label={t('about.open', { name: label })}
+          className="-mx-1 flex min-w-0 cursor-pointer items-center gap-1.5 truncate rounded-md px-1 text-left transition-colors hover:text-bone focus-visible:text-bone"
+        >
+          {icon}<span className="truncate">{label}</span>
+        </button>
         <span className="flex shrink-0 items-center gap-1">
           {eta && status !== 'NOMINAL' ? (
             <StatusForecastBadge status={status} eta={eta} />

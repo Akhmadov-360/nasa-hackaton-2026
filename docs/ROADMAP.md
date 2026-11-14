@@ -14,7 +14,8 @@ login). Their deadlines and format rules must be checked by the team before the 
 | D1 Smoke test and rehearsal | Done (`pnpm smoke`, `scripts/smoke.md`) |
 | Submission pack | Done (`docs/SUBMISSION.md`, README NASA data and AI-use sections) |
 | G2 "Do now" guidance | Done (pinned alarms, organ popover; Island list not changed) |
-| G3, G1, G6+G8, G7, G4, G5, G9, G10 | Not started |
+| G3 "About this indicator" + organ function | Done (side window from card titles, organ popover rows and the Crew dose title; `about.json`, en/ru). G7 is partly covered: every entry carries its HRP hazards and risks, shown in the window; a legend and tags on the cards are still open |
+| G1, G6+G8, G7 (rest), G4, G5, G9, G10 | Not started |
 
 ## 1. What the challenge asks, and where we are
 

@@ -83,6 +83,10 @@ export interface MissionState {
   /** select a crew member and open the tab that holds a reading: used by every "go to the problem" click */
   jumpTo: (crewId: string | undefined, metric: string | undefined) => void;
   focusOrgan: (id: string | null) => void;
+  /** metric whose "About this indicator" window is open (key of about.json; not persisted) */
+  metricDrawer: string | null;
+  openMetric: (metric: string) => void;
+  closeMetric: () => void;
   setMode: (mode: SourceMode, everLive: boolean) => void;
   applyFrames: (t: number, frames: TelemetryFrame[], degraded: Record<string, boolean>) => void;
   addAudit: (e: Omit<LogEntry, 'id'>) => void;
@@ -178,6 +182,9 @@ export const useMissionStore = create<MissionState>()(
           telemetryView: viewOfMetric(metric),
         })),
       focusOrgan: (id) => set({ focusedOrgan: id }),
+      metricDrawer: null,
+      openMetric: (metric) => set({ metricDrawer: metric }),
+      closeMetric: () => set({ metricDrawer: null }),
       setMode: (mode, everLive) => set({ mode, everLive }),
       applyFrames: (t, frames, degraded) =>
         set((s) => {
