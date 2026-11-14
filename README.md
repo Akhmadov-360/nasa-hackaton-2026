@@ -200,12 +200,29 @@ Open http://localhost:3000 and press **Enter Mission Control** (the click also e
 pnpm --filter @astro/web build && pnpm --filter @astro/web start
 ```
 
-**Tests and checks** (35 engine, 5 data, 9 API, 22 web unit tests):
+To keep `dev` running, build into a separate folder and serve it on another port:
+
+```bash
+NEXT_DIST_DIR=.next-prod pnpm --filter @astro/web build
+NEXT_DIST_DIR=.next-prod pnpm --filter @astro/web exec next start -p 3100
+```
+
+**Tests and checks** (35 engine, 5 data, 9 API, 24 web unit tests):
 
 ```bash
 pnpm test
 pnpm typecheck
 ```
+
+**Golden-path smoke test** (a real Chrome or Edge, the pitch end to end with 13 assertions: hold button, island forecast and
+list, pinned alarm, report and Excel export, Time Travel replay, NOAA feed down, network down and back, console errors).
+Start the API and a web server first, then:
+
+```bash
+pnpm smoke -- --url http://localhost:3100 --size 1366x768 --shots shots   # options: --size WxH, --shots <dir>, --browser chrome|msedge, --headed
+```
+
+The manual rehearsal checklist for the presentation laptop is in [`scripts/smoke.md`](scripts/smoke.md).
 
 **Data scripts**
 

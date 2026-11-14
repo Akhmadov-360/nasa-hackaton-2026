@@ -11,3 +11,4 @@ docs/superpowers/
 .playwright-mcp/
 shot-*.png
 *.tsbuildinfo
+.next-prod
