@@ -1,5 +1,6 @@
 'use client';
 import NumberFlow from '@number-flow/react';
+import { ChevronRight } from 'lucide-react';
 import type { ReactNode } from 'react';
 import type { Status, TelemetryFrame } from '@astro/engine';
 import { StatusBadge } from '@/components/StatusBadge';
@@ -9,6 +10,7 @@ import { useEta } from '@/hooks/useEta';
 import { baseCfg } from '@/lib/engineConfig';
 import { useT, type DictKey } from '@/lib/i18n';
 import { SOURCE_OF, STATUS_COLOR, STATUS_RANK } from '@/lib/metrics';
+import { aboutKeyOf } from '@/lib/about';
 import { useMissionStore } from '@/lib/store/missionStore';
 import { ForecastPill, StatusForecastBadge } from './ForecastPill';
 import { Sparkline } from './Sparkline';
@@ -67,6 +69,7 @@ export function ProvenanceMark({ sourceKey, limitKey }: { sourceKey: string; lim
 export function VitalCard({ crewId, sourceKey, metricKey, live, label, icon, unit, value, value2, decimals = 0, status, read, tick, norm, className, highlighted, degraded }: Props) {
   const t = useT();
   const openMetric = useMissionStore((s) => s.openMetric);
+  const isOpen = useMissionStore((s) => s.metricDrawer !== null && aboutKeyOf(s.metricDrawer) === aboutKeyOf(metricKey));
   const eta = useEta(crewId, metricKey, tick, live);
   const fmt = { minimumFractionDigits: decimals, maximumFractionDigits: decimals };
   const color = STATUS_COLOR[status];
@@ -75,21 +78,23 @@ export function VitalCard({ crewId, sourceKey, metricKey, live, label, icon, uni
   return (
     <article
       aria-current={highlighted ? 'true' : undefined}
-      className={`@container relative flex min-w-0 flex-col gap-0.5 bg-cell p-3.5 transition-[box-shadow,background-color] duration-500 ${className ?? ''}`}
+      onClick={() => openMetric(metricKey)}
+      className={`group @container relative flex min-w-0 cursor-pointer flex-col gap-0.5 bg-cell p-3.5 transition-[box-shadow,background-color] duration-200 hover:bg-[color-mix(in_srgb,white_4%,var(--color-cell))] ${className ?? ''}`}
       style={{
-        background: alert ? `color-mix(in srgb, ${color} 9%, var(--color-cell))` : highlighted ? 'color-mix(in srgb, var(--color-teal) 9%, var(--color-cell))' : undefined,
-        boxShadow: alert ? `inset 3px 0 0 ${color}` : highlighted ? 'inset 3px 0 0 var(--color-teal)' : undefined,
+        background: alert ? `color-mix(in srgb, ${color} 9%, var(--color-cell))` : highlighted || isOpen ? 'color-mix(in srgb, var(--color-teal) 9%, var(--color-cell))' : undefined,
+        boxShadow: alert ? `inset 3px 0 0 ${color}` : highlighted || isOpen ? 'inset 3px 0 0 var(--color-teal)' : undefined,
       }}
     >
       <header className="flex items-center justify-between gap-1 text-[13px] text-muted-foreground">
         <button
           type="button"
-          onClick={() => openMetric(metricKey)}
+          onClick={(e) => { e.stopPropagation(); openMetric(metricKey); }}
           title={t('about.open', { name: label })}
           aria-label={t('about.open', { name: label })}
-          className="-mx-1 flex min-w-0 cursor-pointer items-center gap-1.5 truncate rounded-md px-1 text-left transition-colors hover:text-bone focus-visible:text-bone"
+          className="-mx-1 flex min-w-0 cursor-pointer items-center gap-1.5 truncate rounded-md px-1 text-left transition-colors group-hover:text-bone focus-visible:text-bone"
         >
           {icon}<span className="truncate">{label}</span>
+          <ChevronRight className="size-3 shrink-0 text-muted-foreground/60 transition-all group-hover:translate-x-0.5 group-hover:text-bone" aria-hidden />
         </button>
         <span className="flex shrink-0 items-center gap-1">
           {eta && status !== 'NOMINAL' ? (
