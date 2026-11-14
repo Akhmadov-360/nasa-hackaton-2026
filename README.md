@@ -227,6 +227,13 @@ NEXT_DIST_DIR=.next-prod pnpm --filter @astro/web build
 NEXT_DIST_DIR=.next-prod pnpm --filter @astro/web exec next start -p 3100
 ```
 
+**Hosted demo (Vercel).** Only the web app is hosted; it is client-rendered and needs no server. Without the API it
+shows the banner _SIGNAL LOST: USING ESTIMATED TELEMETRY_ and runs the same engine in the browser (mode `SIM`), so every
+feature works except live server events across tabs and the live NOAA GOES card. To deploy: import
+`Akhmadov-360/nasa-hackaton-2026` in Vercel and set the **Root Directory** to `apps/web`; `apps/web/vercel.json` already sets
+the install command (`cd ../.. && pnpm install --frozen-lockfile`) and the build command (builds `@astro/engine`, then the app).
+To use a hosted API instead, set `NEXT_PUBLIC_API_URL` to its address.
+
 **Tests and checks** (50 engine, 5 data, 11 API, 52 web unit tests):
 
 ```bash
