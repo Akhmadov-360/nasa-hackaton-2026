@@ -7,6 +7,15 @@ repository, and the engineering checklists (system design, tech debt, testing st
 What I could **not** read: the *Project Submission Guide* and *Judging and Awards Guide* from the kick-off e-mail (they need a
 login). Their deadlines and format rules must be checked by the team before the submission block below is trusted.
 
+## Status
+
+| Item | State |
+|---|---|
+| D1 Smoke test and rehearsal | Done (`pnpm smoke`, `scripts/smoke.md`) |
+| Submission pack | Done (`docs/SUBMISSION.md`, README NASA data and AI-use sections) |
+| G2 "Do now" guidance | Done (pinned alarms, organ popover; Island list not changed) |
+| G3, G1, G6+G8, G7, G4, G5, G9, G10 | Not started |
+
 ## 1. What the challenge asks, and where we are
 
 The text names four things: (a) astronauts **assess their own health** and act on it, (b) data can come from **user input**

@@ -36,7 +36,8 @@ Adapt sections 1 to 5 of the README. In short:
 - *How it is built*: a deterministic engine `frame(t) = baseline(t) + modifiers(t)` that runs identically on the server and in the browser, Zod-validated contracts, and the source modes `LIVE → POLL → STALE → SIM` for operation without a network.
 - *How it maps to the five NASA HRP hazards*: radiation (dose model and GOES), closed environment (cabin metrics), distance from Earth (offline operation and forecasts), gravity (an in-flight exercise load model; bone and muscle indicators are not modelled yet), isolation and confinement (planned self-check of sleep and mood).
 - *Honesty*: each limit carries a tier (`nasa`, `derived`, `clinical`, `engineering`, `provisional`) and a source; the scenario responses are assumptions and are labelled as such.
-- *Update this paragraph as features land* (self-check of glucose, sleep, mood and water; do-now guidance; mission contexts). Only describe what runs.
+- *Guidance*: a short "do now" first action for any out-of-range reading, in the pinned alarms and the body-scan organ popover (illustrative, not validated by flight surgeons).
+- *Update this paragraph as features land* (self-check of glucose, sleep, mood and water; mission contexts). Only describe what runs.
 
 **Use of Super Intelligence (SI)**
 Most of the code, tests, translations and documentation were written by an AI coding assistant (Anthropic Claude, through Claude Code) following requirements, design decisions and reviews given by the team. The team chose the problem framing, the data sources and the rule that every limit must cite its origin, directed each feature, ran and reviewed the application, and decided what to ship. Where a scientific source could not be read in full, the limit is labelled with a weaker tier instead of being presented as a NASA value. AI assistance is also recorded in the README, in `package.json` and in the commit trailers.

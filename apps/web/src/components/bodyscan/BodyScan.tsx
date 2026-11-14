@@ -2,12 +2,13 @@
 import { useEffect, useRef, useState } from 'react';
 import { animate, svg } from 'animejs';
 import { worstStatus, type Status } from '@astro/engine';
+import { DoNow } from '@/components/guidance/DoNow';
 import { StatusBadge } from '@/components/StatusBadge';
 import { Popover, PopoverAnchor, PopoverContent } from '@/components/ui/popover';
 import { useDisplayFrame } from '@/hooks/useDisplayFrame';
 import { useT, metricName, statusWord, type DictKey } from '@/lib/i18n';
 import { formatValue } from '@/lib/logText';
-import { ORGANS, STATUS_COLOR } from '@/lib/metrics';
+import { ORGANS, STATUS_COLOR, STATUS_RANK } from '@/lib/metrics';
 import { useMissionStore } from '@/lib/store/missionStore';
 
 type OrganId = (typeof ORGANS)[number]['id'];
@@ -157,7 +158,7 @@ export function BodyScan({ crewId }: { crewId: string }) {
           </g>
 
           {/* scan line, clipped to the silhouette */}
-          <g clipPath="url(#body-clip)" aria-hidden>
+          <g clipPath="url(#body-clip)" aria-hidden style={{ pointerEvents: 'none' }}>
             <rect className="scanline" x="0" y="0" width={W} height="70" fill="url(#scan-grad)" style={{ transformBox: 'view-box' }} />
           </g>
 
@@ -226,6 +227,13 @@ export function BodyScan({ crewId }: { crewId: string }) {
                     </div>
                   ))}
                 </dl>
+                {(() => {
+                  // the first action for the organ's worst reading
+                  const worst = o.metrics
+                    .map((m) => ({ m, s: frame?.status.byMetric[m] ?? ('NOMINAL' as Status) }))
+                    .sort((x, y) => STATUS_RANK[y.s] - STATUS_RANK[x.s])[0];
+                  return worst && worst.s !== 'NOMINAL' ? <DoNow metric={worst.m} status={worst.s} value={vals[worst.m]} className="mt-2.5" /> : null;
+                })()}
               </PopoverContent>
             </Popover>
           );

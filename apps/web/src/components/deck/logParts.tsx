@@ -1,6 +1,7 @@
 'use client';
 import { useEffect, useMemo, useState } from 'react';
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
+import { DoNow } from '@/components/guidance/DoNow';
 import { StatusBadge } from '@/components/StatusBadge';
 import { crewName } from '@/lib/engineConfig';
 import { useT } from '@/lib/i18n';
@@ -59,6 +60,7 @@ export function PinnedIncidents({ onOpen, limit = 3 }: { onOpen: (e: LogEntry) =
             <span className="min-w-0 flex-1">
               <span className="num block text-xs text-muted-foreground">{formatMet(e.t)} · {e.crewId ? crewName(e.crewId) : ''}</span>
               <span className="block break-words">{logText(e, locale)}</span>
+              <DoNow metric={e.metric} status={e.severity} value={e.value} className="mt-1.5" />
             </span>
             {e.severity && <StatusBadge status={e.severity} className="shrink-0" />}
           </button>
