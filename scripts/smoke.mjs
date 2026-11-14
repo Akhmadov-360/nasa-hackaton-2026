@@ -182,6 +182,13 @@ await step('hazard legend opens an indicator, and the window closes with its clo
   await page.waitForFunction(() => !document.querySelector('[role=dialog]'), null, { timeout: 5000 });
 });
 
+await step('trend chart: the About window draws the reading with its limit bands', async () => {
+  await page.getByRole('button', { name: /About Heart rate/i }).click();
+  await page.getByRole('img', { name: /^Trend:/ }).waitFor({ timeout: 8000 });
+  await page.getByRole('button', { name: 'Close', exact: true }).click();
+  await page.waitForFunction(() => !document.querySelector('[role=dialog]'), null, { timeout: 5000 });
+});
+
 await step('report lists incidents and the limits table, exports Excel', async () => {
   await page.locator('header button', { hasText: /Report/ }).first().click();
   await page.locator('.report-scroll').waitFor({ timeout: 10000 });

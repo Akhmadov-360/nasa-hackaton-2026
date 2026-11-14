@@ -7,6 +7,7 @@ import { Tip } from '@/components/ui/tip';
 import { Drawer, DrawerClose, DrawerContent, DrawerDescription, DrawerHeader, DrawerTitle } from '@/components/ui/drawer';
 import { isManualMetric } from '@astro/engine';
 import { HazardChip } from './hazards';
+import { TrendChart } from './TrendChart';
 import { aboutFor, aboutKeyOf, aboutTitleKey, pickText, RISK_URL } from '@/lib/about';
 import { baseCfg } from '@/lib/engineConfig';
 import { useT, type DictKey } from '@/lib/i18n';
@@ -96,6 +97,8 @@ export function MetricDrawer() {
                 {norm && <span className="num ml-auto text-xs text-muted-foreground">{t('norm.label')}: {norm}</span>}
                 {th?.tier && <p className="w-full text-[11px] leading-snug text-muted-foreground">{t(`limit.${th.tier}` as DictKey)}{th.source ? `. ${th.source}` : ''}</p>}
               </div>
+
+              <TrendChart metric={key} />
 
               {manual && (
                 <Button
