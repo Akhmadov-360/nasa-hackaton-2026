@@ -13,7 +13,7 @@ pnpm typecheck
 pnpm --filter @astro/api start    # :3001  (restart to reset the event log)
 pnpm --filter @astro/web dev      # :3000
 pnpm --filter @astro/web build && pnpm --filter @astro/web start   # production build, use this for the demo (stop `dev` first: same .next folder)
-NEXT_DIST_DIR=.next-prod pnpm --filter @astro/web build   # prod build next to a running `dev` (serve: ... exec next start -p 3100)
+NEXT_DIST_DIR=.next-prod pnpm --filter @astro/web build   # prod build next to a running `dev` (serve: ... exec next start -p 3100); it rewrites apps/web/next-env.d.ts to .next-prod: `git checkout apps/web/next-env.d.ts` before committing
 pnpm smoke -- --url http://localhost:3100 --size 1366x768   # golden-path test in real Chrome/Edge, 13 assertions (see scripts/smoke.md)
 pnpm --filter @astro/data build:pack      # rebuild packs/demo.pack.json from data-raw/
 pnpm --filter @astro/data fetch:donki   # reads NASA_API_KEY from the git-ignored root .env (see .env.example)
