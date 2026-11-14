@@ -1,0 +1,20 @@
+# Render blueprint for the API (NestJS, WebSocket /ws, REST). The web app is hosted separately on Vercel.
+# Render: New > Blueprint > paste the repository URL > Apply. Then copy the service URL into
+# NEXT_PUBLIC_API_URL on Vercel and redeploy the web app.
+services:
+  - type: web
+    name: astronaut-health-monitor-api
+    runtime: node
+    plan: free
+    region: frankfurt
+    branch: main
+    buildCommand: npm install -g pnpm@10 && pnpm install --frozen-lockfile --prod=false && pnpm build:libs
+    startCommand: pnpm --filter @astro/api start
+    healthCheckPath: /scenarios
+    autoDeploy: true
+    envVars:
+      - key: NODE_VERSION
+        value: "22"
+      # browser origins allowed to call the API (comma separated); localhost and the local network are always allowed
+      - key: CORS_ORIGINS
+        value: https://astronaut-health-monitor-one.vercel.app
