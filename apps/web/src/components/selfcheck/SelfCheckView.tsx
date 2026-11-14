@@ -13,7 +13,9 @@ import { formatValue } from '@/lib/logText';
 import { STATUS_COLOR, STATUS_RANK } from '@/lib/metrics';
 import { normText } from '@/lib/norms';
 import { useMissionStore } from '@/lib/store/missionStore';
+import { useCheckins } from '@/hooks/useCheckins';
 import { moodFace } from './mood';
+import { formatMetShort } from './time';
 
 /** Reference only, not an alarm: the water supplied per crew member per day (NASA-STD-3001, OCHMO water brief). */
 export const WATER_SUPPLY_L = 2.5;
@@ -33,6 +35,7 @@ function Card({ metric, frame, crewId }: { metric: ManualMetric; frame: Telemetr
   // an entry that has expired is "due", one that was never made is "not entered": told apart through the event log
   const events = useMissionStore((s) => s.events);
   const everEntered = useMemo(() => manualEntries(events, { crewId, toT: frame?.t ?? 0 }).some((e) => e.metric === metric), [events, crewId, metric, frame?.t]);
+  const checkin = useCheckins().find((c) => c.metric === metric);
   const entry = frame?.manual?.[metric];
   const status = frame?.status.byMetric[metric] ?? 'NOMINAL';
   const color = STATUS_COLOR[status];
@@ -92,8 +95,10 @@ function Card({ metric, frame, crewId }: { metric: ManualMetric; frame: Telemetr
       {metric === 'mood' && entry && <p className="text-xs text-muted-foreground">{t(`selfcheck.mood.${entry.value}` as DictKey)}</p>}
 
       <div className="mt-auto flex items-center justify-between gap-2 pt-2">
-        <span className={`text-xs ${entry ? 'text-muted-foreground' : everEntered ? 'text-amber' : 'text-muted-foreground/70'}`}>
-          {entry ? (metric === 'hydration' ? t('selfcheck.total') : ageText((frame?.t ?? 0) - entry.t, t)) : everEntered ? t('selfcheck.due') : t('selfcheck.never')}
+        <span className={`text-xs ${checkin ? 'text-amber' : entry ? 'text-muted-foreground' : everEntered ? 'text-amber' : 'text-muted-foreground/70'}`}>
+          {checkin
+            ? t(checkin.state === 'overdue' ? 'selfcheck.overdueSince' : 'selfcheck.dueSince', { time: formatMetShort(checkin.slotT) })
+            : entry ? (metric === 'hydration' ? t('selfcheck.total') : ageText((frame?.t ?? 0) - entry.t, t)) : everEntered ? t('selfcheck.due') : t('selfcheck.never')}
         </span>
         <Button
           type="button" variant="secondary" size="sm" className="h-8 rounded-full px-3"

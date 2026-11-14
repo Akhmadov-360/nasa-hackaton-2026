@@ -3,6 +3,7 @@ export * from './modifiers';
 export * from './baseline';
 export * from './status';
 export * from './manual';
+export * from './checkins';
 export * from './frame';
 export { mulberry32, hashSeed } from './prng';
 export * from './log';

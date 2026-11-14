@@ -1,0 +1,11 @@
+{
+  "provisional": true,
+  "note": "Routine self-check schedule: at which mission-clock hours (MET hour of the day, 0 to 24) each value is due. A check-in is due once the latest passed slot has no entry at or after it, and overdue when that slot is more than overdueAfterHours old. Only the latest passed slot of each routine counts, so a missed morning never piles up. The hours are our choice, not a NASA schedule.",
+  "overdueAfterHours": 3,
+  "routines": [
+    { "metric": "glucose", "atHours": [6, 14, 22] },
+    { "metric": "sleep", "atHours": [7] },
+    { "metric": "mood", "atHours": [9, 21] },
+    { "metric": "hydration", "atHours": [10, 14, 18] }
+  ]
+}

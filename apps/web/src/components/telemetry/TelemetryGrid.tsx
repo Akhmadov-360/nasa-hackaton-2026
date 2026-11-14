@@ -7,6 +7,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip
 import { SelfCheckView } from '@/components/selfcheck/SelfCheckView';
 import { HazardLegend } from '@/components/guidance/hazards';
 import { WidgetBoundary } from '@/components/WidgetBoundary';
+import { useCheckins } from '@/hooks/useCheckins';
 import { useDisplayFrame } from '@/hooks/useDisplayFrame';
 import { statusWord, useT, type DictKey } from '@/lib/i18n';
 import { ORGANS, STATUS_COLOR, TELEMETRY_VIEWS, VIEW_METRICS, type TelemetryView } from '@/lib/metrics';
@@ -54,6 +55,7 @@ export function TelemetryGrid({ crewId }: { crewId: string }) {
     <div className={`grid min-h-[17rem] grid-cols-2 gap-px overflow-hidden rounded-[20px] bg-white/10 ${cols}`}>{children}</div>
   );
 
+  const checkins = useCheckins();
   const items = TELEMETRY_VIEWS.map((k) => {
     const st = worstStatus(VIEW_METRICS[k].map(s));
     const Icon = VIEW_ICON[k];
@@ -64,6 +66,7 @@ export function TelemetryGrid({ crewId }: { crewId: string }) {
           <Icon className="size-4" aria-hidden />
           <span>{t(`view.${k}` as DictKey)}</span>
           {st !== 'NOMINAL' && <span className="size-2 rounded-full" style={{ background: STATUS_COLOR[st] }} role="img" aria-label={statusWord(st, locale)} />}
+          {k === 'selfcheck' && st === 'NOMINAL' && checkins.length > 0 && <span className="size-2 rounded-full border border-amber" role="img" aria-label={t('checkin.dot')} />}
         </>
       ),
     };

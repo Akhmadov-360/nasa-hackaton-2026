@@ -109,6 +109,8 @@ await step('layout: no horizontal overflow, time bar inside the viewport', async
 });
 
 await step('a short press does nothing, a 0.8 s hold sends O2 supply fault', async () => {
+  // the hold buttons stay disabled until the first telemetry frame: wait for the mission clock to run
+  await page.waitForFunction(() => /MET\s+(?!000)\d{3}:/.test(document.body.innerText), null, { timeout: 15000 });
   const btn = page.locator('.hb-root').nth(2);
   const box = await btn.boundingBox();
   const x = box.x + box.width / 2, y = box.y + box.height / 2;
@@ -140,6 +142,12 @@ await step('island list opens and a row jumps to the reading', async () => {
 
 await step('warning pins the active alarm in the flight log', async () => {
   await page.locator('ul[aria-label="Active alarms"] li').first().waitFor({ timeout: 60000 });
+});
+
+await step('routine check-ins: the header chip opens the self-check window', async () => {
+  await page.getByRole('button', { name: /Routine check-ins due/ }).click();
+  await page.locator('[role=dialog] h2', { hasText: 'Self-check' }).waitFor({ timeout: 5000 });
+  await closeDialogs();
 });
 
 await step('self-check: glucose 52 raises a warning with a do-now line', async () => {

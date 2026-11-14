@@ -12,6 +12,7 @@ import { useT, type DictKey } from '@/lib/i18n';
 import { formatMet, STATUS_COLOR } from '@/lib/metrics';
 import { globalStatus, useMissionStore, type Locale } from '@/lib/store/missionStore';
 import { delayText, gravityText, missionLabel, missionOf, missionPlace, missions, roundTripText } from '@/lib/mission';
+import { CheckinChip } from '@/components/selfcheck/CheckinChip';
 import { IslandPill } from './IslandPill';
 
 function LinkReadout() {
@@ -100,6 +101,7 @@ export function TopBar() {
         </div>
         <div className="hidden md:block"><IslandPill /></div>
         <div className="flex items-center justify-end gap-3">
+          <CheckinChip />
           <Button size="sm" onClick={() => setReportOpen(true)} className="gap-2">
             <FileText /> {t('report.open')}{hasImport && <span className="size-1.5 rounded-full bg-primary" aria-hidden />}
           </Button>
