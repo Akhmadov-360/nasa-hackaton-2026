@@ -15,6 +15,8 @@ export interface ServiceOptions { metOffsetSec?: number; now?: () => number }
 
 const EVENT_TYPES: EventType[] = ['flare', 'exertion', 'o2fault', 'normalize', 'measurement'];
 const MAX_EVENTS = 300;
+/** id of a self-check entry: short, no spaces or markup */
+const ENTRY_ID = /^[A-Za-z0-9_-]{1,40}$/;
 const MAX_INTENSITY = 3;
 const MAX_MAGNITUDE = 20;
 
@@ -105,14 +107,30 @@ export class TelemetryService {
     }
     if (cls !== undefined) params.class = String(cls);
     if (e.type === 'measurement') {
-      // self-check entry: one crew member, a known metric and a value inside its range; nothing else is kept
+      // self-check entry or removal: one crew member, a known metric; nothing else is kept
       if (e.crewId === 'ALL') return { ok: false, error: 'a measurement belongs to one crew member' };
       const metric = e.params?.metric;
       if (!isManualMetric(metric)) return { ok: false, error: 'unknown measurement metric' };
-      const value = e.params?.value;
-      if (!validManualValue(metric, value)) return { ok: false, error: `value for ${metric} must be a number from ${MANUAL[metric].min} to ${MANUAL[metric].max}${MANUAL[metric].integer ? ' (whole number)' : ''}` };
       params.metric = metric;
-      params.value = value;
+      const retract = e.params?.retract;
+      if (retract !== undefined) {
+        if (typeof retract !== 'string' || !ENTRY_ID.test(retract)) return { ok: false, error: 'invalid entry id' };
+        params.retract = retract;
+      } else {
+        const value = e.params?.value;
+        if (!validManualValue(metric, value)) return { ok: false, error: `value for ${metric} must be a number from ${MANUAL[metric].min} to ${MANUAL[metric].max}${MANUAL[metric].integer ? ' (whole number)' : ''}` };
+        params.value = value;
+        const id = e.params?.id;
+        if (id !== undefined) {
+          if (typeof id !== 'string' || !ENTRY_ID.test(id)) return { ok: false, error: 'invalid entry id' };
+          params.id = id;
+        }
+        const at = e.params?.at;
+        if (at !== undefined) {
+          if (typeof at !== 'number' || !Number.isFinite(at) || at < 1.5e12 || at > 4.1e12) return { ok: false, error: 'invalid entry time' };
+          params.at = at;
+        }
+      }
     }
     if (e.t !== undefined && !Number.isFinite(e.t)) return { ok: false, error: 'invalid time' };
     if (this.log.length >= MAX_EVENTS) return { ok: false, error: 'event log full, reset the scenario' };

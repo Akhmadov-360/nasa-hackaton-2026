@@ -108,7 +108,7 @@ export function sendCommand(type: EventType, crewId: string, params?: Record<str
   if (t <= 0) return; // no telemetry yet: nothing to act on
   const ev: EngineEvent = { t, type, crewId, ...(params ? { params } : {}) };
   st().addEvent(ev);
-  st().addAudit({ t, kind: 'command', key: COMMAND_KEY[type], params: { crewId, ...(type === 'measurement' && params ? { metric: params.metric, value: params.value } : {}) } });
+  st().addAudit({ t, kind: 'command', key: COMMAND_KEY[type], params: { crewId } });
   getManager()?.command(ev);
   // micro-action: undo for crew-specific commands
   if (type === 'exertion' || type === 'o2fault') {
@@ -119,6 +119,36 @@ export function sendCommand(type: EventType, crewId: string, params?: Record<str
       button: { title: tr('deck.undo'), onClick: () => sendCommand('normalize', crewId) },
     });
   }
+}
+
+/** A short id for a self-check entry: lets it be edited or removed later without touching the log. */
+const entryId = () => `${Math.round(st().t * 10).toString(36)}${Math.random().toString(36).slice(2, 6)}`;
+
+/**
+ * Records one self-check value as a `measurement` event for the crew member. `agoSec` back-dates it (the value was
+ * measured earlier); the wall-clock time is kept in `at` so the report can print a date. Returns the entry id.
+ */
+export function recordMeasurement(crewId: string, metric: string, value: number, agoSec = 0, keep?: { t: number; at?: number }): string | undefined {
+  const now = Math.round(st().t * 10) / 10;
+  if (now <= 0) return undefined; // no telemetry yet
+  const t = keep?.t ?? Math.max(0, Math.round((now - agoSec) * 10) / 10);
+  const at = keep?.at ?? Date.now() - Math.round((now - t) * 1000);
+  const id = entryId();
+  const ev: EngineEvent = { t, type: 'measurement', crewId, params: { metric, value, id, at } };
+  st().addEvent(ev);
+  st().addAudit({ t: now, kind: 'command', key: 'log.cmd.measurement', params: { crewId, metric, value } });
+  getManager()?.command(ev);
+  return id;
+}
+
+/** Removes a self-check entry by id: a correction, so it disappears from the whole history, replays and the report. */
+export function removeMeasurement(crewId: string, metric: string, id: string, value: number): void {
+  const now = Math.round(st().t * 10) / 10;
+  if (now <= 0) return;
+  const ev: EngineEvent = { t: now, type: 'measurement', crewId, params: { metric, retract: id } };
+  st().addEvent(ev);
+  st().addAudit({ t: now, kind: 'command', key: 'log.cmd.measurementRemoved', params: { crewId, metric, value } });
+  getManager()?.command(ev);
 }
 
 /** Clears injected events on the server and in this browser. */

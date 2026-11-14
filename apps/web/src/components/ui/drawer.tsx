@@ -14,6 +14,8 @@ function DrawerContent({ className, children, ...props }: React.ComponentProps<t
     <DrawerPrimitive.Portal>
       <DrawerPrimitive.Overlay className="fixed inset-0 z-50 bg-black/60" />
       <DrawerPrimitive.Content
+        // a click on a toast (for example its Undo button) is not a click outside the window: the window stays open
+        onInteractOutside={(e) => { if ((e.target as HTMLElement | null)?.closest?.('[data-sileo-viewport]')) e.preventDefault(); }}
         className={cn(
           'fixed inset-y-0 right-0 z-50 flex w-[min(720px,100vw)] flex-col bg-rail text-foreground shadow-2xl outline-none',
           className,

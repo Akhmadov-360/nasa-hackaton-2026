@@ -155,3 +155,7 @@ body {
   [role='dialog'] .report-scroll { overflow: visible !important; height: auto !important; }
   [role='dialog'] tr, [role='dialog'] li { break-inside: avoid; }
 }
+
+/* Toasts stay above and clickable over a modal window (a drawer sets pointer-events: none on the page), so an Undo button in a toast can be pressed while the window is open. */
+[data-sileo-viewport] { z-index: 80 !important; }
+[data-sileo-viewport] [data-sileo-toast] { pointer-events: auto; }

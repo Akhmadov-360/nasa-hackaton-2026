@@ -23,10 +23,10 @@ export function logText(e: LogEntry, locale: Locale): string {
       value: value ? ` · ${value}` : '',
     }).replace(' · {trail}', '');
   }
-  if (e.key === 'log.cmd.measurement' && e.params?.metric) {
+  if ((e.key === 'log.cmd.measurement' || e.key === 'log.cmd.measurementRemoved') && e.params?.metric) {
     const metric = String(e.params.metric);
     const crew = e.params.crewId;
-    return translate(locale, 'log.cmd.measurement', {
+    return translate(locale, e.key, {
       label: sentence(metricName(metric, locale)),
       target: crew === undefined ? '' : crewName(String(crew)),
       value: formatValue(metric, Number(e.params.value)),

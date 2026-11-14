@@ -62,6 +62,23 @@ describe('TelemetryService', () => {
     expect(s.tick(1001).frames[0].status.byMetric.glucose).toBe('WARNING');
   });
 
+  it('keeps an entry id and time, removes an entry by id, and rejects bad ids and times', () => {
+    const s = svc();
+    const send = (params: Record<string, unknown>) => s.command({ type: 'measurement', crewId: 'A1', t: 1000, params });
+    expect(send({ metric: 'hydration', value: 0.5, id: 'w1', at: 1.78e12 }).ok).toBe(true);
+    expect(s.snapshot().log[0].params).toEqual({ metric: 'hydration', value: 0.5, id: 'w1', at: 1.78e12 });
+    expect(send({ metric: 'hydration', value: 0.5, id: '<script>' }).ok).toBe(false);
+    expect(send({ metric: 'hydration', value: 0.5, id: 'x'.repeat(41) }).ok).toBe(false);
+    expect(send({ metric: 'hydration', value: 0.5, at: 12 }).ok).toBe(false);
+    expect(send({ metric: 'hydration', value: 0.5, at: 'now' }).ok).toBe(false);
+    expect(s.tick(1001).frames[0].manual?.hydration?.value).toBeCloseTo(0.5);
+    expect(send({ metric: 'hydration', retract: 'w1', value: 9 }).ok).toBe(true);
+    expect(s.snapshot().log[1].params).toEqual({ metric: 'hydration', retract: 'w1' });
+    expect(s.tick(1002).frames[0].manual?.hydration).toBeUndefined();
+    expect(send({ metric: 'hydration', retract: { a: 1 } }).ok).toBe(false);
+    expect(send({ metric: 'hydration', retract: 'bad id' }).ok).toBe(false);
+  });
+
   it('caps the event log and can reset it', () => {
     const s = svc();
     for (let i = 0; i < 300; i++) expect(s.command({ type: 'normalize', crewId: 'ALL', t: 1000 + i }).ok).toBe(true);

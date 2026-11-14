@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { computeFrame } from './frame';
 import { frameAt } from './log';
 import { buildReport, MissionReportSchema } from './report';
-import { manualAt, validManualValue } from './manual';
+import { manualAt, manualEntries, validManualValue } from './manual';
 import { cfgForTests } from './testkit';
 import type { EngineEvent } from './schemas';
 
@@ -78,5 +78,27 @@ describe('self-check measurements', () => {
     expect(inc.causes[0].type).toBe('measurement');
     expect(report.limits?.some((l) => l.metric === 'glucose' && l.tier === 'clinical')).toBe(true);
     expect(MissionReportSchema.safeParse(JSON.parse(JSON.stringify(report))).success).toBe(true);
+  });
+
+  it('removes an entry by id from the start, so an edit never double counts water', () => {
+    const w = (t: number, value: number, id: string, at?: number): EngineEvent => ({ t, type: 'measurement', crewId: 'A1', params: { metric: 'hydration', value, id, ...(at ? { at } : {}) } });
+    const gone: EngineEvent = { t: 5000, type: 'measurement', crewId: 'A1', params: { metric: 'hydration', retract: 'a' } };
+    const events = [w(1000, 0.5, 'a'), w(2000, 0.25, 'b'), gone, w(1000, 0.75, 'c', 1.78e12)]; // 'c' replaces 'a' at the same time
+    expect(manualAt(events, 'A1', 3000).hydration?.value).toBeCloseTo(1.0); // 0.25 + 0.75, never 1.5
+    expect(manualAt(events, 'A1', 1500).hydration?.value).toBeCloseTo(0.75);
+    const list = manualEntries(events, { crewId: 'A1' });
+    expect(list.map((e) => e.id)).toEqual(['c', 'b']);
+    expect(list[0].at).toBe(1.78e12);
+    expect(manualEntries(events, { crewId: 'A2' })).toEqual([]);
+    expect(manualEntries(events, { crewId: 'A1', fromT: 1500 }).map((e) => e.id)).toEqual(['b']);
+  });
+
+  it('does not list removals as report causes', () => {
+    const cfg = cfgForTests([
+      { t: 1000, type: 'measurement', crewId: 'A1', params: { metric: 'glucose', value: 35, id: 'g1' } },
+      { t: 1100, type: 'measurement', crewId: 'A1', params: { metric: 'glucose', retract: 'g1' } },
+    ]);
+    const report = buildReport(cfg, { fromT: 900, toT: 1300 });
+    expect(report.crew.find((c) => c.crewId === 'A1')!.incidents).toEqual([]);
   });
 });

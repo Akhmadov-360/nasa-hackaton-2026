@@ -1,7 +1,8 @@
 'use client';
-import { ClipboardPen } from 'lucide-react';
+import { useMemo } from 'react';
+import { ChevronRight, ClipboardPen } from 'lucide-react';
 import type { ManualMetric, TelemetryFrame } from '@astro/engine';
-import { MANUAL, MANUAL_KEYS } from '@astro/engine';
+import { MANUAL, MANUAL_KEYS, manualEntries } from '@astro/engine';
 import { StatusBadge } from '@/components/StatusBadge';
 import { ProvenanceMark } from '@/components/telemetry/VitalCard';
 import { Button } from '@/components/ui/button';
@@ -11,6 +12,7 @@ import { formatValue } from '@/lib/logText';
 import { STATUS_COLOR, STATUS_RANK } from '@/lib/metrics';
 import { normText } from '@/lib/norms';
 import { useMissionStore } from '@/lib/store/missionStore';
+import { moodFace } from './mood';
 
 /** Reference only, not an alarm: the water supplied per crew member per day (NASA-STD-3001, OCHMO water brief). */
 export const WATER_SUPPLY_L = 2.5;
@@ -28,7 +30,8 @@ function Card({ metric, frame, crewId }: { metric: ManualMetric; frame: Telemetr
   const openMetric = useMissionStore((s) => s.openMetric);
   const openSelfCheck = useMissionStore((s) => s.openSelfCheck);
   // an entry that has expired is "due", one that was never made is "not entered": told apart through the event log
-  const everEntered = useMissionStore((s) => s.events.some((e) => e.type === 'measurement' && e.crewId === crewId && e.params?.metric === metric && e.t <= (frame?.t ?? 0)));
+  const events = useMissionStore((s) => s.events);
+  const everEntered = useMemo(() => manualEntries(events, { crewId, toT: frame?.t ?? 0 }).some((e) => e.metric === metric), [events, crewId, metric, frame?.t]);
   const entry = frame?.manual?.[metric];
   const status = frame?.status.byMetric[metric] ?? 'NOMINAL';
   const color = STATUS_COLOR[status];
@@ -55,6 +58,7 @@ function Card({ metric, frame, crewId }: { metric: ManualMetric; frame: Telemetr
           className="-mx-1 flex min-w-0 cursor-pointer items-center gap-1.5 truncate rounded-md px-1 text-left transition-colors group-hover:text-bone focus-visible:text-bone"
         >
           <span className="truncate">{label}</span>
+          <ChevronRight className="size-3 shrink-0 text-muted-foreground/60 transition-all group-hover:translate-x-0.5 group-hover:text-bone" aria-hidden />
         </button>
         <span className="flex shrink-0 items-center gap-1">
           {status !== 'NOMINAL' && <StatusBadge status={status} />}
@@ -64,7 +68,10 @@ function Card({ metric, frame, crewId }: { metric: ManualMetric; frame: Telemetr
 
       <div className="flex items-baseline gap-1.5">
         {entry ? (
-          <span className="num text-[1.55rem] leading-[1.3] font-medium">{formatValue(metric, entry.value).replace(/ .*$/, '')}</span>
+          <span className="num flex items-center gap-1.5 text-[1.55rem] leading-[1.3] font-medium">
+            {metric === 'mood' && (() => { const f = moodFace(entry.value); return <f.Icon className="size-6" style={{ color: f.color }} aria-hidden />; })()}
+            {formatValue(metric, entry.value).replace(/ .*$/, '')}
+          </span>
         ) : (
           <span className="num text-[1.55rem] leading-[1.3] font-medium text-muted-foreground/60">—</span>
         )}

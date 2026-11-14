@@ -204,7 +204,7 @@ export function buildReport(cfg: EngineConfig, opts: ReportOptions): MissionRepo
       const endT = Math.max(...g.map((e) => e.endT));
       const primary = [...g].sort((a, b) => rank(b.severity) - rank(a.severity) || priority(a.metric) - priority(b.metric) || a.startT - b.startT)[0];
       const causes = events
-        .filter((e) => e.type !== 'normalize' && (e.crewId === id || e.crewId === 'ALL') && e.t >= startT - CAUSE_LOOKBACK_SEC && e.t <= endT)
+        .filter((e) => e.type !== 'normalize' && e.params?.retract === undefined && (e.crewId === id || e.crewId === 'ALL') && e.t >= startT - CAUSE_LOOKBACK_SEC && e.t <= endT)
         .map((e) => ({ t: e.t, type: e.type, crewId: e.crewId, ...(e.params ? { params: e.params } : {}) }));
       const protocol = causes.some((c) => c.type === 'flare') && ['doseRate', 'dose'].includes(primary.metric)
         ? 'radiation'

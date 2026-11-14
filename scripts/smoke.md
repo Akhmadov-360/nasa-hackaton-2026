@@ -45,6 +45,6 @@ The browser only talks to `localhost`, the fonts are bundled, so the app must lo
 ## 5. Backups
 
 - [ ] A screen recording of the full pitch (30 s clip and the 3-minute run) on the laptop and on a USB stick.
-- [ ] Self-check: open the Self-check tab, press Record on Glucose, enter 52 and Save. A warning appears in the island and pins in the Flight log with a *Do now* line; the Report lists it as an incident caused by a self-check entry.
+- [ ] Self-check: open the Self-check tab, press Record on Glucose, enter 52 and Save. A warning appears in the island and pins in the Flight log with a *Do now* line; the Report lists it as an incident caused by a self-check entry. Add 0.5 L of water, press the pencil on that entry, change it to 0.25 L and Update: the total drops. Export Excel and open the *Self-check* sheet: both entries have a date and time.
 - [ ] The Excel workbook exported from a real run, so the Report can be shown even if the app fails.
 - [ ] Screenshots from `pnpm smoke --shots` for the slides.

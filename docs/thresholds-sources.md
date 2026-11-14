@@ -122,3 +122,5 @@ All four are entered by hand (provenance "entered by you"), judged only while th
 - **Mood** (tier provisional): a 1 to 5 self-rating, caution at 3 or less, warning at 2, critical at 1. A rating, not a diagnosis.
 - **Water drunk** (no alarm): 2.5 L per crew member per day is the water supplied (NASA-STD-3001 [V2 6109], OCHMO water brief). It is a supply minimum, not a proven intake target, so the card shows a reference bar and never raises a status.
 - Validity of an entry: glucose 8 h, mood 12 h, sleep and water 24 h (`MANUAL` in `packages/engine/src/manual.ts`); after that the card says *Due*.
+
+Self-check entries carry an id and the wall-clock time (`at`, ms since 1970) next to the mission time. The time is metadata for the report; the engine only uses the mission time. A removed entry is a `measurement` event with `params.retract` set to the entry id; it removes that entry from the whole history, because it is a correction.

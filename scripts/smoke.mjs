@@ -141,6 +141,12 @@ await step('self-check: glucose 52 raises a warning with a do-now line', async (
   await page.locator('ul[aria-label="Active alarms"] li', { hasText: /glucose/i }).first().waitFor({ timeout: 15000 });
   const row = await page.locator('ul[aria-label="Active alarms"] li', { hasText: /glucose/i }).first().innerText();
   if (!/Do now/i.test(row)) throw new Error('no do-now line under the glucose alarm');
+  // a wrong water entry can be corrected: add 0.5 L, edit it to 0.25 L
+  await page.getByRole('button', { name: '+0.5 L' }).click();
+  await page.getByRole('button', { name: /^Edit: Water/ }).first().click();
+  await page.getByLabel('Other amount, L').fill('0.25');
+  await page.getByRole('button', { name: 'Update' }).click();
+  await page.waitForFunction(() => { const t = document.querySelector('#sc-entries')?.parentElement?.innerText ?? ''; return /0\.25 L/.test(t) && !/0\.50 L/.test(t); }, null, { timeout: 5000 });
   await page.keyboard.press('Escape');
   await page.waitForTimeout(600);
 });

@@ -1,9 +1,10 @@
 'use client';
-import { BookOpen, ExternalLink, X } from 'lucide-react';
+import { BookOpen, ClipboardPen, ExternalLink, X } from 'lucide-react';
 import type { Status, TelemetryFrame } from '@astro/engine';
 import { StatusBadge } from '@/components/StatusBadge';
 import { Button } from '@/components/ui/button';
 import { Drawer, DrawerClose, DrawerContent, DrawerDescription, DrawerHeader, DrawerTitle } from '@/components/ui/drawer';
+import { isManualMetric } from '@astro/engine';
 import { aboutFor, aboutKeyOf, pickText, RISK_URL } from '@/lib/about';
 import { baseCfg } from '@/lib/engineConfig';
 import { useT, type DictKey } from '@/lib/i18n';
@@ -23,6 +24,8 @@ function readingOf(frame: TelemetryFrame | undefined, m: string): number | undef
   if (!frame) return undefined;
   const v = (frame.vitals as unknown as Record<string, number>)[m] ?? (frame.cabin as unknown as Record<string, number>)[m];
   if (v !== undefined) return v;
+  const manual = (frame.manual as Record<string, { value: number }> | undefined)?.[m];
+  if (manual) return manual.value;
   if (m === 'doseRate') return frame.radiation.doseRateUSvH;
   if (m === 'dose') return frame.radiation.cumulativeMSv;
   return undefined;
@@ -49,6 +52,7 @@ export function MetricDrawer() {
   const key = opened ? aboutKeyOf(opened) : null;
   const close = useMissionStore((s) => s.closeMetric);
   const crewId = useMissionStore((s) => s.selectedCrewId);
+  const openSelfCheck = useMissionStore((s) => s.openSelfCheck);
   const frame = useMissionStore((s) => s.latest[crewId]);
   const about = key ? aboutFor(key) : undefined;
 
@@ -61,6 +65,7 @@ export function MetricDrawer() {
   const norm = metrics[0] ? normText(metrics[0], frame?.exercise) : undefined;
   const th = metrics[0] ? baseCfg.thresholds.metrics[metrics[0]] : undefined;
   const name = key ? t(aboutTitleKey(key)) : '';
+  const manual = !!key && isManualMetric(key);
 
   return (
     <Drawer open={!!key && !!about} onOpenChange={(o) => !o && close()}>
@@ -83,11 +88,26 @@ export function MetricDrawer() {
             <div className="thin-scroll flex min-h-0 flex-1 flex-col gap-5 overflow-y-auto px-5 pb-5">
               <div className="flex flex-wrap items-center gap-x-3 gap-y-1 rounded-2xl bg-cell px-3.5 py-2.5">
                 <span className="text-xs text-muted-foreground">{t('about.now')}</span>
-                <span className="num text-lg font-medium">{reading.join(' / ') || '—'}</span>
-                <StatusBadge status={status} />
+                {manual && reading.length === 0 ? (
+                  <span className="text-sm text-muted-foreground">{t('about.notEntered')}</span>
+                ) : (
+                  <>
+                    <span className="num text-lg font-medium">{reading.join(' / ') || '—'}</span>
+                    <StatusBadge status={status} />
+                  </>
+                )}
                 {norm && <span className="num ml-auto text-xs text-muted-foreground">{t('norm.label')}: {norm}</span>}
                 {th?.tier && <p className="w-full text-[11px] leading-snug text-muted-foreground">{t(`limit.${th.tier}` as DictKey)}{th.source ? `. ${th.source}` : ''}</p>}
               </div>
+
+              {manual && (
+                <Button
+                  type="button" variant="secondary" className="w-full justify-center"
+                  onClick={() => { close(); openSelfCheck(key); }}
+                >
+                  <ClipboardPen aria-hidden /> {t('about.record')}: {name}
+                </Button>
+              )}
 
               <Section title={t('about.why')}>{pickText(about.why, locale)}</Section>
               <Section title={t('about.inSpace')}>{pickText(about.inSpace, locale)}</Section>
