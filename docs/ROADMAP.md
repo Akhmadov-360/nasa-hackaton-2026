@@ -159,7 +159,7 @@ Each item lists what to touch and how to know it is done. Run `pnpm build:libs` 
 ## 5. Tech-debt and test findings (for the record)
 
 - **Test debt**: unit tests cover the engine, parser, API validation, source state machine, replay clock and alert isolation. Nothing exercises the interface end to end. Two real defects this week (a 3-keyframe spring that crashed the Control deck, a slider animation loop that died under React StrictMode) were only found in a browser. D1 is the cheapest fix.
-- **Dependency debt**: six vendored react-bits components bring Tailwind v3 class names (`blur-0` is not a v4 class) and a second icon library (`@hugeicons`) beside `lucide-react`. Acceptable for the demo; the install command also downgrades `motion` and rewrites the lockfile, so restore both files after any `shadcn add` (rule in `CLAUDE.md`).
+- **Dependency debt**: six vendored react-bits components bring Tailwind v3 class names (`blur-0` is not a v4 class) and a second icon library (`@hugeicons`) beside `lucide-react`. Acceptable for the demo; the install command also downgrades `motion` and rewrites the lockfile, so restore both files after any `shadcn add` (the team's local working notes record this rule).
 - **Architecture debt**: all state is one in-memory server run (events, log); the API has no authentication and allows localhost/LAN origins. Both are right for a hackathon demo and wrong for anything else; say so in the pitch if asked.
 - **Documentation debt**: thresholds are documented per source in `docs/thresholds-sources.md`; add guidance sources there as G2/G3 land.
 

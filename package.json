@@ -15,5 +15,6 @@
     "tsx": "^4.19.0",
     "typescript": "^5.6.0",
     "vitest": "^2.1.0"
-  }
+  },
+  "description": "Astronaut Health Monitor: a Mission Control style health dashboard for a four-person crew (NASA Space Apps Challenge, Tashkent 2026). Developed with AI assistance, see README."
 }

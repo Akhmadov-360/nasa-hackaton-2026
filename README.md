@@ -15,6 +15,9 @@ It is a hackathon prototype and **not a medical device**. The crew is fictional.
 - [6. Quick start and project structure](#6-quick-start-and-project-structure)
 - [7. Three-minute pitch script](#7-three-minute-pitch-script)
 - [Known limits](#known-limits)
+- [NASA data and other references](#nasa-data-and-other-references)
+- [Use of AI (SI) disclosure](#use-of-ai-si-disclosure)
+- [Team](#team)
 
 ---
 
@@ -243,7 +246,6 @@ apps/web/src/
 packages/engine/src/        schemas, baseline, frame, modifiers, status, trend, log, report, telemetryPackage, spaceweather
 packages/data/              thresholds.json, modifiers.json, radiation-model.json, protocols.json, packs/, events/, scripts/
 docs/                       thresholds-sources.md, adr/0001-report-and-telemetry-package.md
-CLAUDE.md                   rules for working in this repository
 ```
 
 ---
@@ -286,8 +288,40 @@ Time and language, Speech), and that the projector resolution (1366×768, 1920×
 - The Excel workbooks were validated with a spreadsheet library, not opened in Microsoft Excel itself.
 - Rendering was profiled in a headless browser without a GPU; check the frame rate on the presentation laptop.
 
+## NASA data and other references
+
+**NASA data and documents used**
+
+| Source | Used for | Where |
+|---|---|---|
+| NASA DONKI (Space Weather Database Of Notifications, Knowledge, Information) | 12 real solar flares of May 2024 (largest X8.7, 2024-05-14); their class and magnitude scale the modelled radiation response | `packages/data/events/donki-flares.json` |
+| NASA-STD-3001 Vol 1 and 2 through the OCHMO technical briefs (CO₂ TB-004, habitable atmosphere TB-003, radiation TB-020, water, acoustics, ECLSS) | Limits for CO₂, humidity, noise, drinking-water minimum, the 250 mSv solar particle event limit | `packages/data/thresholds.json`, `docs/thresholds-sources.md` |
+| NASA Human Integration Design Handbook (NASA/SP-2010-3407 Rev 1) | Hypoxia table and ppO₂ limits behind the cabin O₂ limits | `docs/thresholds-sources.md` |
+| NASA Technical Reports Server: Perry et al. (NTRS 20120015343), Allen (NTRS 20170008857), Downs et al. (NTRS 20140003747) | ISS cabin design table (airflow), acoustic requirements, ISS exercise intensity | `docs/thresholds-sources.md` |
+| NASA Human Research Program: [5 Hazards of Human Spaceflight](https://www.nasa.gov/hrp/hazards/), [Risks](https://www.nasa.gov/hrp/risks/) | The hazard framing of the product (radiation, isolation and confinement, distance, gravity, closed environments) | `docs/ROADMAP.md` |
+
+**Space agency partner data and other references**
+
+| Source | Used for |
+|---|---|
+| [Canadian Space Agency: Monitoring Radiation for Astronaut Health](https://www.asc-csa.gc.ca/eng/news/articles/2026/2026-02-26-monitoring-radiation-astronaut-health.asp) | Context for radiation monitoring (reading only, no data loaded) |
+| NOAA Space Weather Prediction Center, GOES primary satellite | Live integral proton flux (>= 10 MeV and >= 100 MeV) and the NOAA S-scale |
+| PhysioNet: MIT-BIH Arrhythmia Database, BIDMC PPG and Respiration Dataset | Recorded ECG (360 Hz), heart rate, SpO₂ and respiration |
+| American Diabetes Association, American Heart Association, British Thoracic Society, NICE | Clinical limits (glucose low side, heart rate, blood pressure, SpO₂, respiration, temperature marker). Read from public summaries, see the tier notes in section 3 |
+
+This project does not use NASA logos, insignia or flags, and is not affiliated with or endorsed by NASA or any agency named above.
+
+## Use of AI (SI) disclosure
+
+Most of the source code, unit tests, translations (Russian and Uzbek interface strings) and written documentation in this
+repository were produced by an AI coding assistant (Anthropic's Claude, used through Claude Code), working from requirements,
+design decisions and reviews given by the team. The team chose the problem framing, the data sources and the rule that every limit
+must state where it comes from, directed every feature, ran the application, reviewed the output and decided what to ship.
+Scientific limits were looked up in the cited documents during development; where a source could not be read in full, the limit is
+labelled with a weaker tier (section 3) instead of presented as a NASA value. AI assistance is also recorded in the repository
+metadata: AI-assisted commits carry a `Co-Authored-By: Claude` trailer in `git log`.
+
 ## Team
 
-NASA Space Apps Challenge Tashkent 2026 team - Ultra Sun. Data: PhysioNet (BIDMC, MIT-BIH), NASA DONKI, NOAA SWPC. Data attribution
-and licences are listed in `packages/data/packs/demo.pack.json` (`meta.sources`, `meta.licenses`); check each dataset page for its
-exact licence.
+NASA Space Apps Challenge Tashkent 2026 team - Ultra Sun. Data attribution and licences are listed in
+`packages/data/packs/demo.pack.json` (`meta.sources`, `meta.licenses`); check each dataset page for its exact licence.
