@@ -41,12 +41,13 @@ describe('mission contexts', () => {
     expect(escalationFor(mars, 'CRITICAL', 'en')).toMatch(/Act on the checklist/);
     expect(escalationFor(mars, 'CRITICAL', 'en')).toMatch(/6–45 min/);
     expect(escalationFor(mars, 'WARNING', 'ru')).toMatch(/чек-листу/);
-    expect(escalationFor(mars, 'WARNING', 'uz')).toBe(escalationFor(mars, 'WARNING', 'en')); // no Uzbek text yet: English
+    expect(escalationFor(mars, 'WARNING', 'uz')).toMatch(/6–45 daq/);
   });
 
-  it('falls back from Uzbek to Russian for names', () => {
+  it('has Uzbek names', () => {
     const m = missionOf('gateway');
-    expect(missionLabel(m, 'uz')).toBe(m.label.ru);
+    expect(missionLabel(m, 'uz')).toBe(m.label.uz);
+    expect(missionLabel(m, 'ru')).toBe(m.label.ru);
     expect(missionPlace(m, 'en')).toBe(m.place.en);
   });
 

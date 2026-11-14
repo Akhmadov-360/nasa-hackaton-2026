@@ -116,7 +116,7 @@ export function TopBar() {
                 />
               </span>
             </TooltipTrigger>
-            <TooltipContent>{t('top.sound')} <Kbd>M</Kbd></TooltipContent>
+            <TooltipContent>{t('top.sound')} <Kbd>M</Kbd>{locale === 'uz' && <span className="mt-1 block max-w-56 text-balance">{t('voice.note')}</span>}</TooltipContent>
           </Tooltip>
           <Select
             size="sm" ariaLabel={t('top.lang')} value={locale} align="right" menuWidth={150}

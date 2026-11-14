@@ -21,7 +21,7 @@ login). Their deadlines and format rules must be checked by the team before the 
 | G4 Routine check-ins | Done: schedule in `checkins.json`, due and overdue derived from the event log, header chip, tab ring, due state on the cards. Not done: a streak counter (optional), reminders by voice or sound |
 | G5 Metric detail chart | Done as the first section of the *About* window (periods 5 min, 30 min, session; limit bands; hover value; entries as points for the self-check values). No separate window and no tabs: *About* already holds the explanation and the *Do now* text lives at the alarm |
 | G9 Sparklines follow the replay | Done: while replaying, each card's sparkline shows the same window ending at the cursor, rebuilt from the engine on a 0.2 s grid with a cache (`lib/replaySeries.ts`) |
-| G10 | Not started |
+| G10 Translations and voice | Done: `pnpm i18n:report` lists missing and untranslated keys per language; Uzbek went from 96 to about 258 of 389 keys (a draft for a native speaker, medical terms especially); Uzbek now falls back to Russian, then English (it used to fall back to English); the sound tooltip says the voice speaks Russian when Uzbek is selected. Not done: the report, protocols, space weather, tier names and the long explanations of hazards stay Russian in Uzbek, and a native speaker has not read the Uzbek |
 
 ## 1. What the challenge asks, and where we are
 

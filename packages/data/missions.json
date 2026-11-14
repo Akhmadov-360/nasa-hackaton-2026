@@ -12,11 +12,13 @@
       "reply": "live",
       "label": {
         "en": "Station",
-        "ru": "Станция"
+        "ru": "Станция",
+        "uz": "Stansiya"
       },
       "place": {
         "en": "Space station in low Earth orbit",
-        "ru": "Космическая станция на низкой околоземной орбите"
+        "ru": "Космическая станция на низкой околоземной орбите",
+        "uz": "Past Yer orbitasidagi kosmik stansiya"
       }
     },
     {
@@ -29,11 +31,13 @@
       "reply": "live",
       "label": {
         "en": "Gateway",
-        "ru": "Gateway"
+        "ru": "Gateway",
+        "uz": "Gateway"
       },
       "place": {
         "en": "Gateway station in lunar orbit",
-        "ru": "Станция Gateway на лунной орбите"
+        "ru": "Станция Gateway на лунной орбите",
+        "uz": "Oy orbitasidagi Gateway stansiyasi"
       }
     },
     {
@@ -46,11 +50,13 @@
       "reply": "live",
       "label": {
         "en": "Moon base",
-        "ru": "База на Луне"
+        "ru": "База на Луне",
+        "uz": "Oy bazasi"
       },
       "place": {
         "en": "Base on the lunar surface",
-        "ru": "База на поверхности Луны"
+        "ru": "База на поверхности Луны",
+        "uz": "Oy yuzasidagi baza"
       }
     },
     {
@@ -63,11 +69,13 @@
       "reply": "delayed",
       "label": {
         "en": "Mars transit",
-        "ru": "Перелёт на Марс"
+        "ru": "Перелёт на Марс",
+        "uz": "Marsga parvoz"
       },
       "place": {
         "en": "Spacecraft on the way to Mars",
-        "ru": "Корабль на пути к Марсу"
+        "ru": "Корабль на пути к Марсу",
+        "uz": "Marsga ketayotgan kosmik kema"
       }
     },
     {
@@ -80,11 +88,13 @@
       "reply": "delayed",
       "label": {
         "en": "Mars base",
-        "ru": "База на Марсе"
+        "ru": "База на Марсе",
+        "uz": "Mars bazasi"
       },
       "place": {
         "en": "Habitat on the surface of Mars",
-        "ru": "Жилой модуль на поверхности Марса"
+        "ru": "Жилой модуль на поверхности Марса",
+        "uz": "Mars yuzasidagi turar joy moduli"
       }
     }
   ]
