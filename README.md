@@ -227,7 +227,8 @@ NEXT_DIST_DIR=.next-prod pnpm --filter @astro/web build
 NEXT_DIST_DIR=.next-prod pnpm --filter @astro/web exec next start -p 3100
 ```
 
-**Hosted demo (Vercel): https://astronaut-health-monitor-one.vercel.app.** Only the web app is hosted; it is client-rendered and needs no server. Without the API it
+**Hosted demo (Vercel): https://astronaut-health-monitor-one.vercel.app.** The API is hosted on Render (https://astronaut-health-monitor-api.onrender.com, free plan) and the web app uses it (`NEXT_PUBLIC_API_URL`); if the server is asleep or down the app falls back to the browser simulation.
+The web app alone is enough to run the demo; it is client-rendered and needs no server. Without the API it
 shows the banner _SIGNAL LOST: USING ESTIMATED TELEMETRY_ and runs the same engine in the browser (mode `SIM`), so every
 feature works except live server events across tabs and the live NOAA GOES card. To deploy: import
 `Akhmadov-360/nasa-hackaton-2026` in Vercel and set the **Root Directory** to `apps/web`; `apps/web/vercel.json` already sets
