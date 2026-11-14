@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Astronaut Health Monitor · Ultra Sun · NASA Space Apps 2026</title>
+<meta name="description" content="7-slide pitch deck. Screenshots are real captures of the running app; the deck text and layout were written with AI assistance (Anthropic Claude) and reviewed by the team.">
+<style>
+  :root{
+    --bg:#060a13; --bg2:#0a1120; --panel:#0e1727; --panel2:#121d31; --line:#1d2a40; --line2:#2a3a55;
+    --text:#e7eef8; --muted:#8c9cb6; --dim:#5d6c86;
+    --teal:#3fdcbc; --teal-d:#1f8f7a; --amber:#f4b740; --red:#f2645a; --blue:#6aa8ff; --violet:#a78bfa;
+    --sans:"Inter","Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif;
+    --mono:"JetBrains Mono","Cascadia Mono",Consolas,"SFMono-Regular",ui-monospace,monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%;background:#03060c;color:var(--text);font-family:var(--sans);-webkit-font-smoothing:antialiased;overflow:hidden}
+
+  /* ---------- stage: every slide is designed at 1920x1080 and scaled to fit ---------- */
+  #stage{position:fixed;left:50%;top:50%;width:1920px;height:1080px;transform-origin:center center}
+  .slide{position:absolute;inset:0;width:1920px;height:1080px;overflow:hidden;
+    background:radial-gradient(1200px 700px at 85% -10%,rgba(63,220,188,.10),transparent 60%),
+               radial-gradient(900px 600px at -10% 110%,rgba(106,168,255,.08),transparent 60%),var(--bg);
+    opacity:0;visibility:hidden;transition:opacity .5s ease,visibility 0s linear .5s}
+  .slide.active{opacity:1;visibility:visible;transition:opacity .5s ease}
+  .grid-bg{position:absolute;inset:0;pointer-events:none;
+    background-image:linear-gradient(rgba(140,156,182,.06) 1px,transparent 1px),linear-gradient(90deg,rgba(140,156,182,.06) 1px,transparent 1px);
+    background-size:64px 64px;mask-image:radial-gradient(ellipse at center,#000 30%,transparent 80%)}
+  .stars{position:absolute;inset:0;pointer-events:none;opacity:.55;
+    background-image:radial-gradient(1.2px 1.2px at 12% 18%,#fff,transparent),radial-gradient(1px 1px at 33% 72%,#cfe,transparent),
+      radial-gradient(1.4px 1.4px at 58% 12%,#fff,transparent),radial-gradient(1px 1px at 77% 64%,#def,transparent),
+      radial-gradient(1.2px 1.2px at 91% 30%,#fff,transparent),radial-gradient(1px 1px at 22% 90%,#fff,transparent),
+      radial-gradient(1px 1px at 66% 88%,#cfe,transparent),radial-gradient(1.3px 1.3px at 45% 40%,#fff,transparent)}
+
+  /* ---------- frame chrome shared by slides ---------- */
+  .chrome{position:absolute;left:72px;right:72px;top:44px;display:flex;align-items:center;gap:18px;
+    font:500 20px/1 var(--mono);color:var(--muted);letter-spacing:.06em;text-transform:uppercase}
+  .chrome .dot{width:10px;height:10px;border-radius:50%;background:var(--teal);box-shadow:0 0 12px var(--teal)}
+  .chrome .sep{flex:1;height:1px;background:linear-gradient(90deg,var(--line2),transparent)}
+  .chrome .num{color:var(--text)}
+  .content{position:absolute;left:72px;right:72px;top:104px;bottom:70px}
+  .foot{position:absolute;left:72px;right:72px;bottom:28px;display:flex;justify-content:space-between;
+    font:400 17px/1 var(--mono);color:var(--dim)}
+
+  h1{font-size:112px;line-height:.98;font-weight:750;letter-spacing:-.035em}
+  h2{font-size:64px;line-height:1.04;font-weight:720;letter-spacing:-.025em}
+  h3{font-size:30px;line-height:1.15;font-weight:650;letter-spacing:-.01em}
+  p,li{font-size:25px;line-height:1.38;color:var(--muted)}
+  .lead{font-size:31px;line-height:1.35;color:#c6d3e6}
+  b,strong{color:var(--text);font-weight:650}
+  .mono{font-family:var(--mono)}
+  .teal{color:var(--teal)} .amber{color:var(--amber)} .red{color:var(--red)} .blue{color:var(--blue)}
+  .kicker{font:600 21px/1 var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--teal)}
+  .panel{background:linear-gradient(180deg,var(--panel2),var(--panel));border:1px solid var(--line);border-radius:22px}
+  .shot{display:block;border-radius:16px;border:1px solid var(--line2);box-shadow:0 30px 80px rgba(0,0,0,.55),0 0 0 1px rgba(255,255,255,.02)}
+  .chip{display:inline-flex;align-items:center;gap:10px;padding:9px 16px;border-radius:999px;border:1px solid var(--line2);
+    background:rgba(18,29,49,.8);font:500 21px/1 var(--sans);color:#cdd8e8;white-space:nowrap}
+  .chip i{width:9px;height:9px;border-radius:50%;background:var(--teal);display:inline-block}
+  .tag{font:600 16px/1 var(--mono);letter-spacing:.08em;text-transform:uppercase;padding:7px 11px;border-radius:8px}
+
+  /* ---------- reveal animation ---------- */
+  .r{opacity:0;transform:translateY(26px)}
+  .slide.active .r{animation:rise .8s cubic-bezier(.2,.7,.2,1) forwards;animation-delay:calc(var(--d,0) * 110ms + 150ms)}
+  @keyframes rise{to{opacity:1;transform:none}}
+  .slide.active .pop{animation:pop .6s cubic-bezier(.3,1.5,.5,1) forwards;animation-delay:calc(var(--d,0) * 110ms + 300ms);opacity:0;transform:scale(.4)}
+  @keyframes pop{to{opacity:1;transform:scale(1)}}
+
+  /* ---------- slide 1 ---------- */
+  .s1-left{position:absolute;left:0;top:70px;width:900px}
+  .s1-left .tagline{margin-top:34px;font-size:40px;line-height:1.25;color:#cfdaea;font-weight:500}
+  .s1-left .tagline em{font-style:normal;color:var(--teal)}
+  .ecg{position:absolute;left:0;top:520px;width:880px;height:120px}
+  .ecg path{fill:none;stroke:var(--red);stroke-width:3;stroke-linejoin:round;filter:drop-shadow(0 0 6px rgba(242,100,90,.7));
+    stroke-dasharray:2400;stroke-dashoffset:2400}
+  .slide.active .ecg path{animation:draw 3.2s ease-out .4s forwards}
+  @keyframes draw{to{stroke-dashoffset:0}}
+  .team{position:absolute;left:0;bottom:40px;width:900px}
+  .team .who{display:flex;gap:14px;flex-wrap:wrap;margin-top:18px}
+  .team .who .chip{font-size:23px;padding:12px 18px}
+  .team .who .owner{border-color:var(--teal-d)}
+  .s1-shot{position:absolute;right:-40px;top:70px;width:1000px}
+  .s1-shot img{width:100%;transform:perspective(2200px) rotateY(-14deg) rotateX(4deg);transform-origin:right center}
+  .s1-shot .glow{position:absolute;inset:-60px;background:radial-gradient(closest-side,rgba(63,220,188,.18),transparent);z-index:-1}
+  .s1-meta{position:absolute;right:0;bottom:40px;width:900px;display:flex;flex-direction:column;gap:12px;align-items:flex-end}
+  .s1-meta .row{font:500 22px/1.2 var(--mono);color:var(--muted)}
+  .s1-meta .row b{color:var(--teal);font-weight:500}
+
+  /* ---------- slide 2 ---------- */
+  .s2-left{position:absolute;left:0;top:10px;width:1000px}
+  .delay{margin-top:70px;display:flex;flex-direction:column;gap:38px}
+  .delay .row{display:grid;grid-template-columns:200px 1fr 260px;align-items:center;gap:24px}
+  .delay .name{font:600 26px/1 var(--sans)}
+  .delay .track{position:relative;height:14px;border-radius:7px;background:var(--line)}
+  .delay .fill{position:absolute;left:0;top:0;bottom:0;border-radius:7px;width:0}
+  .slide.active .delay .fill{animation:grow 1.6s cubic-bezier(.2,.7,.2,1) forwards;animation-delay:calc(var(--d,0) * 140ms + 500ms)}
+  @keyframes grow{to{width:var(--w)}}
+  .delay .pulse{position:absolute;top:50%;width:16px;height:16px;margin-top:-8px;border-radius:50%;background:#fff;box-shadow:0 0 14px #fff;opacity:0}
+  .slide.active .delay .pulse{animation:travel var(--t) linear infinite;animation-delay:1.8s}
+  @keyframes travel{0%{left:0;opacity:0}8%{opacity:1}92%{opacity:1}100%{left:calc(var(--w) - 16px);opacity:0}}
+  .delay .val{font:600 30px/1 var(--mono);text-align:right}
+  .s2-quote{margin-top:84px;padding:30px 36px;border-left:4px solid var(--teal);background:rgba(63,220,188,.05);border-radius:0 18px 18px 0}
+  .s2-quote p{font-size:31px;color:#d5e0ee;line-height:1.35}
+  .s2-quote small{display:block;margin-top:12px;font:500 19px/1 var(--mono);color:var(--dim)}
+  .s2-right{position:absolute;right:0;top:10px;width:700px}
+  .hazards{display:flex;flex-direction:column;gap:16px;margin-top:22px}
+  .hz{display:grid;grid-template-columns:64px 1fr;gap:20px;align-items:center;padding:18px 22px}
+  .hz svg{width:52px;height:52px;stroke:var(--teal);fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+  .hz h3{font-size:27px}
+  .hz p{font-size:21px;margin-top:4px;line-height:1.3}
+  .needs{position:absolute;left:0;right:0;bottom:0;display:flex;gap:18px;align-items:center}
+  .needs .lbl{font:600 22px/1 var(--mono);color:var(--muted);letter-spacing:.06em;text-transform:uppercase;margin-right:8px}
+  .needs .chip{font-size:24px;padding:13px 22px}
+
+  /* ---------- slide 3 ---------- */
+  .s3-title{position:absolute;left:0;top:0;width:1920px}
+  .s3-img{position:absolute;left:0;top:118px;width:1150px}
+  .s3-img img{width:100%}
+  .callout{position:absolute;width:44px;height:44px;margin:-22px 0 0 -22px;border-radius:50%;background:var(--teal);color:#04241e;
+    font:800 22px/44px var(--sans);text-align:center;box-shadow:0 0 0 6px rgba(63,220,188,.25),0 0 24px rgba(63,220,188,.7)}
+  .s3-list{position:absolute;right:0;top:118px;width:590px;display:flex;flex-direction:column;gap:8px}
+  .s3-list .it{display:grid;grid-template-columns:40px 1fr;gap:14px;align-items:start;padding:10px 16px}
+  .s3-list .n{width:36px;height:36px;border-radius:50%;background:rgba(63,220,188,.15);color:var(--teal);font:800 19px/36px var(--sans);text-align:center;margin-top:2px}
+  .s3-list h3{font-size:22px}
+  .s3-list p{font-size:18px;line-height:1.25;margin-top:2px}
+  .six{position:absolute;left:0;bottom:0;width:1150px;display:flex;align-items:center;gap:12px;flex-wrap:nowrap}
+  .six .lbl{font:600 17px/1.2 var(--mono);color:var(--teal);letter-spacing:.04em;text-transform:uppercase;width:210px;flex:none}
+  .six .chip{font-size:19px;padding:9px 13px;gap:7px}
+  .six .chip::before{content:"✓";color:var(--teal);font-weight:800}
+
+  /* ---------- slide 4 ---------- */
+  .tl{position:absolute;left:0;right:0;top:150px;bottom:96px;display:grid;grid-template-columns:1.02fr 1.12fr 1fr 1.22fr;gap:26px}
+  .step{position:relative;padding:24px 24px 0;display:flex;flex-direction:column;overflow:hidden}
+  .step .t{font:700 24px/1 var(--mono);color:var(--amber)}
+  .step.red .t{color:var(--red)}
+  .step.teal .t{color:var(--teal)}
+  .step h3{margin-top:12px;font-size:30px}
+  .step p{margin-top:10px;font-size:21.5px;line-height:1.32}
+  .step .img{margin-top:auto;padding-top:16px;display:flex;justify-content:center;align-items:flex-end}
+  .step .img img{max-width:100%;border-radius:12px 12px 0 0;border:1px solid var(--line2);border-bottom:0;display:block}
+  .rail{position:absolute;left:0;right:0;top:118px;height:3px;background:linear-gradient(90deg,var(--amber),var(--red) 55%,var(--teal))}
+  .rail::after{content:"";position:absolute;right:0;top:-6px;border:7px solid transparent;border-left:12px solid var(--teal)}
+  .s4-foot{position:absolute;left:0;right:0;bottom:0;display:flex;gap:16px;align-items:center}
+  .s4-foot .chip{font-size:22px}
+  .arrow{color:var(--dim);font-size:26px}
+
+  /* ---------- slide 5 ---------- */
+  .s5-left{position:absolute;left:0;top:0;width:760px}
+  .feat{margin-top:30px;display:flex;flex-direction:column;gap:16px}
+  .feat .f{display:grid;grid-template-columns:56px 1fr;gap:18px;padding:18px 22px;align-items:start}
+  .feat .ic{width:52px;height:52px;border-radius:14px;background:rgba(63,220,188,.12);display:grid;place-items:center;font-size:27px}
+  .feat h3{font-size:26px}
+  .feat p{font-size:20px;margin-top:5px;line-height:1.3}
+  .s5-shots{position:absolute;right:0;top:-6px;width:960px;height:880px}
+  .s5-shots img{position:absolute}
+  .s5-shots .a{right:0;top:0;height:880px}
+  .s5-shots .h{left:0;top:60px;width:470px}
+  .s5-shots .o{left:150px;top:520px;width:340px}
+
+  /* ---------- slide 6 ---------- */
+  .s6-left{position:absolute;left:0;top:118px;width:900px}
+  .tiers{display:flex;flex-direction:column;gap:10px;margin-top:4px}
+  .tier{display:grid;grid-template-columns:190px 1fr;gap:20px;align-items:center;padding:13px 20px}
+  .tier .tag{text-align:center}
+  .tier p{font-size:21px;line-height:1.28}
+  .tag.nasa{background:rgba(63,220,188,.16);color:var(--teal)}
+  .tag.derived{background:rgba(106,168,255,.16);color:var(--blue)}
+  .tag.clinical{background:rgba(167,139,250,.16);color:var(--violet)}
+  .tag.eng{background:rgba(244,183,64,.16);color:var(--amber)}
+  .tag.prov{background:rgba(140,156,182,.16);color:var(--muted)}
+  .s6-limits{margin-top:18px;width:900px;display:block}
+  .s6-right{position:absolute;right:0;top:118px;width:880px}
+  .data{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .data .d{padding:15px 18px}
+  .data .src{font:700 16px/1 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--teal)}
+  .data h3{font-size:22.5px;margin-top:8px}
+  .data p{font-size:18.5px;margin-top:4px;line-height:1.28}
+  .resil{margin-top:16px;padding:18px 22px}
+  .modes{display:flex;align-items:center;gap:10px;margin-top:12px}
+  .mode{font:700 21px/1 var(--mono);padding:10px 14px;border-radius:10px;border:1px solid var(--line2)}
+  .mode.l{color:var(--teal);border-color:var(--teal-d)} .mode.p{color:var(--blue)} .mode.s{color:var(--amber)} .mode.m{color:var(--red)}
+  .slide.active .mode{animation:blink 4s infinite;animation-delay:calc(var(--d,0) * 1s + 1s)}
+  @keyframes blink{0%,20%{box-shadow:0 0 0 0 transparent}8%{box-shadow:0 0 18px currentColor}}
+  .tech{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px}
+  .tech .chip{font-size:19.5px;padding:9px 14px}
+
+  /* ---------- slide 7 ---------- */
+  .s7-grid{position:absolute;left:0;right:0;top:120px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:26px}
+  .col{padding:26px 28px}
+  .col h3{display:flex;align-items:center;gap:12px}
+  .col ul{list-style:none;margin-top:16px;display:flex;flex-direction:column;gap:12px}
+  .col li{font-size:22.5px;line-height:1.3;padding-left:28px;position:relative}
+  .col li::before{content:"";position:absolute;left:4px;top:12px;width:10px;height:10px;border-radius:3px;background:var(--teal)}
+  .col.honest li::before{background:var(--amber)}
+  .col.next li::before{background:var(--blue)}
+  .closing{position:absolute;left:0;right:0;top:470px;text-align:center;font-size:52px;font-weight:700;letter-spacing:-.02em;color:var(--text)}
+  .s7-bottom{position:absolute;left:0;right:0;bottom:0;display:grid;grid-template-columns:1.25fr 1fr;gap:26px;align-items:stretch}
+  .s7-bottom .teambox{padding:26px 30px}
+  .s7-bottom .teambox .names{display:flex;gap:12px;flex-wrap:wrap;margin-top:14px}
+  .links{padding:26px 30px;display:flex;flex-direction:column;gap:12px;justify-content:center}
+  .links .row{font:500 22px/1.25 var(--mono);color:#cfe}
+  .links .row span{display:inline-block;width:120px;color:var(--dim);font-size:18px;text-transform:uppercase;letter-spacing:.08em}
+  .ai{margin-top:14px;font-size:18.5px;line-height:1.35;color:var(--dim)}
+
+  /* ---------- HUD (screen only) ---------- */
+  #hud{position:fixed;left:0;right:0;bottom:0;height:4px;background:rgba(255,255,255,.05);z-index:5}
+  #bar{height:100%;width:0;background:linear-gradient(90deg,var(--teal),var(--blue));transition:width .4s ease}
+  #timer{position:fixed;right:18px;bottom:14px;font:600 15px/1 var(--mono);color:var(--dim);z-index:5;display:none;
+    padding:7px 10px;border-radius:8px;background:rgba(10,17,32,.85);border:1px solid var(--line)}
+  #timer.on{display:block}
+  #timer.warn{color:var(--amber)} #timer.over{color:var(--red)}
+  #help{position:fixed;right:18px;top:12px;font:500 13px/1 var(--mono);color:#3b4860;z-index:5;transition:opacity 1s}
+  #help.gone{opacity:0}
+
+  /* ---------- print: 7 pages, 1920x1080, no animation ---------- */
+  @page{size:1920px 1080px;margin:0}
+  @media print{
+    html,body{overflow:visible;height:auto;background:var(--bg)}
+    #stage{position:static;transform:none!important;width:1920px;height:auto}
+    .slide{position:relative;opacity:1!important;visibility:visible!important;break-after:page;page-break-after:always;transition:none}
+    .slide:last-child{break-after:auto;page-break-after:auto}
+    *,*::before,*::after{animation:none!important;transition:none!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+    .r,.pop{opacity:1!important;transform:none!important}
+    .ecg path{stroke-dashoffset:0}
+    .delay .fill{width:var(--w)}
+    .delay .pulse{display:none}
+    #hud,#timer,#help{display:none!important}
+    .tl{height:650px;bottom:auto}
+    .step{display:block;height:650px;overflow:hidden}
+    .step .img{position:absolute;left:24px;right:24px;bottom:0;padding-top:0}
+    .step .img img{max-height:300px;object-fit:cover;object-position:top}
+  }
+</style>
+</head>
+<body>
+<div id="stage">
+
+<!-- ======================= 1 · TITLE ======================= -->
+<section class="slide" id="s1">
+  <div class="grid-bg"></div><div class="stars"></div>
+  <div class="chrome"><span class="dot"></span><span>NASA Space Apps Challenge 2026 · Tashkent</span><span class="sep"></span><span class="num">01 / 07</span></div>
+  <div class="content">
+    <div class="s1-left">
+      <div class="kicker r" style="--d:0">Challenge · Create Health Monitoring Software for Astronauts on Space Missions</div>
+      <h1 class="r" style="--d:1;margin-top:30px">Astronaut<br>Health Monitor</h1>
+      <p class="tagline r" style="--d:2">See it. <em>Forecast it.</em> Act on it.<br>Even when Earth is <em>22 light-minutes</em> away.</p>
+    </div>
+    <svg class="ecg" viewBox="0 0 880 120" preserveAspectRatio="none" aria-hidden="true">
+      <path d="M0 70 H120 l14 -6 l14 6 H190 l8 10 l12 -72 l12 92 l10 -30 H300 l18 -10 l18 10 H420 l14 -6 l14 6 H470 l8 10 l12 -72 l12 92 l10 -30 H580 l18 -10 l18 10 H700 l14 -6 l14 6 H750 l8 10 l12 -72 l12 92 l10 -30 H880"/>
+    </svg>
+    <div class="team r" style="--d:4">
+      <div class="kicker" style="color:var(--muted)">Team Ultra Sun</div>
+      <div class="who">
+        <span class="chip owner"><i></i>Axmadov Asadbek · team owner</span>
+        <span class="chip"><i></i>Bobokulov Azizbek</span>
+        <span class="chip"><i></i>Sultonmurotov Behzod</span>
+      </div>
+    </div>
+    <div class="s1-shot r" style="--d:3"><div class="glow"></div><img class="shot" src="assets/dashboard-forecast.jpg" alt="The Astronaut Health Monitor dashboard: body scan, ECG, vital cards, a forecast in the status island and the flight log"></div>
+    <div class="s1-meta r" style="--d:5">
+      <div class="row">Live demo&nbsp; <b>astronaut-health-monitor-one.vercel.app</b></div>
+      <div class="row">Code&nbsp; <b>github.com/Akhmadov-360/nasa-hackaton-2026</b></div>
+    </div>
+  </div>
+  <div class="foot"><span>Real screenshots of the running app · fictional crew · not a medical device</span><span>ULTRA SUN</span></div>
+</section>
+
+<!-- ======================= 2 · PROBLEM ======================= -->
+<section class="slide" id="s2">
+  <div class="grid-bg"></div>
+  <div class="chrome"><span class="dot"></span><span>The problem</span><span class="sep"></span><span class="num">02 / 07</span></div>
+  <div class="content">
+    <div class="s2-left">
+      <h2 class="r" style="--d:0">At Mars, the flight surgeon<br>answers in <span class="red">6 to 45 minutes.</span></h2>
+      <div class="delay">
+        <div class="row r" style="--d:1"><span class="name">Space station</span><div class="track"><div class="fill" style="--w:3%;--d:1;background:var(--teal)"></div></div><span class="val teal">&lt; 1 s</span></div>
+        <div class="row r" style="--d:2"><span class="name">Moon</span><div class="track"><div class="fill" style="--w:9%;--d:2;background:var(--blue)"></div><div class="pulse" style="--w:9%;--t:1.3s"></div></div><span class="val blue">1.3 s</span></div>
+        <div class="row r" style="--d:3"><span class="name">Mars</span><div class="track"><div class="fill" style="--w:100%;--d:3;background:linear-gradient(90deg,var(--amber),var(--red))"></div><div class="pulse" style="--w:100%;--t:4.5s"></div></div><span class="val red">3–22 min</span></div>
+        <p class="r" style="--d:4;font-size:20px;font:500 20px/1 var(--mono);color:var(--dim)">ONE-WAY SIGNAL DELAY · A QUESTION AND ITS ANSWER TAKE TWICE AS LONG</p>
+      </div>
+      <div class="s2-quote r" style="--d:5">
+        <p>“Astronauts must be capable of making health assessments on themselves.”</p>
+        <small>NASA SPACE APPS 2026 · CHALLENGE BACKGROUND</small>
+      </div>
+    </div>
+    <div class="s2-right">
+      <div class="kicker r" style="--d:1">NASA HRP · five hazards of human spaceflight</div>
+      <div class="hazards">
+        <div class="hz panel r" style="--d:2"><svg viewBox="0 0 48 48"><circle cx="24" cy="24" r="4"/><path d="M24 20 L17 8 A18 18 0 0 1 31 8 Z"/><path d="M27.5 26 L41.5 26 A18 18 0 0 1 34.5 38 Z"/><path d="M20.5 26 L13.5 38 A18 18 0 0 1 6.5 26 Z"/></svg><div><h3>Radiation</h3><p>Invisible dose that adds up, sharp spikes in a solar storm</p></div></div>
+        <div class="hz panel r" style="--d:3"><svg viewBox="0 0 48 48"><circle cx="24" cy="15" r="7"/><path d="M10 42c0-8 6-13 14-13s14 5 14 13"/></svg><div><h3>Isolation and confinement</h3><p>Sleep, mood and stress suffer, months from home</p></div></div>
+        <div class="hz panel r" style="--d:4"><svg viewBox="0 0 48 48"><circle cx="10" cy="24" r="5"/><circle cx="40" cy="24" r="3"/><path d="M17 24h4m4 0h4m4 0h2" /></svg><div><h3>Distance from Earth</h3><p>Help and supplies are delayed or absent</p></div></div>
+        <div class="hz panel r" style="--d:5"><svg viewBox="0 0 48 48"><path d="M24 6v28"/><path d="M14 26l10 10 10-10"/><path d="M10 42h28"/></svg><div><h3>Gravity fields</h3><p>Heart, vessels, bone and muscle change</p></div></div>
+        <div class="hz panel r" style="--d:6"><svg viewBox="0 0 48 48"><path d="M24 5 41 14v20L24 43 7 34V14z"/><path d="M7 14l17 9 17-9M24 23v20"/></svg><div><h3>Hostile closed environment</h3><p>One sealed cabin: O₂, CO₂, humidity, noise, water</p></div></div>
+      </div>
+    </div>
+    <div class="needs r" style="--d:7">
+      <span class="lbl">The crew needs a tool that</span>
+      <span class="chip"><i></i>measures</span><span class="chip"><i></i>explains</span>
+      <span class="chip"><i style="background:var(--amber)"></i>warns early</span><span class="chip"><i style="background:var(--red)"></i>says what to do first</span>
+      <span class="chip"><i style="background:var(--blue)"></i>works without a link</span>
+    </div>
+  </div>
+  <div class="foot"><span>Delays: Moon 1.28 s; Mars 3–22 min depending on planet positions</span><span>ULTRA SUN</span></div>
+</section>
+
+<!-- ======================= 3 · SOLUTION ======================= -->
+<section class="slide" id="s3">
+  <div class="grid-bg"></div>
+  <div class="chrome"><span class="dot"></span><span>The solution · one screen for a crew of four</span><span class="sep"></span><span class="num">03 / 07</span></div>
+  <div class="content">
+    <div class="s3-title"><h2 class="r" style="--d:0">A Mission Control for the crew’s own health</h2></div>
+    <div class="s3-img r" style="--d:1">
+      <img class="shot" src="assets/dashboard-warning.jpg" alt="Dashboard during an incident: lungs highlighted on the body scan, warning in the status island, pinned alarms in the flight log">
+      <span class="callout pop" style="left:2.4%;top:10%;--d:2">1</span>
+      <span class="callout pop" style="left:12%;top:34%;--d:3">2</span>
+      <span class="callout pop" style="left:50%;top:3%;--d:4">3</span>
+      <span class="callout pop" style="left:45%;top:30%;--d:5">4</span>
+      <span class="callout pop" style="left:30%;top:63%;--d:6">5</span>
+      <span class="callout pop" style="left:91.5%;top:18%;--d:7">6</span>
+      <span class="callout pop" style="left:91.5%;top:58%;--d:8">7</span>
+      <span class="callout pop" style="left:22%;top:97%;--d:9">8</span>
+    </div>
+    <div class="s3-list">
+      <div class="it panel r" style="--d:2"><span class="n">1</span><div><h3>Crew rail</h3><p>Four astronauts, keys 1–4; a red dot flags who needs help.</p></div></div>
+      <div class="it panel r" style="--d:3"><span class="n">2</span><div><h3>Anatomical body scan</h3><p>Click an organ: its function, readings and status.</p></div></div>
+      <div class="it panel r" style="--d:4"><span class="n">3</span><div><h3>Forecast island</h3><p>Countdown to the next limit crossing, whole crew.</p></div></div>
+      <div class="it panel r" style="--d:5"><span class="n">4</span><div><h3>Recorded ECG</h3><p>Real PhysioNet MIT-BIH trace, 360 Hz.</p></div></div>
+      <div class="it panel r" style="--d:6"><span class="n">5</span><div><h3>Vitals · Cabin · Radiation · Self-check</h3><p>Status = icon + word + colour, never colour alone.</p></div></div>
+      <div class="it panel r" style="--d:7"><span class="n">6</span><div><h3>Hold-to-confirm controls</h3><p>A 0.8 s hold: no accidental commands.</p></div></div>
+      <div class="it panel r" style="--d:8"><span class="n">7</span><div><h3>Prioritised flight log</h3><p>Active alarms pinned on top, one click to the astronaut.</p></div></div>
+      <div class="it panel r" style="--d:9"><span class="n">8</span><div><h3>Time travel</h3><p>Replay any moment from the event log.</p></div></div>
+    </div>
+    <div class="six r" style="--d:10">
+      <span class="lbl">Every indicator the challenge names</span>
+      <span class="chip">Blood pressure</span><span class="chip">Heart rate</span><span class="chip">Blood sugar</span>
+      <span class="chip">Temperature</span><span class="chip">Sleep</span><span class="chip">Mood</span>
+    </div>
+  </div>
+  <div class="foot"><span>+ cabin O₂, CO₂, humidity, noise, airflow · SpO₂, respiration, HRV, stress · radiation dose and live proton flux · water</span><span>ULTRA SUN</span></div>
+</section>
+
+<!-- ======================= 4 · STORY ======================= -->
+<section class="slide" id="s4">
+  <div class="grid-bg"></div>
+  <div class="chrome"><span class="dot" style="background:var(--red);box-shadow:0 0 12px var(--red)"></span><span>One incident · Mars base · crew member Lina</span><span class="sep"></span><span class="num">04 / 07</span></div>
+  <div class="content">
+    <h2 class="r" style="--d:0">From a fault to a first action, <span class="teal">before Earth hears about it</span></h2>
+    <div class="rail r" style="--d:1"></div>
+    <div class="tl">
+      <div class="step panel r" style="--d:2">
+        <span class="t">T+0:00</span>
+        <h3>Oxygen supply fault</h3>
+        <p>Held for 0.8 s on the control deck. Cabin O₂ starts to fall, Lina’s SpO₂ follows. <b>No limit is crossed yet.</b></p>
+        <div class="img"><img src="assets/control-deck.jpg" alt="Control deck: solar flare from NASA DONKI, physical exertion, O2 supply fault, hold 0.8 s to send" style="width:92%"></div>
+      </div>
+      <div class="step panel r" style="--d:3">
+        <span class="t">T+0:20 · forecast</span>
+        <h3>The limit, before it is crossed</h3>
+        <p>A trend fit (R² ≥ 0.8, at most 3 min ahead) puts a countdown in the island: <b class="mono amber">Cabin O₂ 0:28</b>. One click jumps to the sensor. A step is not a trend, so noise never forecasts.</p>
+        <div class="img"><img src="assets/island-forecast.jpg" alt="Status island listing forecasts: Cabin O2 in 0:28, SpO2 in 0:31, heart rate in 1:06" style="width:100%"></div>
+      </div>
+      <div class="step panel r red" style="--d:4">
+        <span class="t">T+0:50 · warning</span>
+        <h3>Voice, pinned alarm, “Do now”</h3>
+        <p>The first action under the alarm, and a <b>Ground</b> line that knows it is Mars: <i>act on the checklist first, a reply takes 6–45 min</i>.</p>
+        <div class="img"><img src="assets/flightlog-donow.jpg" alt="Flight log with pinned warnings, each with a Do now action and a Ground line for Mars" style="width:84%"></div>
+      </div>
+      <div class="step panel r teal" style="--d:5">
+        <span class="t">Evening check-in</span>
+        <h3>The astronaut is a sensor too</h3>
+        <p>Lina enters <b class="mono">glucose 52 mg/dL</b>: the same warning and advice as any sensor. Sleep, mood and water work the same way. Routine reminders say what is due.</p>
+        <div class="img"><img src="assets/selfcheck-cards.jpg" alt="Self-check tab: glucose 52 in warning, sleep and mood overdue, water" style="width:100%"></div>
+      </div>
+    </div>
+    <div class="s4-foot r" style="--d:6">
+      <span class="chip"><i></i>Flight log</span><span class="arrow">→</span>
+      <span class="chip"><i></i>Medical report with probable cause</span><span class="arrow">→</span>
+      <span class="chip"><i></i>Excel · CSV · validated telemetry package</span><span class="arrow">→</span>
+      <span class="chip"><i style="background:var(--blue)"></i>sent to Earth when the link allows</span>
+    </div>
+  </div>
+  <div class="foot"><span>Scenario responses are modelled and labelled as such · guidance is illustrative, not validated by flight surgeons</span><span>ULTRA SUN</span></div>
+</section>
+
+<!-- ======================= 5 · EXPLAINS & PREVENTS ======================= -->
+<section class="slide" id="s5">
+  <div class="grid-bg"></div>
+  <div class="chrome"><span class="dot"></span><span>Not just alarms</span><span class="sep"></span><span class="num">05 / 07</span></div>
+  <div class="content">
+    <div class="s5-left">
+      <h2 class="r" style="--d:0">Every reading explains itself and helps <span class="teal">keep the crew healthy</span></h2>
+      <div class="feat">
+        <div class="f panel r" style="--d:1"><span class="ic">📈</span><div><h3>About window for each indicator</h3><p>Trend with caution, warning and critical bands. Why it matters, what spaceflight does to it, how it is measured, when to seek help.</p></div></div>
+        <div class="f panel r" style="--d:2"><span class="ic">🛡️</span><div><h3>Mapped to NASA’s five hazards</h3><p>Every indicator is tagged with its HRP hazard and the named HRP risks.</p></div></div>
+        <div class="f panel r" style="--d:3"><span class="ic">🌱</span><div><h3>“Keep it healthy” prevention</h3><p>Everyday advice that stops a problem before there is an alarm.</p></div></div>
+        <div class="f panel r" style="--d:4"><span class="ic">🔥</span><div><h3>Routine check-ins and a day streak</h3><p>Measurements due by mission-day hour, an overdue ring, and a streak of days with every check-in done.</p></div></div>
+        <div class="f panel r" style="--d:5"><span class="ic">🌐</span><div><h3>English, Russian, Uzbek draft</h3><p>Plain language, not medical jargon. Voice alerts included.</p></div></div>
+      </div>
+    </div>
+    <div class="s5-shots">
+      <img class="shot a r" style="--d:2" src="assets/about-window.jpg" alt="About window for SpO2 with the trend chart, limit bands and explanations">
+      <img class="shot h r" style="--d:4" src="assets/hazards.jpg" alt="Legend of the five hazards of human spaceflight with the indicators each one touches">
+    </div>
+  </div>
+  <div class="foot"><span>Explanations use NASA Human Research Program hazard and risk pages · background, not medical advice</span><span>ULTRA SUN</span></div>
+</section>
+
+<!-- ======================= 6 · DATA & TECH ======================= -->
+<section class="slide" id="s6">
+  <div class="grid-bg"></div>
+  <div class="chrome"><span class="dot"></span><span>Open data and technology</span><span class="sep"></span><span class="num">06 / 07</span></div>
+  <div class="content">
+    <h2 class="r" style="--d:0">Every number says <span class="teal">where it comes from</span></h2>
+    <div class="s6-left">
+      <div class="tiers">
+        <div class="tier panel r" style="--d:1"><span class="tag nasa">NASA</span><p><b>Stated in NASA-STD-3001:</b> cabin CO₂, humidity, noise</p></div>
+        <div class="tier panel r" style="--d:2"><span class="tag derived">Derived</span><p><b>Other NASA documents:</b> O₂ from the Human Integration Design Handbook, 250 mSv SPE limit, ISS airflow</p></div>
+        <div class="tier panel r" style="--d:3"><span class="tag clinical">Clinical</span><p><b>Public clinical references:</b> AHA, BTS, NICE, ADA for heart, SpO₂, glucose</p></div>
+        <div class="tier panel r" style="--d:4"><span class="tag eng">Engineering</span><p><b>Our own choice,</b> said out loud where NASA publishes no number</p></div>
+        <div class="tier panel r" style="--d:5"><span class="tag prov">Provisional</span><p><b>Placeholder:</b> HRV, stress, temperature levels</p></div>
+      </div>
+      <img class="shot s6-limits r" style="--d:6" src="assets/report-limits.jpg" alt="Report table of every limit with its basis and source">
+    </div>
+    <div class="s6-right">
+      <div class="data">
+        <div class="d panel r" style="--d:2"><span class="src">NASA DONKI</span><h3>12 real solar flares</h3><p>May 2024, up to X8.7, scale the radiation scenario</p></div>
+        <div class="d panel r" style="--d:3"><span class="src">NOAA GOES</span><h3>Live proton flux</h3><p>≥ 10 and ≥ 100 MeV, kept apart from our dose model</p></div>
+        <div class="d panel r" style="--d:4"><span class="src">PhysioNet</span><h3>Recorded physiology</h3><p>MIT-BIH ECG; BIDMC heart rate, SpO₂, respiration</p></div>
+        <div class="d panel r" style="--d:5"><span class="src">NASA HRP · CSA</span><h3>Hazards, risks, radiation</h3><p>HRP hazard and risk pages; CSA radiation monitoring</p></div>
+      </div>
+      <div class="resil panel r" style="--d:6">
+        <h3>Keeps working when the link does not</h3>
+        <div class="modes"><span class="mode l" style="--d:0">LIVE</span><span class="arrow">→</span><span class="mode p" style="--d:1">POLL</span><span class="arrow">→</span><span class="mode s" style="--d:2">STALE</span><span class="arrow">→</span><span class="mode m" style="--d:3">SIM</span></div>
+        <p style="margin-top:12px;font-size:20px">The deterministic engine <span class="mono teal">frame(t) = baseline(t) + modifiers(t)</span> runs the same on the server and in the browser. No link: the banner says “estimated” and monitoring goes on.</p>
+      </div>
+      <div class="tech r" style="--d:7">
+        <span class="chip">Next.js · React · TypeScript</span><span class="chip">NestJS · WebSocket</span><span class="chip">Zod contracts</span>
+        <span class="chip"><i></i>121 unit tests</span><span class="chip"><i></i>18-step browser test</span>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span>Recorded: ECG, heart rate, SpO₂, respiration · modelled: everything else, marked with a ring on each card</span><span>ULTRA SUN</span></div>
+</section>
+
+<!-- ======================= 7 · IMPACT & CLOSE ======================= -->
+<section class="slide" id="s7">
+  <div class="grid-bg"></div><div class="stars"></div>
+  <div class="chrome"><span class="dot"></span><span>Impact, limits, next steps</span><span class="sep"></span><span class="num">07 / 07</span></div>
+  <div class="content">
+    <h2 class="r" style="--d:0">Built for Mars, <span class="teal">useful wherever the doctor is far away</span></h2>
+    <div class="s7-grid">
+      <div class="col panel r" style="--d:1">
+        <h3><span class="teal">●</span> On Earth too</h3>
+        <ul>
+          <li>Polar and research stations, ships, remote expeditions</li>
+          <li>Remote districts where the nearest doctor is hours away</li>
+          <li>Any place where help is delayed: forecast, first action, report</li>
+        </ul>
+      </div>
+      <div class="col panel honest r" style="--d:2">
+        <h3><span class="amber">●</span> Honest limits</h3>
+        <ul>
+          <li>A prototype, not a medical device; the crew is fictional</li>
+          <li>Scenario responses are modelled; each limit shows its tier</li>
+          <li>Guidance is illustrative, not reviewed by flight surgeons</li>
+        </ul>
+      </div>
+      <div class="col panel next r" style="--d:3">
+        <h3><span class="blue">●</span> Next</h3>
+        <ul>
+          <li>Camera input: photo of a meter reading, then pulse from video</li>
+          <li>Bone and muscle models for the gravity hazard</li>
+          <li>Real wearables on the same telemetry contract</li>
+        </ul>
+      </div>
+    </div>
+    <div class="closing r" style="--d:4">Lina did not wait <span class="red">45 minutes</span> for Earth. <span class="teal">She acted in 50 seconds.</span></div>
+    <div class="s7-bottom">
+      <div class="teambox panel r" style="--d:5">
+        <div class="kicker" style="color:var(--muted)">Team Ultra Sun · Tashkent</div>
+        <div class="names">
+          <span class="chip"><i></i>Axmadov Asadbek · team owner</span>
+          <span class="chip"><i></i>Bobokulov Azizbek</span>
+          <span class="chip"><i></i>Sultonmurotov Behzod</span>
+        </div>
+        <p class="ai">Use of AI: most code, tests, translations and this deck’s text were written with an AI assistant (Anthropic Claude, via Claude Code), directed and reviewed by the team. All screenshots are real captures of the app, not AI-generated images. No NASA logos are used; not affiliated with or endorsed by NASA.</p>
+      </div>
+      <div class="links panel r" style="--d:6">
+        <div class="row"><span>Live demo</span>astronaut-health-monitor-one.vercel.app</div>
+        <div class="row"><span>Code</span>github.com/Akhmadov-360/nasa-hackaton-2026</div>
+        <div class="row"><span>Sources</span>docs/thresholds-sources.md</div>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span>See it · forecast it · act on it</span><span>ULTRA SUN</span></div>
+</section>
+
+</div>
+
+<div id="hud"><div id="bar"></div></div>
+<div id="timer">0:00</div>
+<div id="help">← → space · F fullscreen · T timer</div>
+
+<script>
+(() => {
+  const slides = [...document.querySelectorAll('.slide')];
+  const stage = document.getElementById('stage');
+  const bar = document.getElementById('bar');
+  const timer = document.getElementById('timer');
+  let i = 0, t0 = null, tick = null;
+
+  const fit = () => {
+    const s = Math.min(innerWidth / 1920, innerHeight / 1080);
+    stage.style.transform = `translate(-50%,-50%) scale(${s})`;
+  };
+  const show = (n) => {
+    i = Math.max(0, Math.min(slides.length - 1, n));
+    slides.forEach((s, k) => s.classList.toggle('active', k === i));
+    bar.style.width = `${((i + 1) / slides.length) * 100}%`;
+    history.replaceState(null, '', `#${i + 1}`);
+  };
+  const fmt = (ms) => { const s = Math.floor(ms / 1000); return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`; };
+  const toggleTimer = () => {
+    if (tick) { clearInterval(tick); tick = null; timer.classList.remove('on'); return; }
+    t0 = Date.now(); timer.classList.add('on');
+    tick = setInterval(() => {
+      const ms = Date.now() - t0; timer.textContent = fmt(ms);
+      timer.classList.toggle('warn', ms > 150000 && ms <= 180000);
+      timer.classList.toggle('over', ms > 180000);
+    }, 250);
+  };
+
+  addEventListener('keydown', (e) => {
+    const k = e.key;
+    if (['ArrowRight', 'PageDown', ' ', 'Enter'].includes(k)) { e.preventDefault(); show(i + 1); }
+    else if (['ArrowLeft', 'PageUp', 'Backspace'].includes(k)) { e.preventDefault(); show(i - 1); }
+    else if (k === 'Home') show(0);
+    else if (k === 'End') show(slides.length - 1);
+    else if (/^[1-7]$/.test(k)) show(+k - 1);
+    else if (k === 'f' || k === 'F') { document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen?.(); }
+    else if (k === 't' || k === 'T') toggleTimer();
+  });
+  addEventListener('click', (e) => { if (e.target.closest('a')) return; show(i + (e.clientX > innerWidth / 3 ? 1 : -1)); });
+  addEventListener('hashchange', () => { const n = (parseInt(location.hash.slice(1), 10) || 1) - 1; if (n !== i) show(n); });
+  addEventListener('resize', fit);
+  setTimeout(() => document.getElementById('help').classList.add('gone'), 5000);
+  fit();
+  show((parseInt(location.hash.slice(1), 10) || 1) - 1);
+})();
+</script>
+</body>
+</html>

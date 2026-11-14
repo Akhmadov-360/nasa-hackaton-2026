@@ -15,3 +15,9 @@ shot-*.png
 CLAUDE.md
 
 .vercel
+
+# private pitch notes (not published)
+pitch/SPEAKER_SCRIPT.md
+
+# copy of the deck made at build time for the hosted site (see apps/web/vercel.json)
+apps/web/public/deck/

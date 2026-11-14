@@ -364,6 +364,16 @@ Scientific limits were looked up in the cited documents during development; wher
 labelled with a weaker tier (section 3) instead of presented as a NASA value. AI assistance is also recorded in the repository
 metadata: AI-assisted commits carry a `Co-Authored-By: Claude` trailer in `git log`.
 
+## Presentation deck
+
+The 7-slide pitch is in `pitch/`: `deck.html` (the slides), `deck.pdf` (the same, 7 pages, for the portal) and `assets/` (screenshots).
+Keys: arrows or space to move, **F** full screen, **T** a 3-minute timer (yellow after 2:30, red after 3:00).
+
+- **Locally** (works offline, safest for the stage): open `pitch/deck.html` in Chrome or Edge (double click, or `start pitch/deck.html` on Windows). Keep `assets/` next to it.
+- **From Vercel**: https://astronaut-health-monitor-one.vercel.app/deck (the build copies `pitch/` into the site, see `apps/web/vercel.json`). It needs the internet; the demo itself is at the site root.
+- **PDF again**: open `deck.html` in Chrome, Print, save as PDF, 1920x1080, no margins, background graphics on.
+- The speaker script (`pitch/SPEAKER_SCRIPT.md`) is git-ignored on purpose and stays on the team's machines.
+
 ## Team
 
 **Team name: Ultra Sun**, NASA Space Apps Challenge Tashkent 2026.
