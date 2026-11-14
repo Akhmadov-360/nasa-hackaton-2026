@@ -20,7 +20,8 @@ login). Their deadlines and format rules must be checked by the team before the 
 | G7 Hazard tags | Done: icon chips in the *About* window and a legend of the five hazards (shield button beside the tabs) that lists the indicators of each hazard and opens their *About* windows. No tags on the cards, to keep them small |
 | G4 Routine check-ins | Done: schedule in `checkins.json`, due and overdue derived from the event log, header chip, tab ring, due state on the cards. Not done: a streak counter (optional), reminders by voice or sound |
 | G5 Metric detail chart | Done as the first section of the *About* window (periods 5 min, 30 min, session; limit bands; hover value; entries as points for the self-check values). No separate window and no tabs: *About* already holds the explanation and the *Do now* text lives at the alarm |
-| G9, G10 | Not started |
+| G9 Sparklines follow the replay | Done: while replaying, each card's sparkline shows the same window ending at the cursor, rebuilt from the engine on a 0.2 s grid with a cache (`lib/replaySeries.ts`) |
+| G10 | Not started |
 
 ## 1. What the challenge asks, and where we are
 

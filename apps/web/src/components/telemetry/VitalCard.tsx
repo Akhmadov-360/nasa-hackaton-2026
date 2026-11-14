@@ -134,7 +134,7 @@ export function VitalCard({ crewId, sourceKey, metricKey, live, label, icon, uni
           </Tip>
         )}
       </div>
-      <div className="mt-auto pt-2"><Sparkline crewId={crewId} read={read} color={color} tick={tick} /></div>
+      <Tip label={t('trend.hint')}><div className="mt-auto pt-2"><Sparkline crewId={crewId} read={read} color={color} tick={tick} /></div></Tip>
     </article>
   );
 }
