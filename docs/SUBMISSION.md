@@ -29,16 +29,19 @@ Astronaut Health Monitor is a Mission Control style dashboard that lets a four-p
 **Link to Final Project**
 https://github.com/Akhmadov-360/nasa-hackaton-2026
 
+**Hosted demo** (web only, runs in the browser simulation; the live server and NOAA feed need the local API)
+`<Vercel URL, see section 6 of the README>`
+
 **Detailed Project Description**
 Adapt sections 1 to 5 of the README. In short:
 - *Problem*: on long missions the crew must spot health changes in themselves, and ground support is delayed (about 1.3 s to the Moon, roughly 3 to 22 minutes one way to Mars). The tool must explain its readings and keep working offline.
-- *What it does today*: body scan with clickable organs, ECG and vitals from real recordings, cabin metrics (O₂, CO₂, humidity, noise, airflow), radiation (modelled crew dose plus live GOES proton flux), colour-coded status with icon and word, a Time-to-Threshold forecast in the status island and on each card, hold-to-confirm scenario controls, a prioritised flight log with pinned alarms, Time Travel replay with pause and skip, a medical report with a limits-and-sources table, and export to Excel and a validated telemetry package.
+- *What it does today*: body scan with clickable organs, ECG and vitals from real recordings, cabin metrics (O₂, CO₂, humidity, noise, airflow), radiation (modelled crew dose plus live GOES proton flux), colour-coded status with icon and word, a Time-to-Threshold forecast in the status island and on each card, hold-to-confirm scenario controls, a prioritised flight log with pinned alarms, Time Travel replay (cards and sparklines follow the cursor), a medical report with a limits-and-sources table, and export to Excel and a validated telemetry package. Beyond the monitor: an *About* window for every indicator (why it matters, what spaceflight does to it, how it is measured, when to seek help, with the NASA HRP hazards and risks, a trend chart with limit bands); a self-check of glucose, sleep, mood and water entered by the astronaut (editable, with routine check-in reminders); a mission-context selector (station, Gateway, Moon base, Mars transit, Mars base) that changes the signal delay and the ground-contact advice; a legend of the five hazards; English, Russian and an Uzbek draft.
 - *How it is built*: a deterministic engine `frame(t) = baseline(t) + modifiers(t)` that runs identically on the server and in the browser, Zod-validated contracts, and the source modes `LIVE → POLL → STALE → SIM` for operation without a network.
-- *How it maps to the five NASA HRP hazards*: radiation (dose model and GOES), closed environment (cabin metrics), distance from Earth (offline operation and forecasts), gravity (an in-flight exercise load model; bone and muscle indicators are not modelled yet), isolation and confinement (a self-check of sleep and mood, and of glucose and water, entered by the crew member).
+- *How it maps to the five NASA HRP hazards*: radiation (dose model and GOES), closed environment (cabin metrics), distance from Earth (offline operation and forecasts), gravity (an in-flight exercise load model; bone and muscle indicators are not modelled yet), isolation and confinement (a self-check of sleep and mood, and of glucose and water, entered by the crew member, with routine reminders).
 - *Honesty*: each limit carries a tier (`nasa`, `derived`, `clinical`, `engineering`, `provisional`) and a source; the scenario responses are assumptions and are labelled as such.
-- *Guidance*: a short "do now" first action for any out-of-range reading, in the pinned alarms and the body-scan organ popover (illustrative, not validated by flight surgeons).
+- *Guidance*: a short "do now" first action for any out-of-range reading, in the pinned alarms and the body-scan organ popover, plus a *Ground* line that depends on the mission context (illustrative, not validated by flight surgeons).
 - *Self-check*: the crew member enters glucose, sleep, mood and water drunk; the values become events in the same log as the scenarios, are judged against limits with a stated basis, and appear in the flight log, the report, the exports and Time Travel.
-- *Update this paragraph as features land* (mission contexts, hazard tags). Only describe what runs.
+- *Update this paragraph as features land.* Only describe what runs. Not built: bone and muscle models, camera input, a streak counter, a reviewed Uzbek translation.
 
 **Use of Super Intelligence (SI)**
 Most of the code, tests, translations and documentation were written by an AI coding assistant (Anthropic Claude, through Claude Code) following requirements, design decisions and reviews given by the team. The team chose the problem framing, the data sources and the rule that every limit must cite its origin, directed each feature, ran and reviewed the application, and decided what to ship. Where a scientific source could not be read in full, the limit is labelled with a weaker tier instead of being presented as a NASA value. AI assistance is also recorded in the README, in `package.json` and in the commit trailers.
@@ -61,11 +64,11 @@ Most of the code, tests, translations and documentation were written by an AI co
 |---|---|---|
 | 1 | Title | Name, one-line promise ("see it, forecast it, act on it, even when the ground is far away"), team name, links. No NASA logo |
 | 2 | Why | Long missions: the crew must self-assess; delay to Moon about 1.3 s, to Mars 3 to 22 min; the five HRP hazards as small icons |
-| 3 | What you see | Full-dashboard screenshot: body scan, ECG, vitals, cabin tab, island, control deck |
-| 4 | Before it happens | Island forecast and card capsule screenshots; pinned alarm and (when built) the "do now" line; GIF of the hold button and the forecast countdown |
+| 3 | What you see | Full-dashboard screenshot: body scan, ECG, vitals, cabin tab, island, control deck, the Self-check tab and the header chips |
+| 4 | Before it happens and what to do | Island forecast and card capsule screenshots; pinned alarm with the "do now" and *Ground* lines, once at the station and once at Mars; the *About* window with the trend chart and limit bands |
 | 5 | Every number states its source | The tier table (`nasa`, `derived`, `clinical`, `engineering`, `provisional`) with 5 to 6 rows, and the NASA data list |
 | 6 | It keeps working | Architecture sketch: deterministic engine, API, browser, `LIVE → POLL → STALE → SIM`; replay and Excel report screenshots |
-| 7 | Honest limits, team, AI | What is modelled, what is next (mission contexts), team name and members, repository link, AI-use statement |
+| 7 | Honest limits, team, AI | What is modelled and what is entered by hand, what is next (bone and muscle, a reviewed Uzbek translation), team name and members, repository link, hosted demo link, AI-use statement |
 
 Screenshots: `pnpm smoke -- --url http://localhost:3100 --size 1920x1080 --shots shots` writes one per step.
 

@@ -5,6 +5,11 @@ A Mission Control style dashboard that monitors the health of a four-person crew
 from NASA DONKI, live space weather from NOAA GOES. Every number on screen says where it comes from, and the system keeps
 running when the network does not.
 
+What it does, in one breath: the crew **sees** its readings (vitals, cabin, radiation, and values the astronaut enters by hand),
+**forecasts** a limit before it is crossed, is told **what to do first** and **when to call the ground** (which depends on
+how far from Earth the crew is), can **explain any indicator** (why it matters, what spaceflight does to it, which of the
+five NASA hazards it belongs to, with a trend chart and its limit bands), and can **replay and export** the whole session.
+
 It is a hackathon prototype and **not a medical device**. The crew is fictional.
 
 - [1. Problem and mission context](#1-problem-and-mission-context)
@@ -27,6 +32,10 @@ Outside low Earth orbit the ground is no longer next door. The one-way radio del
 it ranges from roughly 3 to 22 minutes depending on the planets' positions. A flight surgeon on the ground cannot react to a
 falling blood-oxygen reading in real time, so the crew and the on-board system have to see the situation, and see where it is
 heading, without waiting for a reply.
+
+The app has a **mission context** selector (station in low orbit, Gateway, Moon base, Mars transit, Mars base): it changes the
+signal delay shown and the ground-contact advice, so the same alarm says "call Mission Control now" near the Earth and "act on
+the checklist first, a reply takes 6 to 45 minutes there and back" at Mars.
 
 Two things follow, and they are what this project works on:
 
@@ -59,7 +68,6 @@ Two things follow, and they are what this project works on:
 | **Time Travel**                  | Click or drag the bar to a moment (the window starts at the session start, at most 24 h back) and a **replay runs from there to the present** at 1×, 2×, 4× or 8× (default 1×, so it catches up and hands over to live). Pause, skip 10 s back or forward, or go live at any time. Frames are reconstructed from the event log, not stored. The sparklines on the cards follow the replay cursor too (rebuilt from the engine, so each line agrees with the number beside it). Only the display moves: live monitoring (alerts, forecasts, island, flight log) keeps running, and a chip on the bar shows the live status during a replay.                                                                                                                                                                                                                                                                                                                                                    | `components/time/TimeTravelBar.tsx`, `engine/log.ts`                              |
 | **Medical report**               | Incidents (merged warning-or-worse episodes) with their probable cause from the event log and an illustrative response protocol. A short window still lists incidents from earlier in the session. Ends with a table of every limit and its source.                                                                                                                                                                                        | `engine/report.ts`, `components/report/*`                                         |
 | **Export**                       | Report as a multi-sheet Excel workbook `.xlsx` (_Summary, Crew, Incidents, Events, Limits and sources_), the flight log as `.xlsx` or CSV (`sep=;` so it opens in columns in any locale), and a validated telemetry package (`.json` / `.json.gz`) that can be re-imported by drag and drop.                                                                                                                                               | `lib/xlsx.ts`, `lib/exportReport.ts`, `lib/packageIO.ts`                          |
-| **Languages and voice**          | English, Russian, Uzbek. Voice alerts speak in the interface language (Uzbek falls back to Russian) and spell out units.                                                                                                                                                                                                                                                                                                                   | `lib/i18n.ts`, `lib/audio.ts`                                                     |
 
 **Forecast rules** (`timeToThreshold`): a straight-line fit over the last ~50 s must have R² of at least 0.8, the reading must
 have moved at least two hysteresis widths across the window, no single sample-to-sample change may carry more than 35 % of the
@@ -151,8 +159,9 @@ real flare adds little dose indoors; the real hazard is the solar particles that
 
 ```
 packages/engine   Pure TypeScript. Zod schemas, baseline player, modifiers, thresholds with hysteresis, event log,
-                  time travel, trend forecast, report, telemetry package. No React, no Nest, no DOM.
-packages/data     Scenario pack (real data), thresholds / modifiers / radiation / protocols JSON, DONKI flares, ingest scripts.
+                  time travel, trend forecast, self-check entries and check-ins, report, telemetry package. No React, no Nest, no DOM.
+packages/data     Scenario pack (real data), thresholds / modifiers / radiation / protocols / guidance / about / missions / check-ins JSON,
+                  DONKI flares, ingest scripts.
 apps/api          NestJS: WebSocket gateway (10 Hz batches, heartbeat), REST, NOAA GOES proxy.
 apps/web          Next.js 16 dashboard (client-rendered), Zustand, TanStack Query, hand-written shadcn-style UI on Radix.
 ```
@@ -171,7 +180,7 @@ is recomputed, not stored.
 **Contracts.** Incoming frames are parsed with Zod-based guards per crew member (a bad value falls back to the last good one
 and the card shows `est.`); the telemetry package is a Zod-validated file (`astro-telemetry-package/1`, at most 5 MB, 20 MB
 unpacked, never executed); the same report schema validates an import and describes an export. The API validates every
-command (type, crew, flare class, intensity, magnitude, event-log size).
+command (type, crew, flare class, intensity, magnitude, event-log size, and for a self-check entry the metric, value range, id and time).
 
 **Source modes** (`SourceManager`; components never talk to the WebSocket directly):
 
@@ -186,7 +195,7 @@ When the server returns, its clock and event log win and commands issued offline
 detected (new session id, backwards clock jump) and the client state is reset.
 
 Other guards: every widget has its own error boundary, duplicate and out-of-order frames are dropped, each alert channel
-(toast, sound, voice, log) is isolated, persisted state (language and selected crew only) tolerates corrupt or unavailable
+(toast, sound, voice, log) is isolated, persisted state (language, selected crew and mission context only) tolerates corrupt or unavailable
 `localStorage`, and the demo needs no internet (the live GOES card is the only part that does, and it degrades by itself).
 
 ---
@@ -218,7 +227,7 @@ NEXT_DIST_DIR=.next-prod pnpm --filter @astro/web build
 NEXT_DIST_DIR=.next-prod pnpm --filter @astro/web exec next start -p 3100
 ```
 
-**Tests and checks** (35 engine, 5 data, 9 API, 24 web unit tests):
+**Tests and checks** (50 engine, 5 data, 11 API, 52 web unit tests):
 
 ```bash
 pnpm test
@@ -248,10 +257,12 @@ Keyboard: **1 to 4** select a crew member, **T** back to live, **K** pause or re
 ```
 apps/api/src/telemetry/     service (event log, command validation), gateway (WebSocket), controller, spaceweather.service
 apps/web/src/
-  components/               bodyscan, crew, deck (control deck, flight log), telemetry (cards, ECG), report, time, topbar, ui
-  lib/                      sources (LIVE/POLL/STALE/SIM), store, alerts, audio, i18n, forecast, xlsx, packageIO, ...
-  hooks/                    useDisplayFrame, useEta, useReport
-packages/engine/src/        schemas, baseline, frame, modifiers, status, trend, log, report, telemetryPackage, spaceweather
+  components/               bodyscan, crew, deck (control deck, flight log), telemetry (cards, ECG), guidance (Do now, About window,
+                            trend chart, hazards), selfcheck, report, time, topbar, ui
+  lib/                      sources (LIVE/POLL/STALE/SIM), store, alerts, audio, i18n, forecast, mission, about, guidance,
+                            metricSeries, replaySeries, xlsx, packageIO, ...
+  hooks/                    useDisplayFrame, useEta, useReport, useCheckins
+packages/engine/src/        schemas, baseline, frame, modifiers, status, trend, log, manual, checkins, report, telemetryPackage, spaceweather
 packages/data/              thresholds.json, modifiers.json, radiation-model.json, protocols.json, packs/, events/, scripts/
 docs/                       thresholds-sources.md, adr/0001-report-and-telemetry-package.md
 ```
@@ -260,22 +271,25 @@ docs/                       thresholds-sources.md, adr/0001-report-and-telemetry
 
 ## 7. Three-minute pitch script
 
-Open the production build in English or Russian, press **Enter Mission Control**, make sure the Control deck says
-_Real event: X8.7 · 2024-05-14_ and the scenario is clean (_Reset scenario_ if not). Hold every Control deck button for 0.8 s.
+Open the production build in English, press **Enter Mission Control**, make sure the Control deck says
+_Real event: X8.7 · 2024-05-14_, the mission selector says _Station_ and the scenario is clean (_Reset scenario_ if not).
+Hold every Control deck button for 0.8 s. The header chip shows the check-ins due (4 at the start, by design). If time is
+short, drop the rows marked *(cut)*.
 
-| Time     | Do                                                                                                                                                           | Say                                                                                                                                                                                     |
-| -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **0:00** | Nothing yet. Point at the **Vitals** tab: heart rate, SpO₂, respiration with filled dots, other readings with rings.                                         | "Four astronauts. The filled dot is a real PhysioNet signal, the ring is our model. Next to every number is its normal range."                                                          |
-| **0:20** | Click the `i` next to the tabs, then open **Cabin**. Hover the dot on _CO₂_.                                                                                 | "Cabin limits come from NASA-STD-3001: CO₂ at 3 mmHg, humidity 25 to 75 %, noise NC-50. The tooltip names the document and the tier."                                                   |
-| **0:40** | Hover an organ on the **Body scan**.                                                                                                                         | "Readings by organ, with the same status colours."                                                                                                                                      |
-| **0:50** | Select Lina (key **1**). Hold **O₂ supply fault**.                                                                                                           | "A cabin oxygen fault for one astronaut."                                                                                                                                               |
-| **1:00** | Watch the card capsules (`⏱ 0:41`) and the island (`Cabin O₂ 0:22 +3 ⌄`). Click the island; click the _Cabin O₂_ row.                                        | "Before any limit is crossed, the system forecasts it. The island summarises every forecast across the crew, and a click takes me to the sensor."                                       |
-| **1:25** | Wait for the warning: voice, toast, **Flight log** pins _Active alarms_ at the top.                                                                          | "Warning, voice, toast. The active alarm stays pinned, routine entries are dimmed." Hold **Restore normal**.                                                                            |
-| **1:45** | Pick another flare in the selector, hold **Solar flare**, open **Radiation**.                                                                                | "A real flare from DONKI. The left card is our modelled dose against NASA's 250 mSv limit. The right card is live, real proton flux from the GOES satellite, kept separate on purpose." |
-| **2:10** | Click **Time travel** about a minute back: the replay runs to the present. Pause with **K**, skip with **J** / **L**, return with **T**.                       | "Any moment is recomputed from the event log and replayed up to now, and the live alarm chip stays on the bar the whole time."                                                                                                                     |
-| **2:20** | Open **Report** (top bar). Show _Last 5 min_ with the notice about earlier incidents, then **Export package → Excel workbook**. Scroll to _Data and limits_. | "The report lists incidents with causes and an illustrative protocol, and the table of every limit with its source. It exports to a readable Excel workbook."                           |
-| **2:40** | Stop the API server. Wait 5 s.                                                                                                                               | "No link: the banner says estimated telemetry, and the same engine keeps running in the browser." Start the API; the link returns to LIVE.                                              |
-| **2:55** | Close on the limits table or `docs/thresholds-sources.md`.                                                                                                   | "Every limit says whether it is NASA, derived, clinical or our own choice. We kept the line between real and assumed visible."                                                          |
+| Time | Do | Say |
+| --- | --- | --- |
+| **0:00** | Point at the **Vitals** tab: heart rate, SpO₂, respiration with filled dots, the rest with rings. | "Four astronauts, far from the ground. The filled dot is a real PhysioNet signal, the ring is our model. Next to every number is its normal range." |
+| **0:15** | Click the **Heart rate** card: the *About* window opens with the trend chart. Point at the limit bands, the hazard chip *Gravity* and "Seek help if". Close it. | "Every indicator explains itself: why it matters, what spaceflight does to it, when to seek help, and which of NASA's five hazards it belongs to. The chart shows how near the reading is to each limit." |
+| **0:35** | Press the shield button beside the tabs. *(cut)* | "The five hazards of spaceflight, and the indicators each one touches." |
+| **0:40** | Select Lina (key **1**). Hold **O₂ supply fault**. Open the island when the forecast appears. | "A cabin oxygen fault. Before any limit is crossed the system forecasts it; the island summarises every forecast and a click takes me to the sensor." |
+| **1:05** | Wait for the warning: voice, toast, pinned alarm with the **Do now** line. | "Warning, voice, and the first action to take, right under the alarm." |
+| **1:20** | Switch the selector to **Mars base**. Look at the *Ground* line under *Do now*, then hold **Restore normal**. | "Same alarm, but at Mars a reply takes 6 to 45 minutes there and back: act on the checklist first, then report. Near the Earth the line says call Mission Control now." |
+| **1:40** | Open **Self-check** (or press the header chip). **Record** glucose 52, then show the entry list (edit, remove). | "The astronaut can enter glucose, sleep, mood and water. 52 raises a warning like any sensor, with the same advice. Entries can be corrected, and routine check-ins remind the crew what is due." |
+| **2:00** | Select a flare, hold **Solar flare**, open **Radiation**. *(cut)* | "A real flare from DONKI. Left: our modelled dose against NASA's 250 mSv limit. Right: live proton flux from GOES, kept separate on purpose." |
+| **2:10** | Click **Time travel** a minute back; the replay runs to the present (cards and sparklines follow the cursor). **T** returns to live. | "Any moment is recomputed from the event log and replayed; the live alarms keep running." |
+| **2:25** | Open **Report**, then **Export package → Excel workbook**; show the *Self-check* sheet and *Limits and sources*. | "Incidents with causes and an illustrative protocol, every self-check entry with its date and time, and the table of every limit with its source." |
+| **2:40** | Stop the API server (or go offline). Wait 5 s. | "No link: the banner says estimated telemetry and the same engine keeps running in the browser." |
+| **2:55** | Close on the limits table or `docs/thresholds-sources.md`. | "Every limit says whether it is NASA, derived, clinical or our own choice. We kept the line between real and assumed visible." |
 
 Rehearse once with the production build. Check the presentation laptop has an English and a Russian voice (Windows: Settings,
 Time and language, Speech), and that the projector resolution (1366×768, 1920×1080) shows the full layout.
@@ -289,10 +303,16 @@ Time and language, Speech), and that the projector resolution (1366×768, 1920×
   guidelines; operational vital-sign limits for crews are not published in NASA-STD-3001.
 - The NASA briefs are derived from the standard and are "for reference only". The Human Integration Design Handbook marks its
   hypoxia section as under evaluation.
-- Hydration is deliberately not modelled: no intake signal exists to show.
-- Sparklines keep showing the live trend while Time Travel is active (the main values and the ECG are reconstructed).
-- Uzbek: some report and protocol strings fall back to Russian, and Uzbek has no installed voice in most browsers (it speaks
-  Russian). Russian and Uzbek strings need review by native speakers.
+- Glucose, sleep, mood and water are entered by hand, not measured; sleep and mood limits are placeholders (NASA gives no
+  numeric sleep or mood alarm), and water has no alarm because 2.5 L a day is a supply minimum, not an intake target.
+- Bone and muscle changes (the gravity hazard) are not modelled; the gravity hazard is represented by the circulation
+  indicators and the exercise limits.
+- The signal delay of the station (0.25 to 0.5 s) is our estimate; NASA only says "under a second" via the relay satellites.
+  Moon (1.28 s) and Mars (3 to 22 min) follow from the distances.
+- The trend chart and the card sparklines use the resting limits; the ECG is not rebuilt during a replay.
+- The check-in schedule (which hour each value is due) is our choice, not a NASA schedule.
+- Uzbek is a draft of about two thirds of the strings, not read by a native speaker; the rest (report, protocols, space
+  weather, long hazard texts) falls back to Russian, then English. Voice alerts speak Russian when Uzbek is selected.
 - The Excel workbooks were validated with a spreadsheet library, not opened in Microsoft Excel itself.
 - Rendering was profiled in a headless browser without a GPU; check the frame rate on the presentation laptop.
 
@@ -305,8 +325,9 @@ Time and language, Speech), and that the projector resolution (1366×768, 1920×
 | NASA DONKI (Space Weather Database Of Notifications, Knowledge, Information) | 12 real solar flares of May 2024 (largest X8.7, 2024-05-14); their class and magnitude scale the modelled radiation response | `packages/data/events/donki-flares.json` |
 | NASA-STD-3001 Vol 1 and 2 through the OCHMO technical briefs (CO₂ TB-004, habitable atmosphere TB-003, radiation TB-020, water, acoustics, ECLSS) | Limits for CO₂, humidity, noise, drinking-water minimum, the 250 mSv solar particle event limit | `packages/data/thresholds.json`, `docs/thresholds-sources.md` |
 | NASA Human Integration Design Handbook (NASA/SP-2010-3407 Rev 1) | Hypoxia table and ppO₂ limits behind the cabin O₂ limits | `docs/thresholds-sources.md` |
+| NASA OCHMO sleep accommodations brief and the NASA HRP sleep-loss risk report | Context for the sleep limits (crews slept about 6 to 6.5 h against 8.5 h scheduled; limits are ours) | `docs/thresholds-sources.md` |
 | NASA Technical Reports Server: Perry et al. (NTRS 20120015343), Allen (NTRS 20170008857), Downs et al. (NTRS 20140003747) | ISS cabin design table (airflow), acoustic requirements, ISS exercise intensity | `docs/thresholds-sources.md` |
-| NASA Human Research Program: [5 Hazards of Human Spaceflight](https://www.nasa.gov/hrp/hazards/), [Risks](https://www.nasa.gov/hrp/risks/) | The hazard framing of the product (radiation, isolation and confinement, distance, gravity, closed environments) | `docs/ROADMAP.md` |
+| NASA Human Research Program: [5 Hazards of Human Spaceflight](https://www.nasa.gov/hrp/hazards/), [Risks](https://www.nasa.gov/hrp/risks/) | The hazard framing of the product (radiation, isolation and confinement, distance, gravity, closed environments), the HRP risk names and the statements about spaceflight in the *About* windows | `packages/data/about.json`, `docs/thresholds-sources.md` |
 
 **Space agency partner data and other references**
 
