@@ -2,6 +2,7 @@ import { DEFAULT_CABIN, DEFAULT_DRIFT, type DriftCfg, ecgWarp, envelope, exertio
 import { mulberry32, hashSeed } from './prng';
 import { sampleEcg, sampleVitals, trackMeanHr } from './baseline';
 import { applyStatus } from './status';
+import { manualAt } from './manual';
 import type { EngineEvent, ScenarioPack, Status, TelemetryFrame, Thresholds } from './schemas';
 
 export interface EngineConfig {
@@ -87,5 +88,7 @@ export function computeFrame(
     degraded: false,
     ...(lv.exertion >= dr.exerciseLevel ? { exercise: true } : {}),
   };
+  const manual = manualAt(events, crewId, t);
+  if (Object.keys(manual).length) frame.manual = manual;
   return applyStatus(frame, cfg.thresholds, prevStatus);
 }

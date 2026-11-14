@@ -99,6 +99,7 @@ const COMMAND_KEY: Record<EventType, DictKey> = {
   exertion: 'log.cmd.exertion',
   o2fault: 'log.cmd.o2fault',
   normalize: 'log.cmd.normalize',
+  measurement: 'log.cmd.measurement',
 };
 
 /** Operator command from the Control Deck. The event time is stamped here so server and browser agree. */
@@ -107,7 +108,7 @@ export function sendCommand(type: EventType, crewId: string, params?: Record<str
   if (t <= 0) return; // no telemetry yet: nothing to act on
   const ev: EngineEvent = { t, type, crewId, ...(params ? { params } : {}) };
   st().addEvent(ev);
-  st().addAudit({ t, kind: 'command', key: COMMAND_KEY[type], params: { crewId } });
+  st().addAudit({ t, kind: 'command', key: COMMAND_KEY[type], params: { crewId, ...(type === 'measurement' && params ? { metric: params.metric, value: params.value } : {}) } });
   getManager()?.command(ev);
   // micro-action: undo for crew-specific commands
   if (type === 'exertion' || type === 'o2fault') {

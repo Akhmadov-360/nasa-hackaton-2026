@@ -24,6 +24,8 @@ export interface TelemetryFrame {
   degraded: boolean;
   /** true while exertion is active: statuses use `Thresholds.exercise` for the metrics it lists */
   exercise?: boolean;
+  /** self-check entries current at `t` (glucose, sleep, mood, hydration); absent when none */
+  manual?: Partial<Record<'glucose' | 'sleep' | 'mood' | 'hydration', { value: number; t: number }>>;
 }
 
 export interface Alert {
@@ -38,7 +40,7 @@ export interface Alert {
   unit?: string;
 }
 
-export type EventType = 'flare' | 'exertion' | 'o2fault' | 'normalize';
+export type EventType = 'flare' | 'exertion' | 'o2fault' | 'normalize' | 'measurement';
 export interface EngineEvent {
   t: number;
   type: EventType;
@@ -153,5 +155,6 @@ export function parseFrame(input: unknown, last?: TelemetryFrame): TelemetryFram
     status: { overall, byMetric },
     degraded: input === undefined ? true : degraded || src.degraded === true,
     ...(src.exercise === true ? { exercise: true } : {}),
+    ...(src.manual && typeof src.manual === 'object' ? { manual: src.manual as TelemetryFrame['manual'] } : {}),
   };
 }

@@ -20,7 +20,7 @@ const T = {
     events: ['MET', 'Event', 'Crew', 'Parameters'],
     limits: ['Reading', 'Unit', 'Caution low', 'Warning low', 'Critical low', 'Caution high', 'Warning high', 'Critical high', 'Basis', 'Source'],
     tier: { nasa: 'NASA-STD-3001', derived: 'Other NASA document', clinical: 'Clinical reference', engineering: 'Our choice', provisional: 'Placeholder' },
-    ev: { flare: 'Solar flare', exertion: 'Exertion', o2fault: 'Oxygen supply fault', normalize: 'Return to normal' },
+    ev: { flare: 'Solar flare', exertion: 'Exertion', o2fault: 'Oxygen supply fault', normalize: 'Return to normal', measurement: 'Self-check entry' },
     all: 'All crew', file: 'mission-report',
   },
   ru: {
@@ -36,7 +36,7 @@ const T = {
     events: ['MET', 'Событие', 'Экипаж', 'Параметры'],
     limits: ['Показатель', 'Ед.', 'Внимание ниже', 'Тревога ниже', 'Критично ниже', 'Внимание выше', 'Тревога выше', 'Критично выше', 'Основание', 'Источник'],
     tier: { nasa: 'NASA-STD-3001', derived: 'Другой документ NASA', clinical: 'Клиническая норма', engineering: 'Наш выбор', provisional: 'Временное значение' },
-    ev: { flare: 'Вспышка на Солнце', exertion: 'Физическая нагрузка', o2fault: 'Сбой подачи O₂', normalize: 'Возврат к норме' },
+    ev: { flare: 'Вспышка на Солнце', exertion: 'Физическая нагрузка', o2fault: 'Сбой подачи O₂', normalize: 'Возврат к норме', measurement: 'Ввод самоконтроля' },
     all: 'Весь экипаж', file: 'medicinskij-otchet',
   },
 } as const;

@@ -112,3 +112,13 @@ Every metric carries `tier` (nasa / derived / engineering / provisional), option
 
 - `packages/data/guidance.json` (first action) is illustrative and not validated by flight surgeons.
 - `packages/data/about.json` (why, in space, how measured, seek help, hazards, risks) is background in plain language. Statements about spaceflight come from the NASA HRP hazards and risks pages (nasa.gov/hrp/hazards, nasa.gov/hrp/risks) and from the rows of this file (CO₂ symptoms, 600 mSv career and 250 mSv SPE limits, humidity [V2 6012] and [V2 6013], noise NC-50 and NC-40, ISS airflow range, hypoxia table). Everything else is general knowledge and marked as such by the "not medical advice" note in the window.
+
+## Self-check metrics (G1, applied 2026-11-14)
+
+All four are entered by hand (provenance "entered by you"), judged only while the entry is current, and a single value is never a diagnosis.
+
+- **Glucose** (tier clinical, warning and critical engineering): low side from the ADA Standards of Care 2026, section 6: hypoglycaemia below 70 mg/dL (caution), level 2 below 54 mg/dL (warning); critical 40 is ours. High side: caution 180 mg/dL is the ADA peak after-meal target (80 to 130 before a meal, under 180 after, read from a secondary summary, not the primary text); warning 250 and critical 350 are ours. The brief's "140 / 180 / 250" was not used: 140 is not an ADA limit we could verify.
+- **Sleep** (tier provisional): NASA gives no numeric sleep alarm. "[V2 3006]" quoted in the brief is Human-Centered Task Analysis, not a sleep requirement; the sleep requirement is [V2 7070] Sleep Accommodation. The OCHMO sleep brief reports that ISS and Shuttle crews averaged about 6 to 6.5 h against 8.5 h scheduled (a later NASA sample reports about 7.9 h), so caution below 6.5 h, warning below 5.5 h and critical below 4 h are our placeholders.
+- **Mood** (tier provisional): a 1 to 5 self-rating, caution at 3 or less, warning at 2, critical at 1. A rating, not a diagnosis.
+- **Water drunk** (no alarm): 2.5 L per crew member per day is the water supplied (NASA-STD-3001 [V2 6109], OCHMO water brief). It is a supply minimum, not a proven intake target, so the card shows a reference bar and never raises a status.
+- Validity of an entry: glucose 8 h, mood 12 h, sleep and water 24 h (`MANUAL` in `packages/engine/src/manual.ts`); after that the card says *Due*.

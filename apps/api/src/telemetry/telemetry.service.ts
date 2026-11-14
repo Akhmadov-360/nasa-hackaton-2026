@@ -1,7 +1,7 @@
 import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import {
-  appendEvent, computeFrame, diffAlerts,
+  appendEvent, computeFrame, diffAlerts, isManualMetric, MANUAL, validManualValue,
   type Alert, type EngineConfig, type EngineEvent, type EventType, type ModifiersConfig, type RadiationConfig,
   type ScenarioPack, type Status, type TelemetryFrame, type Thresholds,
 } from '@astro/engine';
@@ -13,7 +13,7 @@ import radiation from '@astro/data/radiation-model.json';
 export interface TickResult { t: number; frames: TelemetryFrame[]; alerts: Alert[] }
 export interface ServiceOptions { metOffsetSec?: number; now?: () => number }
 
-const EVENT_TYPES: EventType[] = ['flare', 'exertion', 'o2fault', 'normalize'];
+const EVENT_TYPES: EventType[] = ['flare', 'exertion', 'o2fault', 'normalize', 'measurement'];
 const MAX_EVENTS = 300;
 const MAX_INTENSITY = 3;
 const MAX_MAGNITUDE = 20;
@@ -104,6 +104,16 @@ export class TelemetryService {
       params.magnitude = magnitude;
     }
     if (cls !== undefined) params.class = String(cls);
+    if (e.type === 'measurement') {
+      // self-check entry: one crew member, a known metric and a value inside its range; nothing else is kept
+      if (e.crewId === 'ALL') return { ok: false, error: 'a measurement belongs to one crew member' };
+      const metric = e.params?.metric;
+      if (!isManualMetric(metric)) return { ok: false, error: 'unknown measurement metric' };
+      const value = e.params?.value;
+      if (!validManualValue(metric, value)) return { ok: false, error: `value for ${metric} must be a number from ${MANUAL[metric].min} to ${MANUAL[metric].max}${MANUAL[metric].integer ? ' (whole number)' : ''}` };
+      params.metric = metric;
+      params.value = value;
+    }
     if (e.t !== undefined && !Number.isFinite(e.t)) return { ok: false, error: 'invalid time' };
     if (this.log.length >= MAX_EVENTS) return { ok: false, error: 'event log full, reset the scenario' };
     const t = Number.isFinite(e.t) ? Number(e.t) : this.nowT();

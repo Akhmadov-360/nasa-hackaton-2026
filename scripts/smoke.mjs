@@ -41,7 +41,7 @@ const step = async (name, fn) => {
     console.log(`  ok   ${name} (${((Date.now() - t0) / 1000).toFixed(1)} s)`);
   } catch (e) {
     results.push({ name, ok: false, error: String(e.message ?? e).split('\n')[0] });
-    console.log(`  FAIL ${name}: ${String(e.message ?? e).split('\n')[0]}`);
+    console.log(`  FAIL ${name}: ${String(e.message ?? e).split('\n').slice(0, 7).map((l) => l.trim()).join(' | ')}`);
   }
   await shot(name).catch(() => {});
 };
@@ -131,6 +131,18 @@ await step('island list opens and a row jumps to the reading', async () => {
 
 await step('warning pins the active alarm in the flight log', async () => {
   await page.locator('ul[aria-label="Active alarms"] li').first().waitFor({ timeout: 60000 });
+});
+
+await step('self-check: glucose 52 raises a warning with a do-now line', async () => {
+  await page.getByRole('radio', { name: /Self-check/ }).click();
+  await page.getByRole('button', { name: /Record Glucose/i }).click();
+  await page.getByLabel('Glucose', { exact: true }).fill('52');
+  await page.getByRole('button', { name: 'Save' }).first().click();
+  await page.locator('ul[aria-label="Active alarms"] li', { hasText: /glucose/i }).first().waitFor({ timeout: 15000 });
+  const row = await page.locator('ul[aria-label="Active alarms"] li', { hasText: /glucose/i }).first().innerText();
+  if (!/Do now/i.test(row)) throw new Error('no do-now line under the glucose alarm');
+  await page.keyboard.press('Escape');
+  await page.waitForTimeout(600);
 });
 
 await step('report lists incidents and the limits table, exports Excel', async () => {

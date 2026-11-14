@@ -4,130 +4,372 @@
   "metrics": {
     "hr": {
       "high": {
-        "caution":  { "en": "Rest and breathe slowly. Check that you are not exercising or in a hot, stuffy cabin, then re-measure in 2 minutes.", "ru": "Отдохните и дышите медленно. Проверьте, нет ли нагрузки или духоты в отсеке, и измерьте снова через 2 минуты." },
-        "warning":  { "en": "Stop all activity and sit down. Check the sensor, re-measure, and tell the crew medical officer if it stays high.", "ru": "Прекратите работу и сядьте. Проверьте датчик, измерьте снова и сообщите врачу экипажа, если пульс остаётся высоким." },
-        "critical": { "en": "Stop everything and keep a crewmate with you. Alert the crew medical officer and call the ground now.", "ru": "Прекратите всё и попросите члена экипажа остаться рядом. Сообщите врачу экипажа и вызовите Землю сейчас." }
+        "caution": {
+          "en": "Rest and breathe slowly. Check that you are not exercising or in a hot, stuffy cabin, then re-measure in 2 minutes.",
+          "ru": "Отдохните и дышите медленно. Проверьте, нет ли нагрузки или духоты в отсеке, и измерьте снова через 2 минуты."
+        },
+        "warning": {
+          "en": "Stop all activity and sit down. Check the sensor, re-measure, and tell the crew medical officer if it stays high.",
+          "ru": "Прекратите работу и сядьте. Проверьте датчик, измерьте снова и сообщите врачу экипажа, если пульс остаётся высоким."
+        },
+        "critical": {
+          "en": "Stop everything and keep a crewmate with you. Alert the crew medical officer and call the ground now.",
+          "ru": "Прекратите всё и попросите члена экипажа остаться рядом. Сообщите врачу экипажа и вызовите Землю сейчас."
+        }
       },
       "low": {
-        "caution":  { "en": "Sit and re-measure: a low resting rate can be normal for a fit person. Report dizziness or fainting.", "ru": "Сядьте и измерьте снова: низкий пульс покоя бывает нормой у тренированного человека. Сообщите о головокружении или потере сознания." },
-        "warning":  { "en": "Lie down with your legs raised, check the sensor, and tell the crew medical officer.", "ru": "Лягте с поднятыми ногами, проверьте датчик и сообщите врачу экипажа." },
-        "critical": { "en": "Lie down and keep a crewmate with you. Alert the crew medical officer and call the ground now.", "ru": "Лягте и попросите члена экипажа остаться рядом. Сообщите врачу экипажа и вызовите Землю сейчас." }
+        "caution": {
+          "en": "Sit and re-measure: a low resting rate can be normal for a fit person. Report dizziness or fainting.",
+          "ru": "Сядьте и измерьте снова: низкий пульс покоя бывает нормой у тренированного человека. Сообщите о головокружении или потере сознания."
+        },
+        "warning": {
+          "en": "Lie down with your legs raised, check the sensor, and tell the crew medical officer.",
+          "ru": "Лягте с поднятыми ногами, проверьте датчик и сообщите врачу экипажа."
+        },
+        "critical": {
+          "en": "Lie down and keep a crewmate with you. Alert the crew medical officer and call the ground now.",
+          "ru": "Лягте и попросите члена экипажа остаться рядом. Сообщите врачу экипажа и вызовите Землю сейчас."
+        }
       }
     },
     "hrv": {
       "low": {
-        "caution":  { "en": "A short dip is common. Allow rest and sleep, avoid heavy exertion, and check again later.", "ru": "Короткое снижение обычно. Дайте себе отдых и сон, избегайте тяжёлой нагрузки и проверьте позже." },
-        "warning":  { "en": "Low variability for a while points to stress or fatigue. Reduce the workload and tell the crew medical officer.", "ru": "Долго низкая вариабельность указывает на стресс или усталость. Снизьте нагрузку и сообщите врачу экипажа." },
-        "critical": { "en": "Treat it as a sign of acute stress or illness: stop work, rest, and alert the crew medical officer.", "ru": "Считайте это признаком острого стресса или болезни: прекратите работу, отдохните и сообщите врачу экипажа." }
+        "caution": {
+          "en": "A short dip is common. Allow rest and sleep, avoid heavy exertion, and check again later.",
+          "ru": "Короткое снижение обычно. Дайте себе отдых и сон, избегайте тяжёлой нагрузки и проверьте позже."
+        },
+        "warning": {
+          "en": "Low variability for a while points to stress or fatigue. Reduce the workload and tell the crew medical officer.",
+          "ru": "Долго низкая вариабельность указывает на стресс или усталость. Снизьте нагрузку и сообщите врачу экипажа."
+        },
+        "critical": {
+          "en": "Treat it as a sign of acute stress or illness: stop work, rest, and alert the crew medical officer.",
+          "ru": "Считайте это признаком острого стресса или болезни: прекратите работу, отдохните и сообщите врачу экипажа."
+        }
       }
     },
     "spo2": {
       "low": {
-        "caution":  { "en": "Breathe slowly and deeply, check the finger sensor, and re-measure in a minute. Check cabin O₂ and CO₂.", "ru": "Дышите медленно и глубоко, проверьте датчик на пальце и измерьте снова через минуту. Проверьте O₂ и CO₂ в отсеке." },
-        "warning":  { "en": "Stop activity and check cabin O₂ and CO₂. Switch to the backup oxygen source if levels are low, and tell the crew medical officer.", "ru": "Прекратите работу и проверьте O₂ и CO₂ в отсеке. При низких значениях переключитесь на резервный кислород и сообщите врачу экипажа." },
-        "critical": { "en": "Put on oxygen or a mask now and move to a known-good volume. Alert the crew medical officer and call the ground.", "ru": "Наденьте кислородную маску сейчас и перейдите в исправный отсек. Сообщите врачу экипажа и вызовите Землю." }
+        "caution": {
+          "en": "Breathe slowly and deeply, check the finger sensor, and re-measure in a minute. Check cabin O₂ and CO₂.",
+          "ru": "Дышите медленно и глубоко, проверьте датчик на пальце и измерьте снова через минуту. Проверьте O₂ и CO₂ в отсеке."
+        },
+        "warning": {
+          "en": "Stop activity and check cabin O₂ and CO₂. Switch to the backup oxygen source if levels are low, and tell the crew medical officer.",
+          "ru": "Прекратите работу и проверьте O₂ и CO₂ в отсеке. При низких значениях переключитесь на резервный кислород и сообщите врачу экипажа."
+        },
+        "critical": {
+          "en": "Put on oxygen or a mask now and move to a known-good volume. Alert the crew medical officer and call the ground.",
+          "ru": "Наденьте кислородную маску сейчас и перейдите в исправный отсек. Сообщите врачу экипажа и вызовите Землю."
+        }
       }
     },
     "bp": {
       "high": {
-        "caution":  { "en": "Rest seated for 5 minutes and re-measure. Cut caffeine and salt and take a short break from stress.", "ru": "Посидите 5 минут и измерьте снова. Уменьшите кофеин и соль, сделайте короткий перерыв." },
-        "warning":  { "en": "Stop activity, re-measure on the other arm, and tell the crew medical officer.", "ru": "Прекратите работу, измерьте на другой руке и сообщите врачу экипажа." },
-        "critical": { "en": "Sit or lie down. Alert the crew medical officer and call the ground now, and report chest pain, headache or vision changes.", "ru": "Сядьте или лягте. Сообщите врачу экипажа и вызовите Землю сейчас, скажите о боли в груди, головной боли или нарушении зрения." }
+        "caution": {
+          "en": "Rest seated for 5 minutes and re-measure. Cut caffeine and salt and take a short break from stress.",
+          "ru": "Посидите 5 минут и измерьте снова. Уменьшите кофеин и соль, сделайте короткий перерыв."
+        },
+        "warning": {
+          "en": "Stop activity, re-measure on the other arm, and tell the crew medical officer.",
+          "ru": "Прекратите работу, измерьте на другой руке и сообщите врачу экипажа."
+        },
+        "critical": {
+          "en": "Sit or lie down. Alert the crew medical officer and call the ground now, and report chest pain, headache or vision changes.",
+          "ru": "Сядьте или лягте. Сообщите врачу экипажа и вызовите Землю сейчас, скажите о боли в груди, головной боли или нарушении зрения."
+        }
       },
       "low": {
-        "caution":  { "en": "Drink water, rise slowly, and re-measure while seated.", "ru": "Выпейте воды, вставайте медленно и измерьте снова сидя." },
-        "warning":  { "en": "Lie down with your legs raised, drink water, and tell the crew medical officer.", "ru": "Лягте с поднятыми ногами, выпейте воды и сообщите врачу экипажа." },
-        "critical": { "en": "Lie down. Alert the crew medical officer and call the ground now.", "ru": "Лягте. Сообщите врачу экипажа и вызовите Землю сейчас." }
+        "caution": {
+          "en": "Drink water, rise slowly, and re-measure while seated.",
+          "ru": "Выпейте воды, вставайте медленно и измерьте снова сидя."
+        },
+        "warning": {
+          "en": "Lie down with your legs raised, drink water, and tell the crew medical officer.",
+          "ru": "Лягте с поднятыми ногами, выпейте воды и сообщите врачу экипажа."
+        },
+        "critical": {
+          "en": "Lie down. Alert the crew medical officer and call the ground now.",
+          "ru": "Лягте. Сообщите врачу экипажа и вызовите Землю сейчас."
+        }
       }
     },
     "respRate": {
       "high": {
-        "caution":  { "en": "Slow your breathing and rest. Check cabin CO₂ and O₂.", "ru": "Замедлите дыхание и отдохните. Проверьте CO₂ и O₂ в отсеке." },
-        "warning":  { "en": "Stop activity. Check cabin CO₂, O₂ and ventilation, and tell the crew medical officer.", "ru": "Прекратите работу. Проверьте CO₂, O₂ и вентиляцию в отсеке и сообщите врачу экипажа." },
-        "critical": { "en": "Alert the crew medical officer and call the ground now. Get oxygen ready.", "ru": "Сообщите врачу экипажа и вызовите Землю сейчас. Приготовьте кислород." }
+        "caution": {
+          "en": "Slow your breathing and rest. Check cabin CO₂ and O₂.",
+          "ru": "Замедлите дыхание и отдохните. Проверьте CO₂ и O₂ в отсеке."
+        },
+        "warning": {
+          "en": "Stop activity. Check cabin CO₂, O₂ and ventilation, and tell the crew medical officer.",
+          "ru": "Прекратите работу. Проверьте CO₂, O₂ и вентиляцию в отсеке и сообщите врачу экипажа."
+        },
+        "critical": {
+          "en": "Alert the crew medical officer and call the ground now. Get oxygen ready.",
+          "ru": "Сообщите врачу экипажа и вызовите Землю сейчас. Приготовьте кислород."
+        }
       },
       "low": {
-        "caution":  { "en": "Sit upright and breathe deliberately. Check that you are alert.", "ru": "Сядьте прямо и дышите осознанно. Убедитесь, что вы бодры." },
-        "warning":  { "en": "Check responsiveness and blood oxygen, and tell the crew medical officer.", "ru": "Проверьте реакцию и кислород в крови и сообщите врачу экипажа." },
-        "critical": { "en": "Alert the crew medical officer now and be ready to give oxygen. Call the ground.", "ru": "Сообщите врачу экипажа сейчас и будьте готовы дать кислород. Вызовите Землю." }
+        "caution": {
+          "en": "Sit upright and breathe deliberately. Check that you are alert.",
+          "ru": "Сядьте прямо и дышите осознанно. Убедитесь, что вы бодры."
+        },
+        "warning": {
+          "en": "Check responsiveness and blood oxygen, and tell the crew medical officer.",
+          "ru": "Проверьте реакцию и кислород в крови и сообщите врачу экипажа."
+        },
+        "critical": {
+          "en": "Alert the crew medical officer now and be ready to give oxygen. Call the ground.",
+          "ru": "Сообщите врачу экипажа сейчас и будьте готовы дать кислород. Вызовите Землю."
+        }
       }
     },
     "temp": {
       "high": {
-        "caution":  { "en": "Rest, drink water, and cool the cabin or remove layers. Re-measure in 15 minutes.", "ru": "Отдохните, пейте воду, охладите отсек или снимите слой одежды. Измерьте снова через 15 минут." },
-        "warning":  { "en": "Stop exertion, cool down, drink water, check the sensor, and tell the crew medical officer.", "ru": "Прекратите нагрузку, охладитесь, пейте воду, проверьте датчик и сообщите врачу экипажа." },
-        "critical": { "en": "Alert the crew medical officer and call the ground now. Cool the crew member actively.", "ru": "Сообщите врачу экипажа и вызовите Землю сейчас. Активно охладите астронавта." }
+        "caution": {
+          "en": "Rest, drink water, and cool the cabin or remove layers. Re-measure in 15 minutes.",
+          "ru": "Отдохните, пейте воду, охладите отсек или снимите слой одежды. Измерьте снова через 15 минут."
+        },
+        "warning": {
+          "en": "Stop exertion, cool down, drink water, check the sensor, and tell the crew medical officer.",
+          "ru": "Прекратите нагрузку, охладитесь, пейте воду, проверьте датчик и сообщите врачу экипажа."
+        },
+        "critical": {
+          "en": "Alert the crew medical officer and call the ground now. Cool the crew member actively.",
+          "ru": "Сообщите врачу экипажа и вызовите Землю сейчас. Активно охладите астронавта."
+        }
       },
       "low": {
-        "caution":  { "en": "Add layers or warm the area, then re-measure in 15 minutes.", "ru": "Добавьте одежду или согрейте помещение и измерьте снова через 15 минут." },
-        "warning":  { "en": "Warm up, check the thermal control, and tell the crew medical officer.", "ru": "Согрейтесь, проверьте терморегуляцию отсека и сообщите врачу экипажа." },
-        "critical": { "en": "Alert the crew medical officer and call the ground now. Warm the crew member.", "ru": "Сообщите врачу экипажа и вызовите Землю сейчас. Согрейте астронавта." }
+        "caution": {
+          "en": "Add layers or warm the area, then re-measure in 15 minutes.",
+          "ru": "Добавьте одежду или согрейте помещение и измерьте снова через 15 минут."
+        },
+        "warning": {
+          "en": "Warm up, check the thermal control, and tell the crew medical officer.",
+          "ru": "Согрейтесь, проверьте терморегуляцию отсека и сообщите врачу экипажа."
+        },
+        "critical": {
+          "en": "Alert the crew medical officer and call the ground now. Warm the crew member.",
+          "ru": "Сообщите врачу экипажа и вызовите Землю сейчас. Согрейте астронавта."
+        }
       }
     },
     "stress": {
       "high": {
-        "caution":  { "en": "Take a short break and a few slow breaths. Reduce the workload if you can.", "ru": "Сделайте короткий перерыв и несколько медленных вдохов. Если можно, уменьшите нагрузку." },
-        "warning":  { "en": "Pause the task, talk with a crewmate, and tell the crew medical officer.", "ru": "Приостановите задачу, поговорите с членом экипажа и сообщите врачу экипажа." },
-        "critical": { "en": "Stop work and keep a crewmate with you. Talk to the ground team now.", "ru": "Прекратите работу и попросите члена экипажа остаться рядом. Свяжитесь с наземной группой сейчас." }
+        "caution": {
+          "en": "Take a short break and a few slow breaths. Reduce the workload if you can.",
+          "ru": "Сделайте короткий перерыв и несколько медленных вдохов. Если можно, уменьшите нагрузку."
+        },
+        "warning": {
+          "en": "Pause the task, talk with a crewmate, and tell the crew medical officer.",
+          "ru": "Приостановите задачу, поговорите с членом экипажа и сообщите врачу экипажа."
+        },
+        "critical": {
+          "en": "Stop work and keep a crewmate with you. Talk to the ground team now.",
+          "ru": "Прекратите работу и попросите члена экипажа остаться рядом. Свяжитесь с наземной группой сейчас."
+        }
       }
     },
     "co2": {
       "high": {
-        "caution":  { "en": "Check ventilation and the CO₂ removal system, and reduce exertion.", "ru": "Проверьте вентиляцию и систему удаления CO₂ и снизьте нагрузку." },
-        "warning":  { "en": "Raise ventilation and switch to the backup scrubber. Limit activity and tell the crew medical officer.", "ru": "Усильте вентиляцию и переключитесь на резервный поглотитель. Ограничьте активность и сообщите врачу экипажа." },
-        "critical": { "en": "Move to the volume with the lowest CO₂ and put on a mask if available. Call the ground now.", "ru": "Перейдите в отсек с наименьшим CO₂ и наденьте маску, если она есть. Вызовите Землю сейчас." }
+        "caution": {
+          "en": "Check ventilation and the CO₂ removal system, and reduce exertion.",
+          "ru": "Проверьте вентиляцию и систему удаления CO₂ и снизьте нагрузку."
+        },
+        "warning": {
+          "en": "Raise ventilation and switch to the backup scrubber. Limit activity and tell the crew medical officer.",
+          "ru": "Усильте вентиляцию и переключитесь на резервный поглотитель. Ограничьте активность и сообщите врачу экипажа."
+        },
+        "critical": {
+          "en": "Move to the volume with the lowest CO₂ and put on a mask if available. Call the ground now.",
+          "ru": "Перейдите в отсек с наименьшим CO₂ и наденьте маску, если она есть. Вызовите Землю сейчас."
+        }
       }
     },
     "o2": {
       "low": {
-        "caution":  { "en": "Check the oxygen supply and the pressure control system, and watch for headache or drowsiness.", "ru": "Проверьте подачу кислорода и систему поддержания давления и следите за головной болью и сонливостью." },
-        "warning":  { "en": "Switch to the backup oxygen source and ventilate. Tell the crew medical officer.", "ru": "Переключитесь на резервный источник кислорода и проветрите. Сообщите врачу экипажа." },
-        "critical": { "en": "Put on breathing masks now and move to a safe volume. Follow the emergency procedure and call the ground.", "ru": "Наденьте дыхательные маски сейчас и перейдите в безопасный отсек. Следуйте аварийной процедуре и вызовите Землю." }
+        "caution": {
+          "en": "Check the oxygen supply and the pressure control system, and watch for headache or drowsiness.",
+          "ru": "Проверьте подачу кислорода и систему поддержания давления и следите за головной болью и сонливостью."
+        },
+        "warning": {
+          "en": "Switch to the backup oxygen source and ventilate. Tell the crew medical officer.",
+          "ru": "Переключитесь на резервный источник кислорода и проветрите. Сообщите врачу экипажа."
+        },
+        "critical": {
+          "en": "Put on breathing masks now and move to a safe volume. Follow the emergency procedure and call the ground.",
+          "ru": "Наденьте дыхательные маски сейчас и перейдите в безопасный отсек. Следуйте аварийной процедуре и вызовите Землю."
+        }
       }
     },
     "humidity": {
       "high": {
-        "caution":  { "en": "Check the humidity control and avoid making moisture (cooking, washing).", "ru": "Проверьте систему контроля влажности и не создавайте лишнюю влагу (готовка, умывание)." },
-        "warning":  { "en": "Run the dehumidifier or condensate system and check for leaks and condensation on equipment.", "ru": "Включите осушитель или систему конденсата и проверьте протечки и конденсат на оборудовании." },
-        "critical": { "en": "Isolate the wet area and protect electronics. Call the ground.", "ru": "Изолируйте влажную зону и защитите электронику. Вызовите Землю." }
+        "caution": {
+          "en": "Check the humidity control and avoid making moisture (cooking, washing).",
+          "ru": "Проверьте систему контроля влажности и не создавайте лишнюю влагу (готовка, умывание)."
+        },
+        "warning": {
+          "en": "Run the dehumidifier or condensate system and check for leaks and condensation on equipment.",
+          "ru": "Включите осушитель или систему конденсата и проверьте протечки и конденсат на оборудовании."
+        },
+        "critical": {
+          "en": "Isolate the wet area and protect electronics. Call the ground.",
+          "ru": "Изолируйте влажную зону и защитите электронику. Вызовите Землю."
+        }
       },
       "low": {
-        "caution":  { "en": "Check the humidity control and drink water.", "ru": "Проверьте систему контроля влажности и пейте воду." },
-        "warning":  { "en": "Add moisture if possible and watch for dry eyes, a dry throat and static.", "ru": "По возможности увлажните воздух и следите за сухостью глаз и горла и статикой." },
-        "critical": { "en": "Call the ground: air this dry risks throat and equipment problems.", "ru": "Вызовите Землю: такой сухой воздух вреден для горла и оборудования." }
+        "caution": {
+          "en": "Check the humidity control and drink water.",
+          "ru": "Проверьте систему контроля влажности и пейте воду."
+        },
+        "warning": {
+          "en": "Add moisture if possible and watch for dry eyes, a dry throat and static.",
+          "ru": "По возможности увлажните воздух и следите за сухостью глаз и горла и статикой."
+        },
+        "critical": {
+          "en": "Call the ground: air this dry risks throat and equipment problems.",
+          "ru": "Вызовите Землю: такой сухой воздух вреден для горла и оборудования."
+        }
       }
     },
     "noise": {
       "high": {
-        "caution":  { "en": "Find and reduce the noise source, and wear hearing protection for long exposure.", "ru": "Найдите и уменьшите источник шума и используйте защиту слуха при долгом воздействии." },
-        "warning":  { "en": "Switch off or isolate the noisy equipment and use hearing protection. Report it if sleep is disturbed.", "ru": "Выключите или изолируйте шумное оборудование и используйте защиту слуха. Сообщите, если нарушен сон." },
-        "critical": { "en": "Leave the noisy area, use hearing protection, and call the ground.", "ru": "Покиньте шумную зону, используйте защиту слуха и вызовите Землю." }
+        "caution": {
+          "en": "Find and reduce the noise source, and wear hearing protection for long exposure.",
+          "ru": "Найдите и уменьшите источник шума и используйте защиту слуха при долгом воздействии."
+        },
+        "warning": {
+          "en": "Switch off or isolate the noisy equipment and use hearing protection. Report it if sleep is disturbed.",
+          "ru": "Выключите или изолируйте шумное оборудование и используйте защиту слуха. Сообщите, если нарушен сон."
+        },
+        "critical": {
+          "en": "Leave the noisy area, use hearing protection, and call the ground.",
+          "ru": "Покиньте шумную зону, используйте защиту слуха и вызовите Землю."
+        }
       }
     },
     "airflow": {
       "low": {
-        "caution":  { "en": "Check the fans and air filters for blockage.", "ru": "Проверьте вентиляторы и воздушные фильтры на засор." },
-        "warning":  { "en": "Restore airflow now: clear the intakes and check for CO₂ pockets near you.", "ru": "Восстановите поток воздуха сейчас: очистите заборники и проверьте, нет ли рядом карманов CO₂." },
-        "critical": { "en": "Move to a ventilated volume and call the ground: stagnant air lets CO₂ pockets form.", "ru": "Перейдите в проветриваемый отсек и вызовите Землю: застой воздуха создаёт карманы CO₂." }
+        "caution": {
+          "en": "Check the fans and air filters for blockage.",
+          "ru": "Проверьте вентиляторы и воздушные фильтры на засор."
+        },
+        "warning": {
+          "en": "Restore airflow now: clear the intakes and check for CO₂ pockets near you.",
+          "ru": "Восстановите поток воздуха сейчас: очистите заборники и проверьте, нет ли рядом карманов CO₂."
+        },
+        "critical": {
+          "en": "Move to a ventilated volume and call the ground: stagnant air lets CO₂ pockets form.",
+          "ru": "Перейдите в проветриваемый отсек и вызовите Землю: застой воздуха создаёт карманы CO₂."
+        }
       },
       "high": {
-        "caution":  { "en": "Check the fan speed settings.", "ru": "Проверьте настройки скорости вентиляторов." },
-        "warning":  { "en": "Reduce the fan speed: loose items and noise may follow.", "ru": "Уменьшите скорость вентиляторов: возможны лишний шум и летающие предметы." },
-        "critical": { "en": "Reduce the fan speed immediately and secure loose items. Call the ground.", "ru": "Немедленно уменьшите скорость вентиляторов и закрепите предметы. Вызовите Землю." }
+        "caution": {
+          "en": "Check the fan speed settings.",
+          "ru": "Проверьте настройки скорости вентиляторов."
+        },
+        "warning": {
+          "en": "Reduce the fan speed: loose items and noise may follow.",
+          "ru": "Уменьшите скорость вентиляторов: возможны лишний шум и летающие предметы."
+        },
+        "critical": {
+          "en": "Reduce the fan speed immediately and secure loose items. Call the ground.",
+          "ru": "Немедленно уменьшите скорость вентиляторов и закрепите предметы. Вызовите Землю."
+        }
       }
     },
     "doseRate": {
       "high": {
-        "caution":  { "en": "Note the reading and watch the trend. No action beyond monitoring yet.", "ru": "Отметьте значение и следите за трендом. Пока достаточно наблюдения." },
-        "warning":  { "en": "Move to the best-shielded area and limit the time you spend outside it.", "ru": "Перейдите в лучше всего защищённую зону и ограничьте время вне её." },
-        "critical": { "en": "Go to the storm shelter now and stay until the rate falls. Call the ground.", "ru": "Немедленно идите в штормовое убежище и оставайтесь, пока мощность дозы не упадёт. Вызовите Землю." }
+        "caution": {
+          "en": "Note the reading and watch the trend. No action beyond monitoring yet.",
+          "ru": "Отметьте значение и следите за трендом. Пока достаточно наблюдения."
+        },
+        "warning": {
+          "en": "Move to the best-shielded area and limit the time you spend outside it.",
+          "ru": "Перейдите в лучше всего защищённую зону и ограничьте время вне её."
+        },
+        "critical": {
+          "en": "Go to the storm shelter now and stay until the rate falls. Call the ground.",
+          "ru": "Немедленно идите в штормовое убежище и оставайтесь, пока мощность дозы не упадёт. Вызовите Землю."
+        }
       }
     },
     "dose": {
       "high": {
-        "caution":  { "en": "Log the extra dose and avoid unnecessary time outside shielded areas.", "ru": "Запишите набранную дозу и избегайте лишнего времени вне защищённых зон." },
-        "warning":  { "en": "Limit outside activity and plan the rest of the mission around the dose budget together with the ground.", "ru": "Ограничьте работы вне укрытия и спланируйте остаток миссии по дозовому бюджету вместе с Землёй." },
-        "critical": { "en": "Stop non-essential exposure and call the ground: the dose has reached the solar-event limit.", "ru": "Прекратите необязательное облучение и вызовите Землю: доза достигла предела для солнечного события." }
+        "caution": {
+          "en": "Log the extra dose and avoid unnecessary time outside shielded areas.",
+          "ru": "Запишите набранную дозу и избегайте лишнего времени вне защищённых зон."
+        },
+        "warning": {
+          "en": "Limit outside activity and plan the rest of the mission around the dose budget together with the ground.",
+          "ru": "Ограничьте работы вне укрытия и спланируйте остаток миссии по дозовому бюджету вместе с Землёй."
+        },
+        "critical": {
+          "en": "Stop non-essential exposure and call the ground: the dose has reached the solar-event limit.",
+          "ru": "Прекратите необязательное облучение и вызовите Землю: доза достигла предела для солнечного события."
+        }
+      }
+    },
+    "glucose": {
+      "low": {
+        "caution": {
+          "en": "Eat or drink 15 g of fast sugar (juice or glucose tablets), then re-measure in 15 minutes.",
+          "ru": "Съешьте или выпейте 15 г быстрых углеводов (сок или глюкоза) и измерьте снова через 15 минут."
+        },
+        "warning": {
+          "en": "Take fast sugar now, sit down, re-measure in 15 minutes and tell the crew medical officer.",
+          "ru": "Примите быстрые углеводы сейчас, сядьте, измерьте снова через 15 минут и сообщите врачу экипажа."
+        },
+        "critical": {
+          "en": "Take fast sugar if you can swallow safely, keep a crewmate with you, alert the crew medical officer and call the ground now.",
+          "ru": "Примите быстрые углеводы, если можете безопасно глотать, попросите члена экипажа остаться рядом, сообщите врачу экипажа и вызовите Землю сейчас."
+        }
+      },
+      "high": {
+        "caution": {
+          "en": "Drink water, avoid sugary food, and re-measure in an hour. Check that the meter and strip are in date.",
+          "ru": "Выпейте воды, избегайте сладкого и измерьте снова через час. Проверьте, что глюкометр и полоска не просрочены."
+        },
+        "warning": {
+          "en": "Drink water, rest, re-measure, and tell the crew medical officer.",
+          "ru": "Выпейте воды, отдохните, измерьте снова и сообщите врачу экипажа."
+        },
+        "critical": {
+          "en": "Alert the crew medical officer and call the ground now. Drink water and report thirst, nausea or confusion.",
+          "ru": "Сообщите врачу экипажа и вызовите Землю сейчас. Пейте воду и сообщите о жажде, тошноте или спутанности сознания."
+        }
+      }
+    },
+    "sleep": {
+      "low": {
+        "caution": {
+          "en": "Plan a full sleep period soon and avoid demanding tasks. Keep the sleep area dark and quiet.",
+          "ru": "Запланируйте полноценный сон в ближайшее время и избегайте сложных задач. Поддерживайте в месте сна темноту и тишину."
+        },
+        "warning": {
+          "en": "Reduce the workload, avoid critical tasks and tell the crew medical officer. Protect your next sleep period.",
+          "ru": "Снизьте нагрузку, избегайте критических задач и сообщите врачу экипажа. Защитите следующий период сна."
+        },
+        "critical": {
+          "en": "Stop critical tasks, ask a crewmate to take over, and tell the crew medical officer and the ground now.",
+          "ru": "Прекратите критические задачи, попросите члена экипажа заменить вас и сообщите врачу экипажа и Земле сейчас."
+        }
+      }
+    },
+    "mood": {
+      "low": {
+        "caution": {
+          "en": "Take a short break, talk to a crewmate, and note how you feel again later today.",
+          "ru": "Сделайте короткий перерыв, поговорите с членом экипажа и оцените состояние ещё раз позже сегодня."
+        },
+        "warning": {
+          "en": "Reduce the workload, talk to a crewmate or the crew medical officer, and plan a private call with the ground.",
+          "ru": "Снизьте нагрузку, поговорите с членом экипажа или врачом экипажа и запланируйте личный сеанс связи с Землёй."
+        },
+        "critical": {
+          "en": "Do not stay alone. Tell the crew medical officer now and ask for a private call with the ground.",
+          "ru": "Не оставайтесь одни. Сообщите врачу экипажа сейчас и попросите личный сеанс связи с Землёй."
+        }
       }
     }
   }

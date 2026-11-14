@@ -34,10 +34,11 @@ Adapt sections 1 to 5 of the README. In short:
 - *Problem*: on long missions the crew must spot health changes in themselves, and ground support is delayed (about 1.3 s to the Moon, roughly 3 to 22 minutes one way to Mars). The tool must explain its readings and keep working offline.
 - *What it does today*: body scan with clickable organs, ECG and vitals from real recordings, cabin metrics (O₂, CO₂, humidity, noise, airflow), radiation (modelled crew dose plus live GOES proton flux), colour-coded status with icon and word, a Time-to-Threshold forecast in the status island and on each card, hold-to-confirm scenario controls, a prioritised flight log with pinned alarms, Time Travel replay with pause and skip, a medical report with a limits-and-sources table, and export to Excel and a validated telemetry package.
 - *How it is built*: a deterministic engine `frame(t) = baseline(t) + modifiers(t)` that runs identically on the server and in the browser, Zod-validated contracts, and the source modes `LIVE → POLL → STALE → SIM` for operation without a network.
-- *How it maps to the five NASA HRP hazards*: radiation (dose model and GOES), closed environment (cabin metrics), distance from Earth (offline operation and forecasts), gravity (an in-flight exercise load model; bone and muscle indicators are not modelled yet), isolation and confinement (planned self-check of sleep and mood).
+- *How it maps to the five NASA HRP hazards*: radiation (dose model and GOES), closed environment (cabin metrics), distance from Earth (offline operation and forecasts), gravity (an in-flight exercise load model; bone and muscle indicators are not modelled yet), isolation and confinement (a self-check of sleep and mood, and of glucose and water, entered by the crew member).
 - *Honesty*: each limit carries a tier (`nasa`, `derived`, `clinical`, `engineering`, `provisional`) and a source; the scenario responses are assumptions and are labelled as such.
 - *Guidance*: a short "do now" first action for any out-of-range reading, in the pinned alarms and the body-scan organ popover (illustrative, not validated by flight surgeons).
-- *Update this paragraph as features land* (self-check of glucose, sleep, mood and water; mission contexts). Only describe what runs.
+- *Self-check*: the crew member enters glucose, sleep, mood and water drunk; the values become events in the same log as the scenarios, are judged against limits with a stated basis, and appear in the flight log, the report, the exports and Time Travel.
+- *Update this paragraph as features land* (mission contexts, hazard tags). Only describe what runs.
 
 **Use of Super Intelligence (SI)**
 Most of the code, tests, translations and documentation were written by an AI coding assistant (Anthropic Claude, through Claude Code) following requirements, design decisions and reviews given by the team. The team chose the problem framing, the data sources and the rule that every limit must cite its origin, directed each feature, ran and reviewed the application, and decided what to ship. Where a scientific source could not be read in full, the limit is labelled with a weaker tier instead of being presented as a NASA value. AI assistance is also recorded in the README, in `package.json` and in the commit trailers.
@@ -64,7 +65,7 @@ Most of the code, tests, translations and documentation were written by an AI co
 | 4 | Before it happens | Island forecast and card capsule screenshots; pinned alarm and (when built) the "do now" line; GIF of the hold button and the forecast countdown |
 | 5 | Every number states its source | The tier table (`nasa`, `derived`, `clinical`, `engineering`, `provisional`) with 5 to 6 rows, and the NASA data list |
 | 6 | It keeps working | Architecture sketch: deterministic engine, API, browser, `LIVE → POLL → STALE → SIM`; replay and Excel report screenshots |
-| 7 | Honest limits, team, AI | What is modelled, what is next (self-check), team name and members, repository link, AI-use statement |
+| 7 | Honest limits, team, AI | What is modelled, what is next (mission contexts), team name and members, repository link, AI-use statement |
 
 Screenshots: `pnpm smoke -- --url http://localhost:3100 --size 1920x1080 --shots shots` writes one per step.
 

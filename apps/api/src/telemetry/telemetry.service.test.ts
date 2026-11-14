@@ -45,6 +45,23 @@ describe('TelemetryService', () => {
     expect(s.command({ type: 'flare', crewId: 'ALL', t: 1001, params: { class: 'X', magnitude: 8.7 } }).ok).toBe(true);
   });
 
+  it('accepts a valid self-check measurement and rejects bad ones', () => {
+    const s = svc();
+    const send = (crewId: string, params: Record<string, unknown>) => s.command({ type: 'measurement', crewId, t: 1000, params });
+    expect(send('A1', { metric: 'glucose', value: 52 }).ok).toBe(true);
+    expect(s.snapshot().log[0].params).toEqual({ metric: 'glucose', value: 52 });
+    expect(send('ALL', { metric: 'glucose', value: 52 }).ok).toBe(false);
+    expect(send('Z9', { metric: 'glucose', value: 52 }).ok).toBe(false);
+    expect(send('A1', { metric: 'weight', value: 70 }).ok).toBe(false);
+    expect(send('A1', { metric: 'glucose', value: Number.NaN }).ok).toBe(false);
+    expect(send('A1', { metric: 'glucose', value: '52' }).ok).toBe(false);
+    expect(send('A1', { metric: 'glucose', value: 9000 }).ok).toBe(false);
+    expect(send('A1', { metric: 'mood', value: 2.5 }).ok).toBe(false);
+    expect(send('A1', { value: 5 }).ok).toBe(false);
+    expect(s.snapshot().log).toHaveLength(1);
+    expect(s.tick(1001).frames[0].status.byMetric.glucose).toBe('WARNING');
+  });
+
   it('caps the event log and can reset it', () => {
     const s = svc();
     for (let i = 0; i < 300; i++) expect(s.command({ type: 'normalize', crewId: 'ALL', t: 1000 + i }).ok).toBe(true);

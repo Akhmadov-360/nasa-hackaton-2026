@@ -1,9 +1,10 @@
 'use client';
-import { Activity, Brain, Cloud, Droplet, Droplets, Fan, Gauge, HeartPulse, Info, Radiation, Thermometer, Volume2, Waves, Wind, Zap } from 'lucide-react';
+import { Activity, Brain, ClipboardList, Cloud, Droplet, Droplets, Fan, Gauge, HeartPulse, Info, Radiation, Thermometer, Volume2, Waves, Wind, Zap } from 'lucide-react';
 import { worstStatus } from '@astro/engine';
 import { Button } from '@/components/ui/button';
 import { Segmented } from '@/components/ui/segmented';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import { SelfCheckView } from '@/components/selfcheck/SelfCheckView';
 import { WidgetBoundary } from '@/components/WidgetBoundary';
 import { useDisplayFrame } from '@/hooks/useDisplayFrame';
 import { statusWord, useT, type DictKey } from '@/lib/i18n';
@@ -16,7 +17,7 @@ import { SpaceWeatherCard } from './SpaceWeatherCard';
 import { VitalCard } from './VitalCard';
 
 const ic = 'size-4 shrink-0';
-const VIEW_ICON = { vitals: HeartPulse, cabin: Waves, radiation: Radiation } as const;
+const VIEW_ICON = { vitals: HeartPulse, cabin: Waves, radiation: Radiation, selfcheck: ClipboardList } as const;
 
 export function TelemetryGrid({ crewId }: { crewId: string }) {
   const t = useT();
@@ -113,9 +114,12 @@ export function TelemetryGrid({ crewId }: { crewId: string }) {
         <WidgetBoundary name={t('sw.title')}><SpaceWeatherCard /></WidgetBoundary>
       </>)}
 
+      {view === 'selfcheck' && plateau('md:grid-cols-2', <SelfCheckView frame={frame} crewId={crewId} />)}
+
       <p className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-muted-foreground">
         <span className="flex items-center gap-1.5"><span className="size-2 rounded-full bg-teal" aria-hidden /> {t('badge.real')}</span>
         <span className="flex items-center gap-1.5"><span className="size-2 rounded-full border border-amber" aria-hidden /> {t('badge.modeled')}</span>
+        {view === 'selfcheck' && <span className="flex items-center gap-1.5"><span className="size-2 rotate-45 rounded-[2px] bg-bone/70" aria-hidden /> {t('src.manualShort')}</span>}
       </p>
     </div>
   );

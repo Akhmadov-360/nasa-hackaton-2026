@@ -84,6 +84,10 @@ export interface MissionState {
   jumpTo: (crewId: string | undefined, metric: string | undefined) => void;
   focusOrgan: (id: string | null) => void;
   /** metric whose "About this indicator" window is open (key of about.json; not persisted) */
+  /** self-check window: closed (undefined) or open, optionally at one metric */
+  selfCheck: { open: boolean; metric?: string };
+  openSelfCheck: (metric?: string) => void;
+  closeSelfCheck: () => void;
   metricDrawer: string | null;
   openMetric: (metric: string) => void;
   closeMetric: () => void;
@@ -182,6 +186,9 @@ export const useMissionStore = create<MissionState>()(
           telemetryView: viewOfMetric(metric),
         })),
       focusOrgan: (id) => set({ focusedOrgan: id }),
+      selfCheck: { open: false },
+      openSelfCheck: (metric) => set({ selfCheck: { open: true, metric } }),
+      closeSelfCheck: () => set({ selfCheck: { open: false } }),
       metricDrawer: null,
       openMetric: (metric) => set({ metricDrawer: metric }),
       closeMetric: () => set({ metricDrawer: null }),

@@ -49,14 +49,14 @@ export function ProvenanceMark({ sourceKey, limitKey }: { sourceKey: string; lim
   if (!s) return null;
   const th = limitKey ? baseCfg.thresholds.metrics[limitKey] : undefined;
   const limit = th?.tier ? `${t(`limit.${th.tier}` as DictKey)}${th.source ? `. ${th.source}` : ''}` : '';
-  const base = s.kind === 'real' ? t('src.real', { src: s.src }) : t('src.modeled');
+  const base = s.kind === 'real' ? t('src.real', { src: s.src }) : s.kind === 'manual' ? t('src.manual') : t('src.modeled');
   const text = limit ? `${base} ${limit}` : base;
   return (
     <Tooltip>
       <TooltipTrigger asChild>
         <span tabIndex={0} className="inline-grid size-5 cursor-help place-items-center rounded-full" aria-label={text}>
           <span
-            className={`size-2 rounded-full ${s.kind === 'real' ? 'bg-teal' : 'border border-amber bg-transparent'}`}
+            className={`size-2 ${s.kind === 'manual' ? 'rotate-45 rounded-[2px] bg-bone/70' : s.kind === 'real' ? 'rounded-full bg-teal' : 'rounded-full border border-amber bg-transparent'}`}
             aria-hidden
           />
         </span>

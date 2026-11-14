@@ -23,6 +23,15 @@ export function logText(e: LogEntry, locale: Locale): string {
       value: value ? ` · ${value}` : '',
     }).replace(' · {trail}', '');
   }
+  if (e.key === 'log.cmd.measurement' && e.params?.metric) {
+    const metric = String(e.params.metric);
+    const crew = e.params.crewId;
+    return translate(locale, 'log.cmd.measurement', {
+      label: sentence(metricName(metric, locale)),
+      target: crew === undefined ? '' : crewName(String(crew)),
+      value: formatValue(metric, Number(e.params.value)),
+    });
+  }
   const crewId = e.params?.crewId;
   const target =
     crewId === undefined ? '' : crewId === 'ALL' ? translate(locale, 'deck.target.all') : crewName(String(crewId));

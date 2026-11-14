@@ -23,6 +23,10 @@ export const METRICS: Record<string, MetricInfo> = {
   airflow: { unit: 'm/s', decimals: 2 },
   doseRate: { unit: 'µSv/h', decimals: 0 },
   dose: { unit: 'mSv', decimals: 2 },
+  glucose: { unit: 'mg/dL', decimals: 0 },
+  sleep: { unit: 'h', decimals: 1 },
+  mood: { unit: '/5', decimals: 0 },
+  hydration: { unit: 'L', decimals: 2 },
 };
 
 export interface OrganInfo {
@@ -37,7 +41,7 @@ export const ORGANS: OrganInfo[] = [
 ];
 
 /** Where each reading comes from: a recorded PhysioNet signal, or our model on top of it. */
-export type Provenance = 'real' | 'modeled';
+export type Provenance = 'real' | 'modeled' | 'manual';
 export const SOURCE_OF: Record<string, { kind: Provenance; src: string }> = {
   hr: { kind: 'real', src: 'PhysioNet MIT-BIH + BIDMC' },
   spo2: { kind: 'real', src: 'PhysioNet BIDMC' },
@@ -52,17 +56,22 @@ export const SOURCE_OF: Record<string, { kind: Provenance; src: string }> = {
   humidity: { kind: 'modeled', src: '' },
   noise: { kind: 'modeled', src: '' },
   airflow: { kind: 'modeled', src: '' },
+  glucose: { kind: 'manual', src: '' },
+  sleep: { kind: 'manual', src: '' },
+  mood: { kind: 'manual', src: '' },
+  hydration: { kind: 'manual', src: '' },
   /** the live space-weather strip; only shown as a source once data has really arrived */
   goes: { kind: 'real', src: 'NOAA SWPC GOES' },
 };
 
 /** The three telemetry views and the readings each one shows. */
-export type TelemetryView = 'vitals' | 'cabin' | 'radiation';
-export const TELEMETRY_VIEWS: TelemetryView[] = ['vitals', 'cabin', 'radiation'];
+export type TelemetryView = 'vitals' | 'cabin' | 'radiation' | 'selfcheck';
+export const TELEMETRY_VIEWS: TelemetryView[] = ['vitals', 'cabin', 'radiation', 'selfcheck'];
 export const VIEW_METRICS: Record<TelemetryView, string[]> = {
   vitals: ['hr', 'hrv', 'spo2', 'bpSys', 'bpDia', 'respRate', 'temp', 'stress', 'eeg'],
   cabin: ['o2', 'co2', 'humidity', 'noise', 'airflow'],
   radiation: ['doseRate', 'dose'],
+  selfcheck: ['glucose', 'sleep', 'mood', 'hydration'],
 };
 /** Which view a reading lives in, so a click on an alert can open the right tab. */
 export const viewOfMetric = (metric: string | undefined): TelemetryView =>

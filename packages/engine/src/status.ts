@@ -37,6 +37,7 @@ export function metricValues(f: TelemetryFrame): Record<string, number> {
     airflow: f.cabin.airflow,
     doseRate: f.radiation.doseRateUSvH,
     dose: f.radiation.cumulativeMSv,
+    ...Object.fromEntries(Object.entries(f.manual ?? {}).map(([k, v]) => [k, v.value])),
   };
 }
 

@@ -12,7 +12,7 @@ import { formatMet } from '@/lib/metrics';
 import { REPLAY_SPEEDS, replay, replayFloor, SKIP_SEC } from '@/lib/replay';
 import { globalStatus, useMissionStore } from '@/lib/store/missionStore';
 
-const EVENT_COLOR = { flare: '#D9645A', exertion: '#D9A441', o2fault: '#D9645A', normalize: '#4FB6A8' };
+const EVENT_COLOR = { flare: '#D9645A', exertion: '#D9A441', o2fault: '#D9645A', normalize: '#4FB6A8', measurement: '#9fb0c9' };
 
 function Hint({ label, keys, children }: { label: string; keys?: string; children: React.ReactNode }) {
   return (

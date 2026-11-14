@@ -9,6 +9,7 @@ import { ControlDeck } from '@/components/deck/ControlDeck';
 import { EnterMissionControl } from '@/components/EnterMissionControl';
 import { GooeyFilter } from '@/components/GooeyFilter';
 import { MetricDrawer } from '@/components/guidance/MetricDrawer';
+import { SelfCheckDrawer } from '@/components/selfcheck/SelfCheckDrawer';
 import { TelemetryGrid } from '@/components/telemetry/TelemetryGrid';
 import { TimeTravelBar } from '@/components/time/TimeTravelBar';
 import { ProtocolDialog } from '@/components/report/ProtocolDialog';
@@ -86,6 +87,7 @@ export function MissionControl() {
         <ReportDrawer />
         <ProtocolDialog />
         <MetricDrawer />
+        <SelfCheckDrawer />
         <AnimatePresence>{!entered && <EnterMissionControl key="enter" />}</AnimatePresence>
       </TooltipProvider>
     </QueryClientProvider>

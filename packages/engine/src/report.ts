@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import { computeFrame, type EngineConfig } from './frame';
 import { metricValues } from './status';
+import { MANUAL, type ManualMetric } from './manual';
 import { STATUS_ORDER, type Status } from './schemas';
 
 /* ---------------------------------------------------------------------------------------------
@@ -14,7 +15,7 @@ const short = z.string().max(120);
 
 export const ReportEventSchema = z.object({
   t: num,
-  type: z.enum(['flare', 'exertion', 'o2fault', 'normalize']),
+  type: z.enum(['flare', 'exertion', 'o2fault', 'normalize', 'measurement']),
   crewId: short,
   params: z.record(short, z.union([num, short])).optional(),
 });
@@ -122,11 +123,11 @@ export const PROTOCOL_OF_METRIC: Record<string, string> = {
 
 const rank = (s: Status) => STATUS_ORDER.indexOf(s);
 /** When several metrics are equally severe, the body comes first and the environment last. */
-const METRIC_PRIORITY = ['spo2', 'hr', 'hrv', 'bpSys', 'bpDia', 'respRate', 'temp', 'stress', 'co2', 'o2', 'humidity', 'noise', 'airflow', 'doseRate', 'dose'];
+const METRIC_PRIORITY = ['spo2', 'hr', 'hrv', 'bpSys', 'bpDia', 'respRate', 'temp', 'stress', 'co2', 'o2', 'humidity', 'noise', 'airflow', 'doseRate', 'dose', 'glucose', 'sleep', 'mood'];
 const priority = (m: string) => { const i = METRIC_PRIORITY.indexOf(m); return i < 0 ? METRIC_PRIORITY.length : i; };
 const MERGE_GAP_SEC = 120;
 const CAUSE_LOOKBACK_SEC = 180;
-const REPORTED = ['hr', 'hrv', 'spo2', 'bpSys', 'bpDia', 'respRate', 'temp', 'stress', 'co2', 'o2', 'humidity', 'noise', 'airflow', 'doseRate'];
+const REPORTED = ['hr', 'hrv', 'spo2', 'bpSys', 'bpDia', 'respRate', 'temp', 'stress', 'co2', 'o2', 'humidity', 'noise', 'airflow', 'doseRate', 'glucose', 'sleep', 'mood', 'hydration'];
 
 interface Open {
   metric: string;
@@ -219,7 +220,7 @@ export function buildReport(cfg: EngineConfig, opts: ReportOptions): MissionRepo
 
     const stats: CrewReport['stats'] = {};
     for (const [m, s] of Object.entries(sums)) {
-      stats[m] = { min: s.min, max: s.max, mean: s.total / s.count, unit: cfg.thresholds.metrics[m === 'doseRate' ? 'doseRate' : m]?.unit ?? '' };
+      stats[m] = { min: s.min, max: s.max, mean: s.total / s.count, unit: cfg.thresholds.metrics[m]?.unit ?? (m in MANUAL ? MANUAL[m as ManualMetric].unit : '') };
     }
     return {
       crewId: id,
