@@ -22,6 +22,7 @@ function LinkReadout() {
   const last = useMissionStore((s) => s.lastFrameAt);
   const locale = useMissionStore((s) => s.locale);
   const m = missionOf(useMissionStore((s) => s.missionId));
+  const tight = useMediaQuery('(min-width: 1280px) and (max-width: 1365px)'); // the header columns have no room for the word
   const [, force] = useState(0);
   useEffect(() => {
     const id = setInterval(() => force((n) => n + 1), 500);
@@ -35,7 +36,7 @@ function LinkReadout() {
       <TooltipTrigger asChild>
         <div className="flex items-center gap-2 text-sm" tabIndex={0}>
           <Icon className="size-4" style={{ color: good ? STATUS_COLOR.NOMINAL : STATUS_COLOR.CAUTION }} aria-hidden />
-          <span className="hidden text-muted-foreground sm:inline xl:hidden 2xl:inline">{t('top.link')}</span>
+          <span className={`text-muted-foreground ${tight ? "hidden" : "hidden sm:inline"}`}>{t('top.link')}</span>
           <span className="font-medium">{t(`mode.${mode}` as DictKey)}</span>
         </div>
       </TooltipTrigger>
@@ -89,13 +90,13 @@ export function TopBar() {
   const setReportOpen = useMissionStore((s) => s.setReportOpen);
   const hasImport = useMissionStore((s) => !!s.imported);
   const narrow = useMediaQuery('(max-width: 639px)');
-  /** the sound button shows only its bell on a phone and on a 1280 to 1535 px desktop, where the header columns are tight */
-  const bellOnly = useMediaQuery('(max-width: 639px), (min-width: 1280px) and (max-width: 1535px)');
+  /** the sound button shows only its bell on a phone and on a 1280 to 1365 px desktop, where the header columns are tight */
+  const bellOnly = useMediaQuery('(max-width: 639px), (min-width: 1280px) and (max-width: 1365px)');
 
   return (
     <header className="hairline-b relative z-30 bg-bar">
       {/* phone: title and language, then the controls, then the status island; tablet: the island on its own row; wide desktop: three columns */}
-      <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-x-3 gap-y-2 px-4 py-2 xl:grid-cols-[minmax(0,1fr)_minmax(0,460px)_minmax(0,1fr)]">
+      <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-x-3 gap-y-2 px-4 py-2 xl:grid-cols-[minmax(0,1fr)_minmax(0,380px)_minmax(0,1fr)]">
         <div className="col-start-1 row-start-1 flex min-w-0 flex-wrap items-center gap-x-3 gap-y-1.5">
           <div className="flex min-w-0 max-w-full shrink-0 items-center gap-3">
           <Orbit className="size-6 shrink-0 text-teal" aria-hidden />
