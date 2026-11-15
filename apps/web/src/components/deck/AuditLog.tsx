@@ -78,7 +78,7 @@ export function AuditLog() {
   }, [audit, filter, pinnedKeys]);
 
   return (
-    <section className="flex max-h-80 min-h-0 flex-1 flex-col gap-2 p-4 lg:max-h-none" aria-label={t('log.title')}>
+    <section className="flex min-h-0 flex-1 flex-col gap-2 p-4" aria-label={t('log.title')}>
       <header className="flex items-center justify-between gap-2">
         <h3 className="text-sm font-medium text-muted-foreground">{t('log.title')}</h3>
         <div className="flex items-center">
@@ -94,8 +94,9 @@ export function AuditLog() {
           { value: 'commands', label: t('log.tab.commands') },
         ]}
       />
-      <PinnedIncidents onOpen={open} />
-      <ScrollArea className="min-h-0 flex-1">
+      {/* the pinned alarms scroll with the list, so a few tall "Do now" cards never push the log out of its panel */}
+      <ScrollArea className="h-96 min-h-0 flex-none xl:h-auto xl:flex-1">
+        <div className="pr-2"><PinnedIncidents onOpen={open} /></div>
         <ul className="divide-y divide-white/5 pr-2">
           <AnimatePresence initial={false}>{rows.map((e) => <Row key={e.id} e={e} onOpen={open} />)}</AnimatePresence>
           {!rows.length && !active.length && <li className="py-2 text-xs text-muted-foreground">{t('log.empty')}</li>}
