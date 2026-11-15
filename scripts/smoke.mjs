@@ -105,13 +105,15 @@ await step('four crew, three telemetry tabs, five hold buttons', async () => {
 await step('layout: no horizontal overflow, time bar inside the viewport', async () => {
   const o = await page.evaluate(() => ({ sw: document.documentElement.scrollWidth, iw: innerWidth, bar: document.querySelector('section[aria-label="Time travel"]')?.getBoundingClientRect().bottom, ih: innerHeight }));
   if (o.sw > o.iw + 1) throw new Error(`page is ${o.sw}px wide in a ${o.iw}px window`);
-  if (o.bar === undefined || o.bar > o.ih + 1) throw new Error(`time travel bar bottom ${o.bar} is below the window (${o.ih})`);
+  // below 1280 px the page scrolls and the time bar sits at the end of it
+  if (o.iw >= 1280 && (o.bar === undefined || o.bar > o.ih + 1)) throw new Error(`time travel bar bottom ${o.bar} is below the window (${o.ih})`);
 });
 
 await step('a short press does nothing, a 0.8 s hold sends O2 supply fault', async () => {
   // the hold buttons stay disabled until the first telemetry frame: wait for the mission clock to run
   await page.waitForFunction(() => /MET\s+(?!000)\d{3}:/.test(document.body.innerText), null, { timeout: 15000 });
   const btn = page.locator('.hb-root').nth(2);
+  await btn.scrollIntoViewIfNeeded(); // below 1280 px the control deck sits under the readings
   const box = await btn.boundingBox();
   const x = box.x + box.width / 2, y = box.y + box.height / 2;
   await page.mouse.move(x, y);
@@ -129,11 +131,11 @@ await step('a short press does nothing, a 0.8 s hold sends O2 supply fault', asy
 });
 
 await step('the island forecasts the limit before it is crossed', async () => {
-  await page.waitForSelector('[role=status] [role=button]', { timeout: 45000 });
+  await page.waitForSelector('[role=status] [role=button]:visible', { timeout: 45000 });
 });
 
 await step('island list opens and a row jumps to the reading', async () => {
-  await page.locator('[role=status] [role=button]').first().click();
+  await page.locator('[role=status] [role=button]:visible').first().click();
   const option = page.locator('[role=option]').first();
   await option.waitFor({ timeout: 5000 });
   await option.click();

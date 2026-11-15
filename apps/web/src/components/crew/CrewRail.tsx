@@ -98,7 +98,7 @@ export function CrewRail() {
     />
   );
   return (
-    <nav ref={nav} aria-label={t('crew.title')} className="relative flex flex-row items-stretch gap-1 border-b border-white/[0.06] bg-rail p-2 lg:flex-col lg:border-r lg:border-b-0 lg:p-3">
+    <nav ref={nav} aria-label={t('crew.title')} className="relative flex flex-row items-stretch gap-1 border-b border-white/[0.06] bg-rail p-2 xl:flex-col xl:border-r xl:border-b-0 xl:p-3">
       <h2 className="sr-only">{t('crew.title')}</h2>
       {/* liquid layer: solid blobs under the goo filter, dimmed as a whole so the avatars stay readable */}
       <div className="pointer-events-none absolute inset-0 opacity-30" style={{ filter: 'url(#goo-rail)' }} aria-hidden>
@@ -107,7 +107,7 @@ export function CrewRail() {
         {blob(62, 320, 28)}
       </div>
       {crew.map((c) => (
-        <div key={c.id} ref={(el) => { slots.current[c.id] = el; }} className="relative z-10 flex-1 lg:flex-none">
+        <div key={c.id} ref={(el) => { slots.current[c.id] = el; }} className="relative z-10 flex-1 xl:flex-none">
           <WidgetBoundary name={c.name}><CrewButton id={c.id} name={c.name} role={c.role} /></WidgetBoundary>
         </div>
       ))}

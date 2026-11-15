@@ -1,3 +1,5 @@
+import { visitorId } from './visitor';
+
 /** Same default as the API (3 days 12 h into the mission), so SIM and LIVE clocks line up. */
 export const DEFAULT_MET_OFFSET_SEC = 3 * 86400 + 12 * 3600;
 
@@ -11,4 +13,6 @@ export const TIME_TRAVEL_SPAN_SEC = 24 * 3600;
 export const apiBase = () =>
   process.env.NEXT_PUBLIC_API_URL ??
   (typeof location !== 'undefined' ? `http://${location.hostname}:3001` : 'http://localhost:3001');
-export const wsUrl = () => apiBase().replace(/^http/, 'ws') + '/ws';
+/** Query that selects this visitor's own simulation on the API. */
+export const sessionQuery = () => `?sid=${visitorId()}`;
+export const wsUrl = () => apiBase().replace(/^http/, 'ws') + '/ws' + sessionQuery();

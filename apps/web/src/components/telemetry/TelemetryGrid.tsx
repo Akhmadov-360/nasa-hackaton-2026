@@ -52,7 +52,7 @@ export function TelemetryGrid({ crewId }: { crewId: string }) {
 
   /** one flat plateau: hairline dividers come from the 1px gap; every view has the same minimum height, so the tab bar never jumps */
   const plateau = (cols: string, children: React.ReactNode) => (
-    <div className={`grid min-h-[17rem] grid-cols-2 gap-px overflow-hidden rounded-[20px] bg-white/10 ${cols}`}>{children}</div>
+    <div className={`grid min-h-[17rem] gap-px overflow-hidden rounded-[20px] bg-white/10 ${cols}`}>{children}</div>
   );
 
   const checkins = useCheckins();
@@ -64,7 +64,7 @@ export function TelemetryGrid({ crewId }: { crewId: string }) {
       label: (
         <>
           <Icon className="size-4" aria-hidden />
-          <span>{t(`view.${k}` as DictKey)}</span>
+          <span className={view === k ? undefined : "sr-only @lg:not-sr-only"}>{t(`view.${k}` as DictKey)}</span>
           {st !== 'NOMINAL' && <span className="size-2 rounded-full" style={{ background: STATUS_COLOR[st] }} role="img" aria-label={statusWord(st, locale)} />}
           {k === 'selfcheck' && st === 'NOMINAL' && checkins.length > 0 && <span className="size-2 rounded-full border border-amber" role="img" aria-label={t('checkin.dot')} />}
         </>
@@ -74,21 +74,21 @@ export function TelemetryGrid({ crewId }: { crewId: string }) {
   const info = t(`view.info.${view}` as DictKey);
 
   return (
-    <div className="flex h-full min-h-0 min-w-0 flex-col gap-3">
+    <div className="@container flex h-full min-h-0 min-w-0 flex-col gap-3">
       <WidgetBoundary name="ECG"><EcgChart crewId={crewId} /></WidgetBoundary>
 
       <div className="flex items-center gap-1.5">
-        <Segmented items={items} value={view} onChange={(x) => setView(x as TelemetryView)} size="md" label={t('view.label')} />
+        <div className="thin-scroll min-w-0 overflow-x-auto"><Segmented items={items} value={view} onChange={(x) => setView(x as TelemetryView)} size="md" label={t('view.label')} /></div>
         <Tooltip>
           <TooltipTrigger asChild>
-            <Button variant="ghost" size="icon" className="size-8 rounded-full" aria-label={t('view.info')}><Info className="size-4" /></Button>
+            <Button variant="ghost" size="icon" className="size-8 shrink-0 rounded-full" aria-label={t('view.info')}><Info className="size-4" /></Button>
           </TooltipTrigger>
           <TooltipContent className="max-w-xs text-pretty">{info}</TooltipContent>
         </Tooltip>
         <HazardLegend />
       </div>
 
-      {view === 'vitals' && plateau('md:grid-cols-4', <>
+      {view === 'vitals' && plateau('grid-cols-2 @xl:grid-cols-4', <>
         {card('hr', t('metric.hr'), <HeartPulse className={ic} aria-hidden />, 'bpm', v?.hr, (f) => f.vitals.hr)}
         {card('spo2', t('metric.spo2'), <Droplets className={ic} aria-hidden />, '%', v?.spo2, (f) => f.vitals.spo2)}
         <WidgetBoundary name={t('metric.bp')} key="bp">
@@ -106,20 +106,20 @@ export function TelemetryGrid({ crewId }: { crewId: string }) {
       </>)}
 
       {/* three on the first row, two wider ones below: no empty cell */}
-      {view === 'cabin' && plateau('md:grid-cols-6', <>
-        {card('o2', t('metric.o2'), <Waves className={ic} aria-hidden />, '%', frame?.cabin.o2, (f) => f.cabin.o2, { decimals: 1, className: 'md:col-span-2' })}
-        {card('co2', t('metric.co2'), <Cloud className={ic} aria-hidden />, 'mmHg', frame?.cabin.co2, (f) => f.cabin.co2, { decimals: 1, className: 'md:col-span-2' })}
-        {card('humidity', t('metric.humidity'), <Droplet className={ic} aria-hidden />, '%', frame?.cabin.humidity, (f) => f.cabin.humidity, { className: 'md:col-span-2' })}
-        {card('noise', t('metric.noise'), <Volume2 className={ic} aria-hidden />, 'NC', frame?.cabin.noise, (f) => f.cabin.noise, { className: 'md:col-span-3' })}
-        {card('airflow', t('metric.airflow'), <Fan className={ic} aria-hidden />, 'm/s', frame?.cabin.airflow, (f) => f.cabin.airflow, { decimals: 2, className: 'md:col-span-3' })}
+      {view === 'cabin' && plateau('grid-cols-2 @xl:grid-cols-6', <>
+        {card('o2', t('metric.o2'), <Waves className={ic} aria-hidden />, '%', frame?.cabin.o2, (f) => f.cabin.o2, { decimals: 1, className: '@xl:col-span-2' })}
+        {card('co2', t('metric.co2'), <Cloud className={ic} aria-hidden />, 'mmHg', frame?.cabin.co2, (f) => f.cabin.co2, { decimals: 1, className: '@xl:col-span-2' })}
+        {card('humidity', t('metric.humidity'), <Droplet className={ic} aria-hidden />, '%', frame?.cabin.humidity, (f) => f.cabin.humidity, { className: 'col-span-2' })}
+        {card('noise', t('metric.noise'), <Volume2 className={ic} aria-hidden />, 'NC', frame?.cabin.noise, (f) => f.cabin.noise, { className: '@xl:col-span-3' })}
+        {card('airflow', t('metric.airflow'), <Fan className={ic} aria-hidden />, 'm/s', frame?.cabin.airflow, (f) => f.cabin.airflow, { decimals: 2, className: '@xl:col-span-3' })}
       </>)}
 
-      {view === 'radiation' && plateau('md:grid-cols-2', <>
+      {view === 'radiation' && plateau('grid-cols-1 @xl:grid-cols-2', <>
         <WidgetBoundary name={t('rad.crewDose')}><RadiationCard frame={frame} crewId={crewId} tick={tick} /></WidgetBoundary>
         <WidgetBoundary name={t('sw.title')}><SpaceWeatherCard /></WidgetBoundary>
       </>)}
 
-      {view === 'selfcheck' && plateau('md:grid-cols-2', <SelfCheckView frame={frame} crewId={crewId} />)}
+      {view === 'selfcheck' && plateau('grid-cols-1 @xl:grid-cols-2', <SelfCheckView frame={frame} crewId={crewId} />)}
 
       <p className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-muted-foreground">
         <span className="flex items-center gap-1.5"><span className="size-2 rounded-full bg-teal" aria-hidden /> {t('badge.real')}</span>

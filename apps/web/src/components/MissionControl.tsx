@@ -68,13 +68,13 @@ export function MissionControl() {
         <a href="#main" className="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-50 focus:rounded-lg focus:bg-popover focus:px-3 focus:py-2">
           Skip to telemetry
         </a>
-        <div className="flex min-h-dvh flex-col bg-shell lg:grid lg:h-dvh lg:grid-rows-[auto_minmax(0,1fr)_auto]">
+        <div className="flex min-h-dvh flex-col overflow-x-clip bg-shell xl:grid xl:h-dvh xl:grid-rows-[auto_minmax(0,1fr)_auto]">
           <TopBar />
-          <div className="flex min-h-0 flex-col lg:grid lg:grid-cols-[92px_minmax(0,1fr)_320px]">
+          <div className="flex min-h-0 flex-col xl:grid xl:grid-cols-[92px_minmax(0,1fr)_320px]">
             <CrewRail />
-            <main id="main" tabIndex={-1} className="thin-scroll min-h-0 p-3 outline-none lg:overflow-y-auto">
-              <div className="grid gap-3 md:grid-cols-[260px_minmax(0,1fr)] lg:min-h-full">
-                <div className="min-h-[440px] md:sticky md:top-0 md:h-[calc(100dvh-170px)] md:max-h-[760px] md:self-start">
+            <main id="main" tabIndex={-1} className="thin-scroll min-h-0 p-3 outline-none xl:overflow-y-auto">
+              <div className="grid gap-3 md:grid-cols-[260px_minmax(0,1fr)] xl:min-h-full">
+                <div className="h-[440px] md:sticky md:top-0 md:h-[calc(100dvh-170px)] md:max-h-[760px] md:min-h-[440px] md:self-start">
                   <WidgetBoundary name="Body scan" className="h-full"><BodyScan crewId={crewId} /></WidgetBoundary>
                 </div>
                 <TelemetryGrid crewId={crewId} />

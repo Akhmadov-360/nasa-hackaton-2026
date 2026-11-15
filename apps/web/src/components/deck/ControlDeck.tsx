@@ -25,7 +25,7 @@ export function ControlDeck() {
   const wait = t('deck.wait');
 
   return (
-    <aside className="flex min-h-0 flex-col bg-rail" aria-label={t('deck.title')}>
+    <aside className="flex min-h-0 flex-col bg-rail md:grid md:grid-cols-2 xl:flex" aria-label={t('deck.title')}>
       <WidgetBoundary name={t('deck.title')}>
         <section className="flex flex-col gap-1.5 p-4">
           <header className="flex items-baseline justify-between gap-2">
@@ -67,8 +67,8 @@ export function ControlDeck() {
           </div>
         </section>
       </WidgetBoundary>
-      <div className="px-4"><Separator /></div>
-      <WidgetBoundary name={t('log.title')} className="min-h-40 flex-1"><AuditLog /></WidgetBoundary>
+      <div className="px-4 md:hidden xl:block"><Separator /></div>
+      <WidgetBoundary name={t('log.title')} className="min-h-64 flex-1 xl:min-h-40"><AuditLog /></WidgetBoundary>
     </aside>
   );
 }

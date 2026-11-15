@@ -1,7 +1,7 @@
 import { sileo } from 'sileo';
 import type { Alert, EngineEvent, EventType, Status } from '@astro/engine';
 import { enableAudio } from './audio';
-import { apiBase, wsUrl } from './constants';
+import { apiBase, sessionQuery, wsUrl } from './constants';
 import { notifyAlert } from './alerts/alertCenter';
 import { crewName } from './engineConfig';
 import { tr, type DictKey } from './i18n';
@@ -157,6 +157,6 @@ export function resetScenario(): void {
   st().clearEvents();
   st().setTimeTravel(null);
   st().addAudit({ t, kind: 'command', key: 'log.cmd.reset' });
-  void fetch(`${apiBase()}/reset`, { method: 'POST' }).catch(() => {});
+  void fetch(`${apiBase()}/reset${sessionQuery()}`, { method: 'POST' }).catch(() => {});
   getManager()?.resetLog();
 }

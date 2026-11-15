@@ -237,8 +237,7 @@ feature works except live server events across tabs and the live NOAA GOES card.
 the install command (`cd ../.. && pnpm install --frozen-lockfile`) and the build command (builds `@astro/engine`, then the app).
 To use a hosted API instead, deploy `apps/api` (blueprint in `render.yaml`: Render, New, Blueprint, repository URL, Apply;
 the API reads `PORT` and `CORS_ORIGINS`), set `NEXT_PUBLIC_API_URL` on Vercel to the service's https address and redeploy
-the web app. The hosted API has one shared event log: every visitor sees the same scenario, so use _Reset scenario_ before a
-demo. On Render's free plan the service sleeps after 15 minutes and takes up to a minute to wake; the app falls back to the
+the web app. Every browser tab has its own simulation on the API (a random `sid` kept in `sessionStorage` and sent as `?sid=`): its own event log, mission clock and alerts, so what one visitor injects is never seen by another. A reload keeps the scenario, a new tab starts a fresh one, and idle sessions are dropped after 30 minutes (at most 200 at a time). On Render's free plan the service sleeps after 15 minutes and takes up to a minute to wake; the app falls back to the
 browser simulation meanwhile and reconnects by itself.
 
 **Tests and checks** (50 engine, 5 data, 11 API, 52 web unit tests):

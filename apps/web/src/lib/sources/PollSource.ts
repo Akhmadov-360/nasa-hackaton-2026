@@ -1,4 +1,5 @@
 import type { EngineEvent } from '@astro/engine';
+import { sessionQuery } from '../constants';
 import { emitter, type Batch, type TelemetrySource } from './types';
 
 /** REST fallback for networks that block WebSocket: GET /telemetry/latest every 500 ms. */
@@ -23,7 +24,7 @@ export class PollSource implements TelemetrySource {
   }
 
   send(ev: EngineEvent): boolean {
-    void fetch(`${this.base()}/events`, {
+    void fetch(`${this.base()}/events${sessionQuery()}`, {
       method: 'POST',
       headers: { 'content-type': 'application/json' },
       body: JSON.stringify(ev),
@@ -35,7 +36,7 @@ export class PollSource implements TelemetrySource {
     const ctl = new AbortController();
     const to = setTimeout(() => ctl.abort(), 2000);
     try {
-      const r = await fetch(`${this.base()}/telemetry/latest`, { signal: ctl.signal });
+      const r = await fetch(`${this.base()}/telemetry/latest${sessionQuery()}`, { signal: ctl.signal });
       if (!r.ok) return;
       const d = (await r.json()) as { t: number; frames: unknown[] };
       this.batches.emit({ t: d.t, frames: d.frames, alerts: [] });
