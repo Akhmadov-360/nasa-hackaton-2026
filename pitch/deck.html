@@ -210,6 +210,25 @@
   #timer.warn{color:var(--amber)} #timer.over{color:var(--red)}
   #help{position:fixed;right:18px;top:12px;font:500 13px/1 var(--mono);color:#3b4860;z-index:5;transition:opacity 1s}
   #help.gone{opacity:0}
+  /* on-screen controls: always visible, never printed */
+  #nav{position:fixed;left:50%;bottom:16px;transform:translateX(-50%);z-index:6;display:flex;align-items:center;gap:10px;
+    padding:6px 10px;border-radius:999px;background:rgba(10,17,32,.82);border:1px solid var(--line2);backdrop-filter:blur(6px)}
+  #nav button{all:unset;cursor:pointer;display:grid;place-items:center;width:34px;height:34px;border-radius:50%;color:var(--text);font:600 18px/1 var(--mono)}
+  #nav button:hover{background:rgba(63,220,188,.16);color:var(--teal)}
+  #nav button:disabled{opacity:.3;cursor:default;background:none;color:var(--text)}
+  #nav button:focus-visible{outline:2px solid var(--teal)}
+  #nav .count{font:600 14px/1 var(--mono);color:var(--muted);min-width:62px;text-align:center;letter-spacing:.06em}
+  #nav .dots{display:flex;gap:7px}
+  #nav .dots i{width:8px;height:8px;border-radius:50%;background:var(--line2);cursor:pointer;transition:background .2s,transform .2s}
+  #nav .dots i.on{background:var(--teal);transform:scale(1.35)}
+  .s1-nav{position:absolute;right:72px;top:668px;width:840px;padding:16px 26px;border-radius:18px;background:rgba(14,23,39,.86);border:1px solid var(--line2);
+    display:grid;grid-template-columns:1fr auto;gap:12px 24px;align-items:center}
+  .s1-nav .ttl{font:600 21px/1.25 var(--mono);color:var(--teal);letter-spacing:.04em}
+  .s1-nav .ttl small{display:block;margin-top:4px;font:500 16px/1.2 var(--mono);color:var(--muted);letter-spacing:.02em}
+  .s1-nav .go{all:unset;cursor:pointer;padding:12px 24px;border-radius:12px;background:var(--teal);color:#04121a;font:700 20px/1 var(--sans);white-space:nowrap}
+  .s1-nav .go:hover{filter:brightness(1.1)} .s1-nav .go:focus-visible{outline:3px solid #fff}
+  .s1-nav .keys{grid-column:1/-1;display:flex;flex-wrap:nowrap;gap:10px 20px;font:500 15px/1 var(--mono);color:var(--muted);white-space:nowrap}
+  .s1-nav kbd{display:inline-block;min-width:30px;padding:4px 7px;margin-right:5px;text-align:center;border-radius:7px;background:#16233a;border:1px solid var(--line2);border-bottom-width:3px;color:var(--text);font:600 14px/1 var(--mono)}
 
 
   /* ---------- motion mode (screen only; set by motion.js when GSAP loads) ---------- */
@@ -243,7 +262,7 @@
     .ecg path{stroke-dashoffset:0}
     .delay .fill{width:var(--w)}
     .delay .pulse{display:none}
-    #hud,#timer,#help{display:none!important}
+    #hud,#timer,#help,#nav,.s1-nav{display:none!important}
     .tl{height:650px;bottom:auto}
     .step{display:block;height:650px;overflow:hidden}
     .step .img{position:absolute;left:24px;right:24px;bottom:0;padding-top:0}
@@ -305,6 +324,17 @@
       </div>
     </div>
     <div class="s1-shot r" style="--d:3"><div class="glow"></div><img class="shot" src="assets/dashboard-forecast.jpg" alt="The Astronaut Health Monitor dashboard: body scan, ECG, vital cards, a forecast in the status island and the flight log"></div>
+    <div class="s1-nav r" style="--d:5">
+      <div class="ttl">7-SLIDE PITCH · 3 MINUTES<small>Slide 1 of 7 · use the keys or the buttons below</small></div>
+      <button class="go" type="button" id="start" aria-label="Start the presentation: next slide">Start &rarr;</button>
+      <div class="keys">
+        <span><kbd>&larr;</kbd><kbd>&rarr;</kbd>back / next</span>
+        <span><kbd>Space</kbd>next</span>
+        <span><kbd>1</kbd>&ndash;<kbd>7</kbd>jump</span>
+        <span><kbd>F</kbd>full screen</span>
+        <span><kbd>T</kbd>timer</span>
+      </div>
+    </div>
     <div class="s1-meta r" style="--d:5">
       <div class="row">Live demo&nbsp; <b>astronaut-health-monitor-one.vercel.app</b></div>
       <div class="row">Code&nbsp; <b>github.com/Akhmadov-360/nasa-hackaton-2026</b></div>
@@ -547,7 +577,8 @@
 
 <div id="hud"><div id="bar"></div></div>
 <div id="timer">0:00</div>
-<div id="help">← → space · F fullscreen · T timer</div>
+<nav id="nav" aria-label="Slides"><button type="button" id="prev" aria-label="Previous slide">&lsaquo;</button><span class="count" id="count" aria-live="polite">1 / 7</span><span class="dots" id="dots"></span><button type="button" id="next" aria-label="Next slide">&rsaquo;</button></nav>
+<div id="help">← → space · 1–7 jump · F fullscreen · T timer</div>
 
 <script src="vendor/gsap.min.js"></script>
 <script src="vendor/three.min.js"></script>
@@ -558,6 +589,9 @@
   const stage = document.getElementById('stage');
   const bar = document.getElementById('bar');
   const timer = document.getElementById('timer');
+  const prevBtn = document.getElementById('prev'), nextBtn = document.getElementById('next');
+  const count = document.getElementById('count'), dots = document.getElementById('dots');
+  slides.forEach((_, k) => { const d = document.createElement('i'); d.title = `Slide ${k + 1}`; d.onclick = () => show(k); dots.appendChild(d); });
   let i = 0, t0 = null, tick = null;
 
   const fit = () => {
@@ -573,6 +607,9 @@
     slides.forEach((s, k) => s.classList.toggle('active', k === i));
     if (window.DeckMotion) window.DeckMotion.go(prev, slides[i], dir, i + 1);
     bar.style.width = `${((i + 1) / slides.length) * 100}%`;
+    count.textContent = `${i + 1} / ${slides.length}`;
+    prevBtn.disabled = i === 0; nextBtn.disabled = i === slides.length - 1;
+    [...dots.children].forEach((d, k) => d.classList.toggle('on', k === i));
     history.replaceState(null, '', `#${i + 1}`);
   };
   const fmt = (ms) => { const s = Math.floor(ms / 1000); return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`; };
@@ -596,10 +633,11 @@
     else if (k === 'f' || k === 'F') { document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen?.(); }
     else if (k === 't' || k === 'T') toggleTimer();
   });
-  addEventListener('click', (e) => { if (e.target.closest('a')) return; show(i + (e.clientX > innerWidth / 3 ? 1 : -1)); });
+  addEventListener('click', (e) => { if (e.target.closest('a, #nav, .s1-nav')) return; show(i + (e.clientX > innerWidth / 3 ? 1 : -1)); });
   addEventListener('hashchange', () => { const n = (parseInt(location.hash.slice(1), 10) || 1) - 1; if (n !== i) show(n); });
+  prevBtn.onclick = () => show(i - 1); nextBtn.onclick = () => show(i + 1);
+  document.getElementById('start').onclick = () => show(1);
   addEventListener('resize', fit);
-  setTimeout(() => document.getElementById('help').classList.add('gone'), 5000);
   fit();
   const start = () => show((parseInt(location.hash.slice(1), 10) || 1) - 1);
   if (window.DeckMotion && window.DeckMotion.intro) window.DeckMotion.intro(start); else start();
