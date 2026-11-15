@@ -52,17 +52,27 @@ function MissionSelect() {
   const setMission = useMissionStore((s) => s.setMission);
   const m = missionOf(id);
   const tip = t('mission.tip', { place: missionPlace(m, locale), oneWay: delayText(m.delaySec, locale), round: roundTripText(m, locale), gravity: gravityText(m) });
+  // the explanation stays out of the way while the list is open (a click on the selector hides it until the pointer leaves)
+  const [tipOpen, setTipOpen] = useState(false);
+  const [hold, setHold] = useState(false);
   return (
-    <Tip label={tip} side="bottom">
-      <span className="inline-flex shrink-0 items-center gap-2">
-        <Select
-          size="sm" ariaLabel={t('mission.label')} value={id} align="left" menuWidth={170}
-          onChange={setMission}
-          options={missions.map((x) => ({ value: x.id, label: missionLabel(x, locale) }))}
-        />
-        <span className="num hidden whitespace-nowrap text-xs text-muted-foreground 2xl:inline" aria-label={t('mission.delay')}>{delayText(m.delaySec, locale)}</span>
-      </span>
-    </Tip>
+    <Tooltip open={tipOpen && !hold} onOpenChange={setTipOpen}>
+      <TooltipTrigger asChild>
+        <span
+          className="inline-flex shrink-0 items-center gap-2"
+          onClickCapture={() => setHold(true)}
+          onPointerLeave={() => setHold(false)}
+        >
+          <Select
+            size="sm" ariaLabel={t('mission.label')} value={id} align="left" menuWidth={170}
+            onChange={setMission}
+            options={missions.map((x) => ({ value: x.id, label: missionLabel(x, locale) }))}
+          />
+          <span className="num hidden whitespace-nowrap text-xs text-muted-foreground 2xl:inline" aria-label={t('mission.delay')}>{delayText(m.delaySec, locale)}</span>
+        </span>
+      </TooltipTrigger>
+      <TooltipContent side="bottom">{tip}</TooltipContent>
+    </Tooltip>
   );
 }
 
